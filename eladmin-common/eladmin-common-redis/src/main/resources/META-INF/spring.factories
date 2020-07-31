@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.micah.redis.config.RedisConfig,\
+  org.micah.redis.util.RedisUtils
