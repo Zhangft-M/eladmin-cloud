@@ -19,7 +19,6 @@
 package org.micah.security.exception;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.pig4cloud.pig.common.security.component.PigAuth2ExceptionSerializer;
 import org.micah.security.component.OAuth2ExceptionSerializer;
 import org.springframework.http.HttpStatus;
 
