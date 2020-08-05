@@ -1,8 +1,9 @@
 package ogr.micah.log.service.impl;
 
-import ogr.micah.log.entity.Log;
+
 import ogr.micah.log.service.ILogService;
-import org.aspectj.lang.ProceedingJoinPoint;
+
+import org.micah.model.Log;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,8 +14,11 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 public class LogServiceImpl implements ILogService {
+
+
+
     @Override
-    public void save(String username, String browser, String ip, ProceedingJoinPoint joinPoint, Log log) {
+    public void save(Log log) {
 
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -171,6 +172,21 @@ public class DateUtil {
     public static String getNowLocalDateTime(String patten){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(patten);
         return dtf.format(LocalDate.now(ZoneId.systemDefault()));
+    }
+
+    /**
+     * 获得当天是周几
+     */
+    public static String getWeekDay() {
+        String[] weekDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+
+        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
+        if (w < 0) {
+            w = 0;
+        }
+        return weekDays[w];
     }
 
 }

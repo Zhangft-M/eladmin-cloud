@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ogr.micah.log.entity;
+package org.micah.model;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * @author Zheng Jie
@@ -70,7 +71,7 @@ public class Log  implements Serializable {
     private byte[] exceptionDetail;
 
     /** 创建日期 */
-    private Timestamp createTime;
+    private LocalDateTime createTime;
 
     public Log(String logType, Long time) {
         this.logType = logType;

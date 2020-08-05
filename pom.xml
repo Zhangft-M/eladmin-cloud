@@ -27,11 +27,17 @@
         <mybatis-plus.version>3.3.2</mybatis-plus.version>
         <hutool.version>5.3.8</hutool.version>
         <fastjson.version>1.2.70</fastjson.version>
+        <eladmin-model.version>0.0.1</eladmin-model.version>
+        <eladmin-api.version>0.0.1</eladmin-api.version>
+        <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
     </properties>
 
     <modules>
         <module>eladmin-gateway</module>
         <module>eladmin-common</module>
+        <module>eladmin-api</module>
+        <module>eladmin-model</module>
+        <module>eladmin-auth</module>
     </modules>
 
 
@@ -113,17 +119,68 @@
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
+<!--            通用的redis模块-->
             <dependency>
                 <groupId>org.micah.eladmin-cloud</groupId>
                 <artifactId>eladmin-common-redis</artifactId>
                 <version>${eladmin-common.version}</version>
             </dependency>
+<!--            通用核心模块-->
             <dependency>
                 <groupId>org.micah.eladmin-cloud</groupId>
                 <artifactId>eladmin-common-core</artifactId>
                 <version>${eladmin-common.version}</version>
             </dependency>
+<!--            日志接口模块-->
+            <dependency>
+                <groupId>org.micah</groupId>
+                <artifactId>eladmin-api-log</artifactId>
+                <version>${eladmin-api.version}</version>
+            </dependency>
+<!--            封装mybatis-plus的通用模块-->
+            <dependency>
+                <groupId>org.micah.eladmin-cloud</groupId>
+                <artifactId>eladmin-common-mybatis-plus</artifactId>
+                <version>${eladmin-common.version}</version>
+            </dependency>
+<!--            通过安全模块-->
+            <dependency>
+                <groupId>org.micah.eladmin-cloud</groupId>
+                <artifactId>eladmin-common-security</artifactId>
+                <version>${eladmin-common.version}</version>
+            </dependency>
+<!--            mybatis-plus注解相关-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+<!--            日志模块-->
+            <dependency>
+                <groupId>org.micah</groupId>
+                <artifactId>eladmin-model-log</artifactId>
+                <version>${eladmin-model.version}</version>
+            </dependency>
+<!--            系统接口-->
+            <dependency>
+                <groupId>org.micah</groupId>
+                <artifactId>eladmin-api-system</artifactId>
+                <version>${eladmin-api.version}</version>
+            </dependency>
+<!--            mapstruct相关依赖-->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
 
 

@@ -12,6 +12,7 @@
         <module>eladmin-common-exception</module>
         <module>eladmin-common-log</module>
         <module>eladmin-common-mybatis-plus</module>
+        <module>eladmin-common-security</module>
     </modules>
     <name>eladmin-common</name>
     <description>通用模块</description>
