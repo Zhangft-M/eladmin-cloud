@@ -56,4 +56,9 @@ public class BaseEntity implements Serializable {
         }
         return builder.toString();
     }
+    /* 分组校验 */
+    public @interface Create {}
+
+    /* 分组校验 */
+    public @interface Update {}
 }

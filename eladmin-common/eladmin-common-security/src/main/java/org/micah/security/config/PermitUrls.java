@@ -9,8 +9,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -28,7 +30,8 @@ import java.util.regex.Pattern;
  * @create: 2020-08-04 14:51
  **/
 
-@ConfigurationProperties("security.oauth2.permit")
+@Configuration
+@ConfigurationProperties(prefix = "security.oauth2.permit")
 public class PermitUrls implements InitializingBean, ApplicationContextAware {
 
     /**

@@ -3,7 +3,7 @@ package org.micah.logapi.factory;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.logapi.api.RemoteLogService;
-import org.micah.model.Log;
+import org.micah.model.SysLog;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -19,7 +19,7 @@ public class RemoteLogFallbackFactory implements FallbackFactory<RemoteLogServic
         log.error("插入日志失败:case{}",throwable.getCause().toString());
         return new RemoteLogService() {
             @Override
-            public ResponseEntity<Void> saveLog(Log log) {
+            public ResponseEntity<Void> saveLog(SysLog log) {
                 return null;
             }
 

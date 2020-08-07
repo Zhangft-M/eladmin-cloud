@@ -3,15 +3,23 @@ package org.micah.core.util;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
+import com.sun.istack.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @program: eladmin-cloud
@@ -310,6 +318,42 @@ public class FileUtils extends FileUtil {
                     log.info(e.getMessage(), e);
                 }
             }
+        }
+    }
+
+    /**
+     *
+     * @param response 响应
+     * @param fileName 文件名
+     * @param clazz 需要导出的实体类对象
+     * @param data 需要导出的数据
+     * @param sheetName 表名
+     * @param <T>
+     * @throws IOException
+     */
+    public static <T> void downloadFailedUsingJson(HttpServletResponse response, String fileName, Class<T> clazz, List<T> data, @Nullable String sheetName) throws IOException {
+        // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String fName = URLEncoder.encode(fileName, "UTF-8");
+            //String sName = URLEncoder.encode(sheetName,"UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fName + ".xlsx");
+            // 这里需要设置不关闭流
+            EasyExcel.write(response.getOutputStream(), clazz)
+                    .autoCloseStream(Boolean.FALSE)
+                    .sheet(StringUtils.isBlank(sheetName)? fName:URLEncoder.encode(sheetName,"UTF-8"))
+                    .doWrite(data);
+        } catch (Exception e) {
+            // 重置response
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, String> map = new HashMap<String, String>(3);
+            map.put("status", "failure");
+            map.put("message", "下载文件失败" + e.getMessage());
+            response.getWriter().println(JSONUtil.toJsonStr(map));
         }
     }
 

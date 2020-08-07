@@ -38,6 +38,10 @@ public class InnerAspect implements Ordered {
         return pjp.proceed();
     }
 
+    /**
+     * 确保在权限认证aop执行前执行
+     * @return
+     */
     @Override
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE + 1;

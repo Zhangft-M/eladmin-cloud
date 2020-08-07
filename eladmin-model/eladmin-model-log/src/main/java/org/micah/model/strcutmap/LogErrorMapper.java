@@ -20,7 +20,7 @@ package org.micah.model.strcutmap;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.micah.core.base.BaseMapStruct;
-import org.micah.model.Log;
+import org.micah.model.SysLog;
 import org.micah.model.dto.LogErrorDTO;
 
 /**
@@ -28,6 +28,6 @@ import org.micah.model.dto.LogErrorDTO;
  * @date 2019-5-22
  */
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface LogErrorMapper extends BaseMapStruct<LogErrorDTO, Log> {
+public interface LogErrorMapper extends BaseMapStruct<LogErrorDTO, SysLog> {
 
 }

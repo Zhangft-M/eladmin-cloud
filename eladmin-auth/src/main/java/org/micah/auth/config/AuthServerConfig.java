@@ -111,6 +111,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
             public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
                 if (accessToken instanceof DefaultOAuth2AccessToken){
                     LoginUser loginUser = (LoginUser) authentication.getUserAuthentication().getPrincipal();
+                    // TODO: 2020/8/5 在token中后续添加权限信息
+                    authentication.getAuthorities();
                     Map<String, Object> additionalInformation = new LinkedHashMap<String, Object>(3);
                     additionalInformation.put(SecurityConstants.DETAILS_USERNAME, loginUser.getUsername());
                     additionalInformation.put(SecurityConstants.DETAILS_USER_ID, loginUser.getUserId());

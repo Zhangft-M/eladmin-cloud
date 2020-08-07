@@ -83,5 +83,5 @@ public class SecurityConstants {
     public static final String FROM = "from";
 
 
-    public static final CharSequence FROM_IN = "Y";
+    public static final String FROM_IN = "Y";
 }

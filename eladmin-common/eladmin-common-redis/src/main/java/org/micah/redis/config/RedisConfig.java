@@ -40,7 +40,6 @@ import java.util.Map;
  * @create: 2020-07-29 17:37
  **/
 @Slf4j
-@Configuration
 @EnableCaching
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)

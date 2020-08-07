@@ -24,6 +24,6 @@ import java.lang.annotation.*;
 // 开启权限校验注解
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 // 在spring初始化的时候自动装配这两个类
-@Import({ ResourceServerAutoConfiguration.class, SecurityBeanDefinitionRegistrar.class })
+@Import({ResourceServerAutoConfiguration.class,SecurityBeanDefinitionRegistrar.class})
 public @interface EnableCustomizeResourceServer {
 }

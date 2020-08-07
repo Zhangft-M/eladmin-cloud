@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 /**
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @MapperScan("org.micah.*.mapper")
+@ComponentScan("org.micah.model.structmap")
 public class MyBatisPlusConfig {
 
     @Bean
@@ -35,6 +38,11 @@ public class MyBatisPlusConfig {
     @Bean
     public IdentifierGenerator idGenerator() {
         return new CustomIdGenerator();
+    }
+
+    @Bean
+    public WebMvcConfigurer customizeWebMvcConfig(){
+        return new CustomizeWebMvcConfig();
     }
 
 }

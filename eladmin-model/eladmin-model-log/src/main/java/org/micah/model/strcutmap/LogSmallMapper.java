@@ -19,7 +19,7 @@ package org.micah.model.strcutmap;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.micah.core.base.BaseMapStruct;
-import org.micah.model.Log;
+import org.micah.model.SysLog;
 import org.micah.model.dto.LogSmallDTO;
 
 /**
@@ -27,6 +27,6 @@ import org.micah.model.dto.LogSmallDTO;
  * @date 2019-5-22
  */
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface LogSmallMapper extends BaseMapStruct<LogSmallDTO,Log> {
+public interface LogSmallMapper extends BaseMapStruct<LogSmallDTO, SysLog> {
 
 }

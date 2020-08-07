@@ -11,6 +11,7 @@ import org.micah.mp.annotation.type.SelectType;
 import java.lang.reflect.Field;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @program: eladmin-cloud
@@ -20,6 +21,7 @@ import java.util.*;
  **/
 
 public class QueryHelpUtils {
+
 
     private static final char SEPARATOR = '_';
 
@@ -233,6 +235,5 @@ public class QueryHelpUtils {
         return sb.toString();
 
     }
-
 
 }

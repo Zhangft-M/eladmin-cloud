@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +23,11 @@ import java.util.Map;
  * @create: 2020-08-04 19:55
  **/
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class CustomizeAccessDeniedHandler extends OAuth2AccessDeniedHandler {
-    private final ObjectMapper objectMapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 授权拒绝处理，使用R包装

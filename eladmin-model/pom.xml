@@ -13,12 +13,19 @@
     <packaging>pom</packaging>
     <modules>
         <module>eladmin-model-log</module>
+        <module>eladmin-model-system</module>
     </modules>
 
     <dependencies>
         <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-mybatis-plus</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
@@ -29,20 +36,12 @@
                     <artifactId>spring-security-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.lionsoul</groupId>
                     <artifactId>ip2region</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-lang3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.swagger</groupId>
-                    <artifactId>swagger-annotations</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>cn.hutool</groupId>
@@ -57,6 +56,10 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
         </dependency>
     </dependencies>
 

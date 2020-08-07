@@ -3,7 +3,7 @@ package org.micah.logapi.api;
 
 import org.micah.core.constant.ServiceNameConstants;
 import org.micah.logapi.factory.RemoteLogFallbackFactory;
-import org.micah.model.Log;
+import org.micah.model.SysLog;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +26,7 @@ public interface RemoteLogService {
      * @return 结果
      */
     @PostMapping("/operlog")
-    ResponseEntity<Void> saveLog(@RequestBody Log log);
+    ResponseEntity<Void> saveLog(@RequestBody SysLog log);
 
     /**
      * 保存访问记录
