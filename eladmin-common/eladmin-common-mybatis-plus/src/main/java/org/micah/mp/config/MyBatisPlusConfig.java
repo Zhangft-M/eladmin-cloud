@@ -20,7 +20,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableTransactionManagement
 @MapperScan("org.micah.*.mapper")
-@ComponentScan("org.micah.model.structmap")
 public class MyBatisPlusConfig {
 
     @Bean

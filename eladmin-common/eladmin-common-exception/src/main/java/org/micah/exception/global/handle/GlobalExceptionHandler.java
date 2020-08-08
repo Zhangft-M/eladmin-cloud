@@ -37,7 +37,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  * @date 2018-11-23
  */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice("org.micah.*.controller")
 public class GlobalExceptionHandler {
 
     /**

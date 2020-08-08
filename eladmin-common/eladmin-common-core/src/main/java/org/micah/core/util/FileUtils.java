@@ -331,7 +331,7 @@ public class FileUtils extends FileUtil {
      * @param <T>
      * @throws IOException
      */
-    public static <T> void downloadFailedUsingJson(HttpServletResponse response, String fileName, Class<T> clazz, List<T> data, @Nullable String sheetName) throws IOException {
+    public static <T> void downloadFailedUsingJson(HttpServletResponse response, String fileName, Class<T> clazz, List<?> data, @Nullable String sheetName) throws IOException {
         // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
         try {
             response.setContentType("application/vnd.ms-excel");

@@ -24,33 +24,33 @@ public class PageResult implements Serializable {
     /**
      * 总的页数
      */
-    private Integer pages;
+    private Long pages;
 
     /**
      * 数据
      */
-    private List<?> records;
+    private List<?> content;
 
 
     public PageResult() {
     }
 
-    public PageResult(Long total, List<?> records) {
+    public PageResult(Long total, List<?> content) {
         this.total = total;
-        this.records = records;
+        this.content = content;
     }
 
-    public PageResult(Long total, Integer pages, List<?> records) {
+    public PageResult(Long total, Long pages, List<?> content) {
         this.total = total;
         this.pages = pages;
-        this.records = records;
+        this.content = content;
     }
 
-    public static PageResult success(Long total, Integer pages, List<?> records){
-        return new PageResult(total,pages,records);
+    public static PageResult success(Long total, Long pages, List<?> content){
+        return new PageResult(total,pages,content);
     }
 
-    public static PageResult success(Long total, List<?> records){
-        return new PageResult(total,records);
+    public static PageResult success(Long total, List<?> content){
+        return new PageResult(total,content);
     }
 }

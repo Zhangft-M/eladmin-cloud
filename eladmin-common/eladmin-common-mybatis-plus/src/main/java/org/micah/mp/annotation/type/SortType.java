@@ -6,7 +6,7 @@ package org.micah.mp.annotation.type;
  * @author: Micah
  * @create: 2020-07-31 19:24
  **/
-public enum OrderType {
+public enum SortType {
 
     // 升序
     ASC,

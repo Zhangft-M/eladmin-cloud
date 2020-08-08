@@ -1,7 +1,7 @@
 package org.micah.mp.annotation;
 
-import org.micah.mp.annotation.type.OrderType;
 import org.micah.mp.annotation.type.SelectType;
+import org.micah.mp.annotation.type.SortType;
 
 import java.lang.annotation.*;
 
@@ -29,20 +29,20 @@ public @interface Query {
     SelectType type() default SelectType.EQUAL;
 
     /**
-     * 是否对该字段进行排序
+     * 是否使用该字段进行排序
      * @return
      */
-    boolean isOder() default false;
+    boolean isSort() default false;
 
     /**
      * 排序方式
      */
-    OrderType order() default OrderType.ASC;
+    SortType sort() default SortType.ASC;
 
     /**
      * 多字段模糊搜索，仅支持String类型字段，多个用逗号隔开, 如@Query(blurry = "email,username")
      */
-    String[] blurry() default {""};
+    String[] blurry() default {};
 
 
 

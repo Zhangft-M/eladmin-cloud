@@ -3,13 +3,11 @@ server:
 spring:
   application:
     name: gateway-server
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 121.89.178.219:8848
   datasource:
-    url: jdbc:mysql://121.89.178.219:3306/eladmin?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:p6spy:mysql://121.89.178.219:3306/eladmin?useUnicode=true&characterEncoding=UTF-8
     username: root
-    password:
+    password: missyou1127
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+
 jwt:
   online-key: abcdefg

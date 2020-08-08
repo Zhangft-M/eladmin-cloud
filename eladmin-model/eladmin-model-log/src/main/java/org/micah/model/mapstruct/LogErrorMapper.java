@@ -13,20 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.micah.model.strcutmap;
+package org.micah.model.mapstruct;
+
 
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.micah.core.base.BaseMapStruct;
 import org.micah.model.SysLog;
-import org.micah.model.dto.LogSmallDTO;
+import org.micah.model.dto.LogErrorDTO;
 
 /**
  * @author Zheng Jie
  * @date 2019-5-22
  */
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface LogSmallMapper extends BaseMapStruct<LogSmallDTO, SysLog> {
+public interface LogErrorMapper extends BaseMapStruct<LogErrorDTO, SysLog> {
 
 }

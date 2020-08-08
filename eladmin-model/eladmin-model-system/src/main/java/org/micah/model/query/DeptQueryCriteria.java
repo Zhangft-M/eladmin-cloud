@@ -45,4 +45,10 @@ public class DeptQueryCriteria {
 
     @Query(type = SelectType.BETWEEN)
     private List<LocalDateTime> createTime;
+
+    /**
+     * 排序字段
+     */
+    @Query(isSort = true)
+    private String deptSort;
 }

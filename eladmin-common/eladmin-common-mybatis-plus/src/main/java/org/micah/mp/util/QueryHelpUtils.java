@@ -1,17 +1,16 @@
 package org.micah.mp.util;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import org.micah.mp.annotation.Query;
-import org.micah.mp.annotation.type.OrderType;
+import org.micah.mp.annotation.type.SortType;
 import org.micah.mp.annotation.type.SelectType;
 
 
 import java.lang.reflect.Field;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @program: eladmin-cloud
@@ -20,12 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @create: 2020-07-31 19:34
  **/
 
+@SuppressWarnings("unchecked")
 public class QueryHelpUtils {
 
 
     private static final char SEPARATOR = '_';
 
-    public static <T> Wrapper<T> getWrapper(T queryEntity) {
+    public static <T> QueryWrapper<T> getWrapper(T queryEntity) {
         // 初始化一个查询对象
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
         // 判断查询条件是否为空
@@ -41,34 +41,41 @@ public class QueryHelpUtils {
                 boolean accessible = field.isAccessible();
                 // 设置成员变量可以访问，避免private修饰的变量无法访问的问题
                 field.setAccessible(true);
-                // 获取成员变量的值
-                Object val = field.get(queryEntity);
-                if (Objects.isNull(val)) {
-                    // 如果该值为null，直接开始下一次的循环
-                    continue;
-                }
-
                 // 获取字段上面的注解
                 Query query = field.getAnnotation(Query.class);
-                if (!Objects.isNull(query)) {
+                if (query != null) {
+                    // 获取成员变量的值
+                    Object val = field.get(queryEntity);
                     // 数据库中的字段名,如果为""则默认为成员变量名转化为有下划线形式
                     // 如果该值没有指定则成员变量名与数据库字段名严格以驼峰命名方式转换
                     String attributeName = QueryHelpUtils.isBlank(query.value()) ? QueryHelpUtils.toUnderScoreCase(field.getName()) : query.value();
+                    if (Objects.isNull(val)) {
+                        // 如果该值为null，则查看是否是排序字段
+                        if (query.isSort()){
+                            SortType sortType = query.sort();
+                            if (sortType.name().equals(SortType.ASC.name())) {
+                                queryWrapper.orderByAsc(attributeName);
+                            } else if ( sortType.name().equals(SortType.DESC.name())) {
+                                queryWrapper.orderByDesc(attributeName);
+                            }
+                        }
+                        continue;
+                    }
                     // 多字段模糊查询,该字段与数据库中的多个字段进行模糊匹配查询
                     // 该属性的值为数据库中的字段名
                     String[] blurry = query.blurry();
                     // 字段是否进行排序
-                    boolean isOrder = query.isOder();
+                    boolean isSort = query.isSort();
                     // 字段查询的类型
                     SelectType selectType = query.type();
-                    OrderType orderType = isOrder ? query.order() : null;
+                    SortType sortType = isSort ? query.sort() : null;
                     if (blurry.length > 0) {
                         // 初始化多字段模糊匹配查询
-                        QueryHelpUtils.createBlurryQuery(queryWrapper, blurry, val, orderType);
+                        QueryHelpUtils.createBlurryQuery(queryWrapper, blurry, val);
                         continue;
                     }
                     // 初始化基本查询条件
-                    QueryHelpUtils.createTypeQuery(selectType, attributeName, val, orderType, queryWrapper);
+                    QueryHelpUtils.createTypeQuery(selectType, attributeName, val, queryWrapper);
 
                 }
 
@@ -99,9 +106,8 @@ public class QueryHelpUtils {
      * @param selectType    查询方式
      * @param attributeName 数据库字段名
      * @param val           值
-     * @param orderType     排序方式
      */
-    private static <T> void createTypeQuery(SelectType selectType, String attributeName, Object val, OrderType orderType, QueryWrapper<T> queryWrapper) {
+    private static <T> void createTypeQuery(SelectType selectType, String attributeName, Object val, QueryWrapper<T> queryWrapper) {
         switch (selectType) {
             case EQUAL:
                 queryWrapper.eq(attributeName, val);
@@ -131,7 +137,10 @@ public class QueryHelpUtils {
                 queryWrapper.likeRight(attributeName, val);
                 break;
             case IN:
-                queryWrapper.in(attributeName, val);
+
+                if (CollectionUtils.isNotEmpty((Collection<Long>)val)) {
+                    queryWrapper.in(attributeName, (Collection<Long>)val);
+                }
                 break;
             case NOT_NULL:
                 queryWrapper.isNotNull(attributeName);
@@ -147,11 +156,6 @@ public class QueryHelpUtils {
                 break;
 
         }
-        if (orderType != null && orderType.name().equals(OrderType.ASC.name())) {
-            queryWrapper.orderByAsc(val.toString());
-        } else if (orderType != null && orderType.name().equals(OrderType.DESC.name())) {
-            queryWrapper.orderByDesc(val.toString());
-        }
     }
 
 
@@ -161,21 +165,20 @@ public class QueryHelpUtils {
      * @param queryWrapper 查询条件封装类
      * @param blurry       数据库对应需要匹配的字段
      * @param val          值
-     * @param orderType    排序方式
      * @param <T>
      */
-    private static <T> void createBlurryQuery(QueryWrapper<T> queryWrapper, String[] blurry, Object val, OrderType orderType) {
+    private static <T> void createBlurryQuery(QueryWrapper<T> queryWrapper, String[] blurry, Object val) {
         for (int i = 0; i < blurry.length; i++) {
             if (i == blurry.length - 1) {
                 queryWrapper.like(blurry[i], val);
             }
             queryWrapper.like(blurry[i], val).or();
         }
-        if (orderType != null && orderType.name().equals(OrderType.ASC.name())) {
+       /* if (sortType != null && sortType.name().equals(SortType.ASC.name())) {
             queryWrapper.orderByAsc(val.toString());
-        } else if (orderType != null && orderType.name().equals(OrderType.DESC.name())) {
+        } else if (sortType != null && sortType.name().equals(SortType.DESC.name())) {
             queryWrapper.orderByDesc(val.toString());
-        }
+        }*/
     }
 
     private static boolean isBlank(final CharSequence cs) {
@@ -203,10 +206,10 @@ public class QueryHelpUtils {
 
         // 是否是大写
         boolean isUpperCase = false;
-        
+
         // 初始化一个StringBuilder
         StringBuilder sb = new StringBuilder();
-        
+
         // 遍历字符
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
