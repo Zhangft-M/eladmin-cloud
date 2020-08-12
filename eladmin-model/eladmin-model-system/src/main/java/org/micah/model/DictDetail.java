@@ -1,6 +1,7 @@
 package org.micah.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
@@ -28,11 +29,6 @@ public class DictDetail extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;
 
-
-
-    @ApiModelProperty(value = "字典", hidden = true)
-    private Dict dict;
-
     @ApiModelProperty(value = "字典标签")
     private String label;
 
@@ -41,4 +37,9 @@ public class DictDetail extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "排序")
     private Integer dictSort = 999;
+
+
+    @ApiModelProperty(value = "字典", hidden = true)
+    @TableField(exist = false)
+    private Dict dict;
 }

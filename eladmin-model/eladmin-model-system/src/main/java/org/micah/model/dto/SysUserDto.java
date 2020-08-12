@@ -30,7 +30,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-public class UserDto extends BaseDTO implements Serializable {
+public class SysUserDto extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = 967234921171721967L;
     private Long id;

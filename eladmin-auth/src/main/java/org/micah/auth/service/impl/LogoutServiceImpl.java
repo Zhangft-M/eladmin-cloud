@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.micah.auth.service.ILogoutService;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.core.util.StringUtils;
-import org.micah.logapi.api.RemoteLogService;
+import org.micah.logapi.api.IRemoteLogService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class LogoutServiceImpl implements ILogoutService {
 
     private final TokenStore tokenStore;
 
-    private final RemoteLogService remoteLogService;
+    private final IRemoteLogService remoteLogService;
 
     @Override
     public Boolean logout(String authHeader) {

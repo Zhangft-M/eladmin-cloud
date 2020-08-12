@@ -2,8 +2,11 @@ package org.micah.security.config;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @program: eladmin-cloud
@@ -14,4 +17,9 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationPropertiesScan
 @ComponentScan("org.micah.security")
 public class ResourceServerAutoConfiguration {
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 }

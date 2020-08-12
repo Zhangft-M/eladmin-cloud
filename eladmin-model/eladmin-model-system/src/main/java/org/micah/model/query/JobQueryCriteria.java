@@ -39,5 +39,5 @@ public class JobQueryCriteria {
     private Boolean enabled;
 
     @Query(type = SelectType.BETWEEN)
-    private List<LocalDateTime> createTime;
+    private List<Timestamp> createTime;
 }

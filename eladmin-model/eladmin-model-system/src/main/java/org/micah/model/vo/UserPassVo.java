@@ -13,19 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.micah.model.mapstruct;
+package org.micah.model.vo;
 
+import lombok.Data;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
-import org.micah.core.base.BaseMapStruct;
-import org.micah.model.User;
-import org.micah.model.dto.UserDto;
+import java.io.Serializable;
 
 /**
+ * 修改密码的 Vo 类
  * @author Zheng Jie
- * @date 2018-11-23
+ * @date 2019年7月11日13:59:49
  */
-@Mapper(componentModel = "spring",uses = {RoleMapStruct.class, DeptMapStruct.class, JobMapStruct.class},unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface UserMapStruct extends BaseMapStruct<UserDto, User> {
+@Data
+public class UserPassVo implements Serializable {
+
+    private static final long serialVersionUID = -7706927239984656243L;
+
+    private String oldPass;
+
+    private String newPass;
 }

@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>org.micah</groupId>
-            <artifactId>eladmin-model-system</artifactId>
+            <artifactId>eladmin-api-system</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.micah.eladmin-cloud</groupId>
@@ -101,7 +101,16 @@
                     <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>5.2.3</version>
         </dependency>
     </dependencies>
 

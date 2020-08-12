@@ -35,8 +35,8 @@ public class DeptTest {
         DeptQueryCriteria queryCriteria = new DeptQueryCriteria();
         queryCriteria.setEnabled(true);
         // queryCriteria.setName("华南");
-        queryCriteria.setDeptSort(null);
-        PageResult pageResult = this.deptService.queryAll(queryCriteria, 1, 2, true);
+        // queryCriteria.setDeptSort(null);
+        PageResult pageResult = this.deptService.queryAll(queryCriteria, null, true);
         System.out.println(pageResult.getContent());
     }
 

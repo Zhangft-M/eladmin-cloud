@@ -5,12 +5,10 @@ import org.micah.core.web.page.PageResult;
 import org.micah.model.Dept;
 import org.micah.model.dto.DeptDto;
 import org.micah.model.query.DeptQueryCriteria;
+import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @program: eladmin-cloud
@@ -22,12 +20,10 @@ public interface IDeptService extends IService<Dept> {
     /**
      * 查询所有
      * @param criteria 查询条件
-     * @param page
-     * @param size
      * @param isQuery 是查询还是导出数据
      * @return
      */
-    PageResult queryAll(DeptQueryCriteria criteria, Integer page, Integer size, boolean isQuery);
+    PageResult queryAll(DeptQueryCriteria criteria, Pageable pageable, boolean isQuery);
 
     /**
      * 根据id查询
@@ -93,4 +89,12 @@ public interface IDeptService extends IService<Dept> {
      * @param newDeptPid
      */
     void delCaches(Long id, Long oldDeptPid, Long newDeptPid);
+
+    /**
+     * 根据当前部门的id获取所有子部门的id
+     * @param deptId
+     * @param byPid
+     * @return
+     */
+    Collection<? extends Long> getDeptChildren(Long deptId, List<Dept> byPid);
 }

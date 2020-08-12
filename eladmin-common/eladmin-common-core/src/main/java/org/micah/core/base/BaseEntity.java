@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -32,11 +33,11 @@ public class BaseEntity implements Serializable {
 
 
     @ApiModelProperty(value = "创建时间", hidden = true)
-    private LocalDateTime createTime;
+    private Timestamp createTime;
 
 
     @ApiModelProperty(value = "更新时间", hidden = true)
-    private LocalDateTime updateTime;
+    private Timestamp updateTime;
 
 
 

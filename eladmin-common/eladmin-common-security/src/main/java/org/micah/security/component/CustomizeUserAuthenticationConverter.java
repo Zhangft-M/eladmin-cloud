@@ -5,7 +5,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 import org.springframework.util.StringUtils;
@@ -27,7 +26,7 @@ public class CustomizeUserAuthenticationConverter implements UserAuthenticationC
     /**
      * 将信息返回给资源服务器,使用的是默认的实现
      * {@link DefaultUserAuthenticationConverter#convertUserAuthentication(org.springframework.security.core.Authentication)}
-     * @param userAuthentication
+     * @param userAuthentication 用户认证信息，包含了用户信息以及权限信息
      * @return
      */
     @Override
@@ -46,8 +45,10 @@ public class CustomizeUserAuthenticationConverter implements UserAuthenticationC
             Collection<? extends GrantedAuthority> authorities = getAuthorities(map);
             Long userId = (Long) map.get(SecurityConstants.DETAILS_USER_ID);
             String username = (String) map.get(SecurityConstants.DETAILS_USERNAME);
-            LoginUser loginUser = new LoginUser(userId,username,N_A,true,true,true,true,authorities);
-            return new UsernamePasswordAuthenticationToken(loginUser, "N/A", authorities);
+            // TODO: 2020/8/10 获取dataScopes
+            /*LoginUser loginUser = new LoginUser(userId,username,N_A,true,true,true,true,
+                    authorities, null);*/
+            return new UsernamePasswordAuthenticationToken(null, "N/A", authorities);
         }
         return null;
     }

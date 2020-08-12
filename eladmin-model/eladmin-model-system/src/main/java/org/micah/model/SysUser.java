@@ -26,7 +26,7 @@ import java.util.Set;
 @Setter
 @Getter
 @TableName("sys_user")
-public class User extends BaseEntity implements Serializable {
+public class SysUser extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -3797115638759597781L;
 
 
@@ -96,7 +96,7 @@ public class User extends BaseEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        User user = (User) o;
+        SysUser user = (SysUser) o;
         return Objects.equals(id, user.id) &&
                 Objects.equals(username, user.username);
     }

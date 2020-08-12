@@ -32,12 +32,12 @@ public @interface Query {
      * 是否使用该字段进行排序
      * @return
      */
-    boolean isSort() default false;
+    // boolean isSort() default false;
 
     /**
      * 排序方式
      */
-    SortType sort() default SortType.ASC;
+    // SortType sort() default SortType.ASC;
 
     /**
      * 多字段模糊搜索，仅支持String类型字段，多个用逗号隔开, 如@Query(blurry = "email,username")

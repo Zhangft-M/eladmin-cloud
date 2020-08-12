@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @create: 2020-08-02 17:18
  **/
 @FeignClient(contextId = "remoteLogService", value = ServiceNameConstants.LOG_SERVICE, fallbackFactory = RemoteLogFallbackFactory.class)
-public interface RemoteLogService {
+public interface IRemoteLogService {
 
     /**
      * 保存系统日志

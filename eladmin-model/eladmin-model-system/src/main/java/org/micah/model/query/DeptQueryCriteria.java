@@ -44,11 +44,6 @@ public class DeptQueryCriteria {
     private Boolean pidIsNull;
 
     @Query(type = SelectType.BETWEEN)
-    private List<LocalDateTime> createTime;
+    private List<Timestamp> createTime;
 
-    /**
-     * 排序字段
-     */
-    @Query(isSort = true)
-    private String deptSort;
 }

@@ -10,6 +10,8 @@ import org.micah.model.Dept;
 import org.micah.model.dto.DeptDto;
 import org.micah.model.query.DeptQueryCriteria;
 import org.micah.system.service.IDeptService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,15 +40,15 @@ public class DeptController {
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dept:list')")
     public void download(HttpServletResponse response, DeptQueryCriteria criteria) throws Exception {
-        this.deptService.download(this.deptService.queryAll(criteria, null, null, false), response);
+        this.deptService.download(this.deptService.queryAll(criteria, null, false), response);
     }
 
     // @Log("查询部门")
     @ApiOperation("查询部门")
-    @GetMapping("/{page}/{size}")
+    @GetMapping()
     @PreAuthorize("@el.check('user:list','dept:list')")
-    public ResponseEntity<PageResult> query( @PathVariable Integer page, @PathVariable Integer size,DeptQueryCriteria criteria) throws Exception {
-        PageResult deptPages = this.deptService.queryAll(criteria,page,size, true);
+    public ResponseEntity<PageResult> query(DeptQueryCriteria criteria, @PageableDefault Pageable pageable) throws Exception {
+        PageResult deptPages = this.deptService.queryAll(criteria, pageable, true);
         return new ResponseEntity<>(deptPages, HttpStatus.OK);
     }
 
@@ -54,7 +56,7 @@ public class DeptController {
     @ApiOperation("查询部门:根据ID获取同级与上级数据")
     @PostMapping("/superior")
     @PreAuthorize("@el.check('user:list','dept:list')")
-    public ResponseEntity<Map<String,Object>> getSuperior(@RequestBody List<Long> ids) {
+    public ResponseEntity<Map<String, Object>> getSuperior(@RequestBody List<Long> ids) {
         List<DeptDto> deptDtoList = new ArrayList<>();
         // List<Dept> deptList = new ArrayList<>();
         for (Long id : ids) {
@@ -63,16 +65,16 @@ public class DeptController {
             List<DeptDto> depts = deptService.getSuperior(deptDto, new ArrayList<>());
             deptDtoList.addAll(depts);
         }
-        return new ResponseEntity<>(this.deptService.buildTree(deptDtoList),HttpStatus.OK);
+        return new ResponseEntity<>(this.deptService.buildTree(deptDtoList), HttpStatus.OK);
     }
 
     // @Log("新增部门")
     @ApiOperation("新增部门")
     @PostMapping
     @PreAuthorize("@el.check('dept:add')")
-    public ResponseEntity<Object> create(@Validated @RequestBody Dept resources){
+    public ResponseEntity<Object> create(@Validated @RequestBody Dept resources) {
         if (resources.getId() != null) {
-            throw new BadRequestException("A new "+ ENTITY_NAME +" cannot already have an ID");
+            throw new BadRequestException("A new " + ENTITY_NAME + " cannot already have an ID");
         }
         deptService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -82,7 +84,7 @@ public class DeptController {
     @ApiOperation("修改部门")
     @PutMapping
     @PreAuthorize("@el.check('dept:edit')")
-    public ResponseEntity<Object> update(@Validated(Dept.Update.class) @RequestBody Dept resources){
+    public ResponseEntity<Object> update(@Validated(Dept.Update.class) @RequestBody Dept resources) {
         this.deptService.updateDept(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -91,7 +93,7 @@ public class DeptController {
     @ApiOperation("删除部门")
     @DeleteMapping
     @PreAuthorize("@el.check('dept:del')")
-    public ResponseEntity<Object> delete(@RequestBody List<Long> ids){
+    public ResponseEntity<Object> delete(@RequestBody List<Long> ids) {
         this.deptService.deleteDepts(ids);
         /*Set<DeptDto> deptDtos = new HashSet<>();
         for (Long id : ids) {

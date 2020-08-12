@@ -25,9 +25,9 @@ public class BaseDTO implements Serializable {
 
     private String updatedBy;
 
-    private LocalDateTime createTime;
+    private Timestamp createTime;
 
-    private LocalDateTime updateTime;
+    private Timestamp updateTime;
 
     @Override
     public String toString() {

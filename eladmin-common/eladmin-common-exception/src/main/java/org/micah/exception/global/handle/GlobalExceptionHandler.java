@@ -18,9 +18,7 @@ package org.micah.exception.global.handle;
 
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.util.ThrowableUtil;
-import org.micah.exception.global.BadRequestException;
-import org.micah.exception.global.EntityExistException;
-import org.micah.exception.global.EntityNotFoundException;
+import org.micah.exception.global.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,6 +29,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_MODIFIED;
 
 /**
  * @author Zheng Jie
@@ -89,6 +88,33 @@ public class GlobalExceptionHandler {
         // 打印堆栈信息
         log.error(ThrowableUtil.getStackTrace(e));
         return buildResponseEntity(ApiError.error(NOT_FOUND.value(),e.getMessage()));
+    }
+    /**
+     * 处理 CreateFailException
+     */
+    @ExceptionHandler(value = CreateFailException.class)
+    public ResponseEntity<ApiError> createFailException(CreateFailException e) {
+        // 打印堆栈信息
+        log.error(ThrowableUtil.getStackTrace(e));
+        return buildResponseEntity(ApiError.error(NOT_MODIFIED.value(),e.getMessage()));
+    }
+    /**
+     * 处理 UpdateFailException
+     */
+    @ExceptionHandler(value = UpdateFailException.class)
+    public ResponseEntity<ApiError> updateFailException(UpdateFailException e) {
+        // 打印堆栈信息
+        log.error(ThrowableUtil.getStackTrace(e));
+        return buildResponseEntity(ApiError.error(NOT_MODIFIED.value(),e.getMessage()));
+    }
+    /**
+     * 处理 UpdateFailException
+     */
+    @ExceptionHandler(value = DeleteFailException.class)
+    public ResponseEntity<ApiError> deleteFailException(DeleteFailException e) {
+        // 打印堆栈信息
+        log.error(ThrowableUtil.getStackTrace(e));
+        return buildResponseEntity(ApiError.error(NOT_MODIFIED.value(),e.getMessage()));
     }
 
     /**

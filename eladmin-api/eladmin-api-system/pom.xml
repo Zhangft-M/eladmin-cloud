@@ -12,7 +12,10 @@
     <artifactId>eladmin-api-system</artifactId>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.micah</groupId>
+            <artifactId>eladmin-model-system</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

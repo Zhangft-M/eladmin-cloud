@@ -20,7 +20,7 @@ import java.util.*;
  **/
 
 @SuppressWarnings("unchecked")
-public class QueryHelpUtils {
+public final class QueryHelpUtils {
 
 
     private static final char SEPARATOR = '_';
@@ -50,25 +50,24 @@ public class QueryHelpUtils {
                     // 如果该值没有指定则成员变量名与数据库字段名严格以驼峰命名方式转换
                     String attributeName = QueryHelpUtils.isBlank(query.value()) ? QueryHelpUtils.toUnderScoreCase(field.getName()) : query.value();
                     if (Objects.isNull(val)) {
-                        // 如果该值为null，则查看是否是排序字段
-                        if (query.isSort()){
+                       /* if (query.isSort()){
                             SortType sortType = query.sort();
                             if (sortType.name().equals(SortType.ASC.name())) {
                                 queryWrapper.orderByAsc(attributeName);
                             } else if ( sortType.name().equals(SortType.DESC.name())) {
                                 queryWrapper.orderByDesc(attributeName);
                             }
-                        }
+                        }*/
                         continue;
                     }
                     // 多字段模糊查询,该字段与数据库中的多个字段进行模糊匹配查询
                     // 该属性的值为数据库中的字段名
                     String[] blurry = query.blurry();
                     // 字段是否进行排序
-                    boolean isSort = query.isSort();
+                    // boolean isSort = query.isSort();
                     // 字段查询的类型
                     SelectType selectType = query.type();
-                    SortType sortType = isSort ? query.sort() : null;
+                    // SortType sortType = isSort ? query.sort() : null;
                     if (blurry.length > 0) {
                         // 初始化多字段模糊匹配查询
                         QueryHelpUtils.createBlurryQuery(queryWrapper, blurry, val);
@@ -137,7 +136,6 @@ public class QueryHelpUtils {
                 queryWrapper.likeRight(attributeName, val);
                 break;
             case IN:
-
                 if (CollectionUtils.isNotEmpty((Collection<Long>)val)) {
                     queryWrapper.in(attributeName, (Collection<Long>)val);
                 }
@@ -149,7 +147,7 @@ public class QueryHelpUtils {
                 queryWrapper.isNull(attributeName);
                 break;
             case BETWEEN:
-                List<Object> between = Collections.singletonList(val);
+                List<Object> between = new ArrayList<>((List<Object>)val);
                 queryWrapper.between(attributeName, between.get(0), between.get(1));
                 break;
             default:
@@ -170,9 +168,10 @@ public class QueryHelpUtils {
     private static <T> void createBlurryQuery(QueryWrapper<T> queryWrapper, String[] blurry, Object val) {
         for (int i = 0; i < blurry.length; i++) {
             if (i == blurry.length - 1) {
-                queryWrapper.like(blurry[i], val);
+                queryWrapper.like(QueryHelpUtils.toUnderScoreCase(blurry[i]), val);
+                break;
             }
-            queryWrapper.like(blurry[i], val).or();
+            queryWrapper.like(QueryHelpUtils.toUnderScoreCase(blurry[i]), val).or();
         }
        /* if (sortType != null && sortType.name().equals(SortType.ASC.name())) {
             queryWrapper.orderByAsc(val.toString());
@@ -199,7 +198,7 @@ public class QueryHelpUtils {
      *
      * @return toUnderScoreCase("helloWorld") = "hello_world"
      */
-    private static String toUnderScoreCase(String s){
+    public static String toUnderScoreCase(String s){
         if (QueryHelpUtils.isBlank(s)){
             return null;
         }

@@ -6,7 +6,9 @@ package org.micah.core.constant;
  * @author: Micah
  * @create: 2020-08-02 18:30
  **/
-public class ServiceNameConstants {
+public final class ServiceNameConstants {
 
     public static final String LOG_SERVICE = "log-service";
+
+    public static final String SYS_SERVICE = "system-service";
 }

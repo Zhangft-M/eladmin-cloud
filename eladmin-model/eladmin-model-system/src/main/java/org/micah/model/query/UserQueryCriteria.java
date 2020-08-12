@@ -34,10 +34,10 @@ import java.util.Set;
 public class UserQueryCriteria implements Serializable {
 
     private static final long serialVersionUID = -8942145971476050045L;
-    @Query
+    @Query(value = "user_id")
     private Long id;
 
-    @Query(value = "id", type = SelectType.IN)
+
     private Set<Long> deptIds = new HashSet<>();
 
     @Query(blurry = {"email","username","nickName"})
@@ -49,5 +49,5 @@ public class UserQueryCriteria implements Serializable {
     private Long deptId;
 
     @Query(type = SelectType.BETWEEN)
-    private List<LocalDateTime> createTime;
+    private List<Timestamp> createTime;
 }

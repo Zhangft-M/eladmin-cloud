@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.micah.core.base.BaseEntity;
@@ -37,7 +38,7 @@ public class Role extends BaseEntity implements Serializable {
     @JsonIgnore
     @TableField(exist = false)
     @ApiModelProperty(value = "用户", hidden = true)
-    private Set<User> users;
+    private Set<SysUser> users;
 
     @TableField(exist = false)
     @ApiModelProperty(value = "菜单", hidden = true)

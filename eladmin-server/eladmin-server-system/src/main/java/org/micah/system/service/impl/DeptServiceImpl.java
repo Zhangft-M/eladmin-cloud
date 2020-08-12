@@ -16,9 +16,11 @@ import org.micah.model.mapstruct.DeptMapStruct;
 import org.micah.model.query.DeptQueryCriteria;
 import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
+import org.micah.mp.util.SortUtils;
 import org.micah.redis.util.RedisUtils;
 import org.micah.system.mapper.DeptMapper;
 import org.micah.system.service.IDeptService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,22 +58,25 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      * 查询所有
      *
      * @param criteria 查询条件
-     * @param page
-     * @param size
+     * @param pageable 分页和排序参数对象
      * @param isQuery  是查询还是导出数据
      * @return
      */
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public PageResult queryAll(DeptQueryCriteria criteria, Integer page, Integer size, boolean isQuery) {
+    public PageResult queryAll(DeptQueryCriteria criteria, Pageable pageable, boolean isQuery) {
         if (!isQuery) {
-            // 如果不是进行查询，只是用来导出数据,
-            List<DeptDto> deptDtoList = this.deptMapStruct.toDto(this.list());
-            return PageResult.success((long) deptDtoList.size(),deptDtoList);
+            // 如果不是进行查询，只是用来导出数据
+            // 进行排序查询
+            QueryWrapper<Dept> queryWrapper = SortUtils.startSort(pageable.getSort());
+            List<DeptDto> deptDtoList = this.deptMapStruct.toDto(this.list(queryWrapper));
+            return PageResult.success((long) deptDtoList.size(), deptDtoList);
         }
-        Page<Dept> p = PageUtils.startPage(page, size);
+        // 初始化分页条件
+        Page<Dept> page = PageUtils.startPageAndSort(pageable);
+        // 初始化查询条件
         QueryWrapper query = QueryHelpUtils.getWrapper(criteria);
-        Page<Dept> selectPage = this.deptMapper.selectPage(p, query);
+        Page<Dept> selectPage = this.deptMapper.selectPage(page, query);
         return PageResult.success(selectPage.getTotal(), selectPage.getPages(), this.deptMapStruct.toDto(selectPage.getRecords()));
     }
 
@@ -264,6 +269,18 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     }
 
     /**
+     * 根据当前部门的id获取所有子部门的id
+     *
+     * @param deptId
+     * @param byPid
+     * @return
+     */
+    @Override
+    public Collection<? extends Long> getDeptChildren(Long deptId, List<Dept> byPid) {
+        return null;
+    }
+
+    /**
      * 通过父部门查询
      *
      * @param id
@@ -275,7 +292,8 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     }
 
     /**
-     *该方法的作用就是使用递归遍历所有的子节点，找到节点的所有子节点，然后加入需要删除的列表中
+     * 该方法的作用就是使用递归遍历所有的子节点，找到节点的所有子节点，然后加入需要删除的列表中
+     *
      * @param deptList 需要删除的子节点，每个子节点可能还包含子节点
      * @param deptDtos 所有需要删除的节点列表
      * @return
@@ -286,9 +304,9 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             deptDtos.add(this.deptMapStruct.toDto(dept));
             // 再进行查询，看是否还存在子节点
             List<Dept> depts = this.findByPid(dept.getId());
-            if (CollUtil.isNotEmpty(depts)){
+            if (CollUtil.isNotEmpty(depts)) {
                 // 递归调用，直到查询出最后一个子节点
-                getDeleteDepts(depts,deptDtos);
+                getDeleteDepts(depts, deptDtos);
             }
         });
     }
@@ -313,7 +331,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         // 定义一个列表用来存储需要删除的部门
         final List<DeptDto> deptDtoList = new ArrayList<>();
         // 遍历需要删除的部门的id
-        ids.forEach(id->{
+        ids.forEach(id -> {
             // 查询需要删除的部门信息
             DeptDto deptDto = this.findById(id);
             // 加入到需要删除的列表中来
@@ -321,10 +339,10 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             // 查询该部门是否存在子部门
             List<Dept> deptList = this.findByPid(id);
             // 判断是否存在子部门
-            if (CollUtil.isNotEmpty(deptList)){
+            if (CollUtil.isNotEmpty(deptList)) {
                 // 存在子节点
                 // 需要遍历子节点，查找出所有需要删除的节点
-                this.getDeleteDepts(deptList,deptDtoList);
+                this.getDeleteDepts(deptList, deptDtoList);
             }
         });
         // 验证需要删除的部门与用户或者角色是否有关联
@@ -334,13 +352,13 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             // 先删除
             int result = this.deptMapper.deleteById(deptDto.getId());
             // 判断是否删除成功
-            if (result > 0){
+            if (result > 0) {
                 // 删除缓存
-                this.delCaches(deptDto.getId(),deptDto.getPid(),null);
+                this.delCaches(deptDto.getId(), deptDto.getPid(), null);
                 // 更新父节点信息
                 this.updateSubCount(deptDto.getPid());
-            }else {
-                log.info("删除失败，需要删除的数据的id为:{}",deptDto.getId());
+            } else {
+                log.info("删除失败，需要删除的数据的id为:{}", deptDto.getId());
                 throw new RuntimeException("删除失败");
             }
         });
@@ -355,6 +373,6 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     @SneakyThrows
     @Override
     public void download(PageResult pageResult, HttpServletResponse response) {
-        FileUtils.downloadFailedUsingJson(response,"dept-info",DeptDto.class,pageResult.getContent(),"sheet");
+        FileUtils.downloadFailedUsingJson(response, "dept-info", DeptDto.class, pageResult.getContent(), "sheet");
     }
 }

@@ -34,5 +34,5 @@ public class RoleQueryCriteria {
     private String blurry;
 
     @Query(type = SelectType.BETWEEN)
-    private List<LocalDateTime> createTime;
+    private List<Timestamp> createTime;
 }

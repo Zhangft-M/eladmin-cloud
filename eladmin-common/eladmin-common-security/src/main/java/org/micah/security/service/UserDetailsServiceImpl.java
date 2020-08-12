@@ -4,6 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheConstants;
 import org.micah.core.constant.SecurityConstants;
+import org.micah.core.util.StringUtils;
+import org.micah.model.dto.MenuDto;
+import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
 import org.micah.security.component.LoginUser;
 import org.micah.security.config.LoginProperties;
@@ -19,9 +22,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @program: eladmin-cloud
@@ -107,15 +110,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         SysUserDto userDto = result.getBody();
         Set<String> dbAuthsSet = new HashSet<>();
         if (CollUtil.isNotEmpty(userDto.getRoles())) {
-            userDto.getRoles().forEach(role -> {
-                dbAuthsSet.add(SecurityConstants.ROLE + role.getName());
-            });
+            // 获取所有的角色
+            userDto.getRoles().forEach(role -> dbAuthsSet.add(SecurityConstants.ROLE + role.getName()));
+            // 根据用户的角色查询用户的菜单权限
+            Set<Long> ids = userDto.getRoles().stream().map(RoleSmallDto::getId).collect(Collectors.toSet());
+            ResponseEntity<List<MenuDto>> menuResult = this.remoteMenuService.queryByRoleIds(ids);
+            List<MenuDto> menuDtos = menuResult.getBody();
+            if (menuDtos != null){
+                // 获取所有的权限
+                List<String> permissions = menuDtos.stream().distinct().filter(menuDto -> StringUtils.isNotBlank(menuDto.getPermission())).map(MenuDto::getPermission).collect(Collectors.toList());
+                dbAuthsSet.addAll(permissions);
+            }
+            // TODO: 2020/8/12 远程查询部门数据权限
+            //......
 
         }
-        Collection<GrantedAuthority> authorities = AuthorityUtils
-                .createAuthorityList(dbAuthsSet.toArray(new String[0]));
+        // 封装为Collection<? extends GrantedAuthority>
+        Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
         return new LoginUser(userDto.getUsername(), userDto.getPassword(), userDto.getEnabled(),
                 true, true, true, authorities, userDto, null);
-
     }
 }

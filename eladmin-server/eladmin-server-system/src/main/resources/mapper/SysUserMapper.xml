@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.system.mapper.SysUserMapper">
+
+    <resultMap id="baseUserMap" type="org.micah.model.SysUser">
+        <id property="id" column="user_id"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="avatarName" column="avatar_name"/>
+        <result property="avatarPath" column="avatar_path"/>
+        <result property="email" column="email"/>
+        <result property="gender" column="gender"/>
+        <result property="enabled" column="enabled"/>
+        <result property="password" column="password"/>
+        <result property="isAdmin" column="is_admin"/>
+        <result property="phone" column="phone"/>
+        <result property="username" column="username"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="pwdResetTime" column="pwd_reset_time"/>
+    </resultMap>
+    <resultMap id="sysUserMap" extends="baseUserMap" type="org.micah.model.SysUser">
+        <association property="dept" javaType="org.micah.model.Dept">
+            <id property="id" column="dept_id"/>
+            <result property="name" column="dept_name"/>
+        </association>
+        <collection property="roles" ofType="org.micah.model.Role">
+            <id property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+            <result property="level" column="level"/>
+            <result property="dataScope" column="data_scope"/>
+        </collection>
+        <collection property="jobs" ofType="org.micah.model.Job">
+            <id property="id" column="job_id"/>
+            <result property="name" column="job_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="userWithRoleMap" extends="baseUserMap" type="org.micah.model.SysUser">
+        <collection property="roles" ofType="org.micah.model.Role">
+            <id property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+            <result property="level" column="level"/>
+            <result property="dataScope" column="data_scope"/>
+        </collection>
+    </resultMap>
+
+    <sql id="baseSql">
+        select su.user_id,
+               su.username,
+               su.nick_name,
+               su.gender,
+               su.phone,
+               su.email,
+               su.avatar_name,
+               su.avatar_path,
+               su.password,
+               su.is_admin,
+               su.enabled,
+               su.create_by,
+               su.update_by,
+               su.pwd_reset_time,
+               su.create_time,
+               su.update_time,
+               sj.job_id,
+               sj.name as job_name,
+               sr.role_id,
+               sr.name as role_name,
+               sr.level,
+               sr.data_scope,
+               sd.dept_id,
+               sd.name as dept_name
+        from (sys_user su,sys_dept sd)
+                 left join sys_users_jobs suj on su.user_id = suj.user_id
+                 inner join sys_job sj on suj.job_id = sj.job_id
+                 left join sys_users_roles sur on su.user_id = sur.user_id
+                 inner join sys_role sr on sur.role_id = sr.role_id
+        where (sd.dept_id = su.dept_id)
+    </sql>
+
+    <sql id="selectUserWithRole">
+        select su.user_id,
+               su.username,
+               su.nick_name,
+               su.gender,
+               su.phone,
+               su.email,
+               su.avatar_name,
+               su.avatar_path,
+               su.password,
+               su.is_admin,
+               su.enabled,
+               su.create_by,
+               su.update_by,
+               su.pwd_reset_time,
+               su.create_time,
+               su.update_time,
+               sr.role_id,
+               sr.name as role_name,
+               sr.level,
+               sr.data_scope
+        from sys_user su
+                 left join sys_users_roles sur on su.user_id = sur.user_id
+                 inner join sys_role sr on sur.role_id = sr.role_id
+    </sql>
+
+    <select id="queryAll" resultMap="sysUserMap">
+        <include refid="baseSql"/>
+        <if test="ew != null">
+            and ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="queryAllWithPage" resultMap="sysUserMap">
+        <include refid="baseSql"/>
+        <if test="ew != null">
+            and ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="getById" resultMap="sysUserMap">
+        <include refid="baseSql"/>
+        and su.user_id = #{id}
+    </select>
+
+    <select id="queryByUsername" resultMap="userWithRoleMap">
+        <include refid="selectUserWithRole"/>
+        where su.username = #{username}
+    </select>
+</mapper>
