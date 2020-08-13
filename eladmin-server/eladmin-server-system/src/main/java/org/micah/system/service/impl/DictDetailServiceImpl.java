@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.micah.core.util.StringUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.DeleteFailException;
+import org.micah.model.Dict;
 import org.micah.model.DictDetail;
 import org.micah.model.dto.DictDetailDto;
 import org.micah.model.mapstruct.DictDetailMapStruct;
@@ -62,7 +63,6 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
      * @return
      */
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public PageResult queryAll(DictDetailQueryCriteria queryCriteria, Pageable pageable, Boolean isQuery) {
         if (!isQuery) {
             // 导出数据，查询所有的数据
@@ -80,7 +80,7 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
 
         }
         // 根据label条件查询
-        QueryWrapper queryWrapper = QueryHelpUtils.getWrapper(queryCriteria);
+        QueryWrapper<DictDetail> queryWrapper = QueryHelpUtils.getWrapper(queryCriteria, DictDetail.class);
         Page<DictDetail> dictDetailPage = this.dictDetailMapper.selectPage(page, queryWrapper);
         return PageResult.success(dictDetailPage.getTotal(),
                 this.dictDetailMapStruct.toDto(dictDetailPage.getRecords()));

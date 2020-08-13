@@ -2,28 +2,55 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.micah.system.mapper.MenuMapper">
 
+    <resultMap id="menuBaseMap" type="org.micah.model.Menu">
+        <id column="menu_id" property="id"/>
+        <result column="menu_update_time" property="updateTime"/>
+        <result column="menu_update_by" property="updateBy"/>
+        <result column="menu_create_time" property="createTime"/>
+        <result column="menu_create_by" property="createBy"/>
+        <result column="cache" property="cache"/>
+        <result column="component" property="component"/>
+        <result column="component_name" property="componentName"/>
+        <result column="hidden" property="hidden"/>
+        <result column="icon" property="icon"/>
+        <result column="i_frame" property="iFrame"/>
+        <result column="menu_sort" property="menuSort"/>
+        <result column="path" property="path"/>
+        <result column="permission" property="permission"/>
+        <result column="pid" property="pid"/>
+        <result column="sub_count" property="subCount"/>
+        <result column="title" property="title"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <sql id="menuSql">
+        ${property}.menu_id,
+        ${property}.pid,
+        ${property}.sub_count,
+        ${property}.type,
+        ${property}.title,
+        ${property}.name as component_name,
+        ${property}.component,
+        ${property}.menu_sort,
+        ${property}.icon,
+        ${property}.path,
+        ${property}.i_frame,
+        ${property}.cache,
+        ${property}.hidden,
+        ${property}.permission,
+        ${property}.create_by as menu_create_by,
+        ${property}.update_by as menu_update_by,
+        ${property}.create_time as menu_create_time,
+        ${property}.update_time as menu_update_time
+    </sql>
+
     <select id="queryByRoleIds" resultType="org.micah.model.Menu">
         select
-        sm.menu_id as id,
-        sm.pid,
-        sm.sub_count,
-        sm.type,
-        sm.title,
-        sm.name,
-        sm.component,
-        sm.menu_sort,
-        sm.icon,
-        sm.path,
-        sm.i_frame,
-        sm.cache,
-        sm.hidden,
-        sm.permission,
-        sm.create_by,
-        sm.update_by,
-        sm.create_time,
-        sm.update_time
-        from sys_menu sm
-        left join sys_roles_menus srm on sm.menu_id = srm.menu_id
+        <include refid="menuSql">
+            <property name="property" value="sys_menu"/>
+        </include>
+        from sys_menu
+        left join sys_roles_menus srm on sys_menu.menu_id = srm.menu_id
         <where>
             srm.role_id in
             <foreach collection="ids" open="(" close=")" item="id" separator=",">

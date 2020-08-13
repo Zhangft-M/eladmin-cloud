@@ -34,35 +34,35 @@ public interface IDeptService extends IService<Dept> {
 
     /**
      * 使用递归查询部门的数据以及该部门的子部门数据
-     * @param deptDto
-     * @param deptList
+     * @param deptDto /
+     * @param deptList /
      * @return
      */
     List<DeptDto> getSuperior(DeptDto deptDto, List<DeptDto> deptList);
 
     /**
      * 构建数据成为树形
-     * @param deptDtos
+     * @param deptDtos /
      * @return
      */
     Map<String,Object> buildTree(List<DeptDto> deptDtos);
 
     /**
      * 增加一条数据
-     * @param resources
+     * @param resources /
      */
     void create(Dept resources);
 
     /**
      * 更新一条数据
-     * @param resources
+     * @param resources /
      */
     void updateDept(Dept resources);
 
     /**
      * 通过父部门查询
-     * @param id
-     * @return
+     * @param id /
+     * @return /
      */
     List<Dept> findByPid(Long id);
 
@@ -77,24 +77,31 @@ public interface IDeptService extends IService<Dept> {
 
     /**
      * 导出所有的部门数据
-     * @param queryAll
-     * @param response
+     * @param queryAll /
+     * @param response /
      */
     void download(PageResult queryAll, HttpServletResponse response);
 
     /**
      * 删除所有的缓存信息
-     * @param id
-     * @param oldDeptPid
-     * @param newDeptPid
+     * @param id /
+     * @param oldDeptPid /
+     * @param newDeptPid /
      */
     void delCaches(Long id, Long oldDeptPid, Long newDeptPid);
 
     /**
      * 根据当前部门的id获取所有子部门的id
-     * @param deptId
-     * @param byPid
+     * @param childrenDeptList /
+     * @param deptIds /
+     * @return /
+     */
+    Set<Long> getDeptIds(List<Dept> childrenDeptList, Set<Long> deptIds);
+
+    /**
+     * 通过roleId查询部门信息
+     * @param id
      * @return
      */
-    Collection<? extends Long> getDeptChildren(Long deptId, List<Dept> byPid);
+    List<Dept> findByRoleId(Long id);
 }

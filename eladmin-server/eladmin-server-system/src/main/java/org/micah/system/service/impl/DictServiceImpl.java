@@ -64,7 +64,6 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
      * @return
      */
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public PageResult queryAll(DictQueryCriteria queryCriteria, Pageable pageable, Boolean isQuery) {
         if (!isQuery) {
             // 导出数据，查询所有
@@ -75,8 +74,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
         // 查询数据，根据条件查询
         // Page<Dict> startPage = PageUtils.startPage(page, size);
         Page<Dict> page = PageUtils.startPageAndSort(pageable);
-        QueryWrapper queryWrapper = QueryHelpUtils.getWrapper(queryCriteria);
-        Page selectPage = this.dictMapper.selectPage(page, queryWrapper);
+        QueryWrapper<Dict> queryWrapper = QueryHelpUtils.getWrapper(queryCriteria,Dict.class);
+        Page<Dict> selectPage = this.dictMapper.selectPage(page, queryWrapper);
         return PageResult.success(selectPage.getTotal(), selectPage.getPages(),
                 this.mapStruct.toDto(selectPage.getRecords()));
     }

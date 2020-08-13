@@ -64,10 +64,11 @@ public class SysUserController {
     @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<PageResult> query(UserQueryCriteria queryCriteria, Pageable pageable){
         if (!Objects.isNull(queryCriteria.getDeptId())) {
+            // 先将当前部门的id加入到权限列表中
             queryCriteria.getDeptIds().add(queryCriteria.getDeptId());
-            // 有数据权限则获取当下部门的数据以及子部门数据的id，构建数据权限
-            queryCriteria.getDeptIds().addAll(this.deptService.getDeptChildren(queryCriteria.getDeptId(),
-                    this.deptService.findByPid(queryCriteria.getDeptId())));
+            // 再获取当下部门的数据以及子部门数据的id，构建数据权限
+            //queryCriteria.getDeptIds().addAll(this.deptService.getDeptChildren(this.deptService.findByPid(queryCriteria.getDeptId())));
+            queryCriteria.getDeptIds().addAll(this.deptService.getDeptIds(this.deptService.findByPid(queryCriteria.getId()),queryCriteria.getDeptIds()));
         }
         // 数据权限
         List<Long> dataScopes = this.dataService.getDeptIds(this.userService.findByName(SecurityUtils.getCurrentUsername()));

@@ -56,9 +56,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
      * @return
      */
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public List<JobDto> queryAll(JobQueryCriteria queryCriteria) {
-        QueryWrapper queryWrapper = QueryHelpUtils.getWrapper(queryCriteria);
+        QueryWrapper<Job> queryWrapper = QueryHelpUtils.getWrapper(queryCriteria,Job.class);
         List<Job> list = this.jobMapper.selectList(queryWrapper);
         return this.jobMapStruct.toDto(list);
     }
@@ -71,10 +70,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
      * @return
      */
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public PageResult queryAll(JobQueryCriteria queryCriteria, Pageable pageable) {
         Page<Job> page = PageUtils.startPageAndSort(pageable);
-        QueryWrapper queryWrapper = QueryHelpUtils.getWrapper(queryCriteria);
+        QueryWrapper<Job> queryWrapper = QueryHelpUtils.getWrapper(queryCriteria,Job.class);
         Page<Job> selectPage = this.jobMapper.selectPage(page, queryWrapper);
         return PageResult.success(selectPage.getTotal(), selectPage.getPages(), selectPage.getRecords());
     }

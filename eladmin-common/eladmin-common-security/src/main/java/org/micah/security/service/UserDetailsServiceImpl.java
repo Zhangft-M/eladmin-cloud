@@ -35,25 +35,41 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
+    /**
+     * Locates the user based on the username. In the actual implementation, the search
+     * may possibly be case sensitive, or case insensitive depending on how the
+     * implementation instance is configured. In this case, the <code>UserDetails</code>
+     * object that comes back may have a username that is of a different case than what
+     * was actually requested..
+     *
+     * @param username the username identifying the user whose data is required.
+     * @return a fully populated user record (never <code>null</code>)
+     * @throws UsernameNotFoundException if the user could not be found or the user has no
+     *                                   GrantedAuthority
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
+    }
 
 
     /**
      * userfeign接口
-     */
+     *//*
     private final IRemoteUserService remoteUserService;
 
 
     private final IRemoteMenuService remoteMenuService;
 
 
-    /**
+    *//**
      * 缓存管理器，在第一次调用加载用户的方法系统会自动将其缓存
-     */
+     *//*
     private final CacheManager cacheManager;
 
-    /**
+    *//**
      * 用户登录设置
-     */
+     *//*
     private final LoginProperties loginProperties;
 
     public UserDetailsServiceImpl(IRemoteUserService remoteUserService,
@@ -65,20 +81,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
 
-    /**
+    *//**
      * 设置用户信息是否被缓存
      * @param enableCache
-     */
+     *//*
     public void setEnableCache(boolean enableCache) {
         this.loginProperties.setCacheEnable(enableCache);
     }
 
-    /**
+    *//**
      * 通过用户名加载用户
      * @param username
      * @return
      * @throws UsernameNotFoundException
-     */
+     *//*
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Cache cache = this.cacheManager.getCache(CacheConstants.USER_DETAILS);
@@ -98,11 +114,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
 
-    /**
+    *//**
      * 构建UserDetails
      * @param result
      * @return
-     */
+     *//*
     private UserDetails getUserDetails(ResponseEntity<SysUserDto> result) {
         if (result == null || result.getBody() == null) {
             throw new UsernameNotFoundException("用户不存在");
@@ -129,5 +145,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
         return new LoginUser(userDto.getUsername(), userDto.getPassword(), userDto.getEnabled(),
                 true, true, true, authorities, userDto, null);
-    }
+    }*/
 }

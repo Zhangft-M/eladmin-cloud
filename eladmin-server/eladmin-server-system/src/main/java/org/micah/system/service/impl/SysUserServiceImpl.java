@@ -78,11 +78,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    @SuppressWarnings("rawtypes")
     public List<SysUserDto> queryAll(UserQueryCriteria queryCriteria) {
-        QueryWrapper wrapper = null;
+        QueryWrapper<SysUser> wrapper = null;
         if (BeanUtil.isNotEmpty(queryCriteria)) {
-            wrapper = QueryHelpUtils.getWrapper(queryCriteria);
+            wrapper = QueryHelpUtils.getWrapper(queryCriteria,SysUser.class);
         }
         List<SysUser> sysUserList = this.userMapper.queryAll(wrapper);
         return this.userMapStruct.toDto(sysUserList);
@@ -98,9 +97,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @SuppressWarnings("rawtypes")
     public PageResult queryAll(UserQueryCriteria queryCriteria, Pageable pageable) {
-        QueryWrapper wrapper = null;
+        QueryWrapper<SysUser> wrapper = null;
         if (BeanUtil.isNotEmpty(queryCriteria)) {
-            wrapper = QueryHelpUtils.getWrapper(queryCriteria);
+            wrapper = QueryHelpUtils.getWrapper(queryCriteria,SysUser.class);
         }
         Page<SysUser> page = PageUtils.startPageAndSort(pageable);
         Page<SysUser> sysUserPage = this.userMapper.queryAllWithPage(wrapper, page);

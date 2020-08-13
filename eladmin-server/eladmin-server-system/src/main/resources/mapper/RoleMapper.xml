@@ -41,34 +41,38 @@
     <sql id="selectAllSql">
         select
         <include refid="roleSql">
-            <property name="property" value="sr"/>
+            <property name="property" value="sys_role"/>
         </include>
         ,
         <include refid="org.micah.system.mapper.MenuMapper.menuSql">
             <property name="property" value="sm"/>
         </include>
-        from sys_role sr
-        left join sys_roles_menus srm on sr.role_id = srm.role_id
+        from sys_role
+        left join sys_roles_menus srm on sys_role.role_id = srm.role_id
         left join sys_menu sm on srm.menu_id = sm.menu_id
     </sql>
 
     <select id="queryAllByPage" resultMap="resultWithMenuAndDept">
         <include refid="selectAllSql"/>
         <if test="ew!=null">
-            ${ew.sqlSegment}
+            <where>
+                ${ew.sqlSegment}
+            </where>
         </if>
     </select>
     <select id="queryAll" resultMap="resultWithMenuAndDept">
         <include refid="selectAllSql"/>
         <if test="ew!=null">
-            ${ew.sqlSegment}
+            <where>
+                ${ew.sqlSegment}
+            </where>
         </if>
     </select>
     <select id="findById" resultMap="resultWithMenuAndDept">
         <include refid="selectAllSql"/>
         <if test="id != null">
             <where>
-                sr.role_id = #{id}
+                sys_role.role_id = #{id}
             </where>
         </if>
     </select>

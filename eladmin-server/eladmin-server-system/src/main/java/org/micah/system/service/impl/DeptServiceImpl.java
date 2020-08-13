@@ -63,7 +63,6 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      * @return
      */
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public PageResult queryAll(DeptQueryCriteria criteria, Pageable pageable, boolean isQuery) {
         if (!isQuery) {
             // 如果不是进行查询，只是用来导出数据
@@ -75,8 +74,8 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         // 初始化分页条件
         Page<Dept> page = PageUtils.startPageAndSort(pageable);
         // 初始化查询条件
-        QueryWrapper query = QueryHelpUtils.getWrapper(criteria);
-        Page<Dept> selectPage = this.deptMapper.selectPage(page, query);
+        QueryWrapper<Dept> wrapper = QueryHelpUtils.getWrapper(criteria, Dept.class);
+        Page<Dept> selectPage = this.deptMapper.selectPage(page, wrapper);
         return PageResult.success(selectPage.getTotal(), selectPage.getPages(), this.deptMapStruct.toDto(selectPage.getRecords()));
     }
 
@@ -271,13 +270,36 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     /**
      * 根据当前部门的id获取所有子部门的id
      *
-     * @param deptId
-     * @param byPid
+     * @param childrenDeptList
+     * @param deptIds
      * @return
      */
     @Override
-    public Collection<? extends Long> getDeptChildren(Long deptId, List<Dept> byPid) {
-        return null;
+    public Set<Long> getDeptIds(List<Dept> childrenDeptList, Set<Long> deptIds) {
+        // Set<Long> deptIds = new HashSet<>();
+        childrenDeptList.forEach(dept -> {
+            // 首先把当前的id加入到集合中
+            deptIds.add(dept.getId());
+            // 查询是否存在子节点
+            List<Dept> deptList = this.findByPid(dept.getId());
+            if (CollUtil.isNotEmpty(deptList)){
+                // 递归查询加入到
+                deptIds.addAll(this.getDeptIds(deptList,deptIds));
+            }
+        });
+        return deptIds;
+    }
+
+    /**
+     * 通过roleId查询部门信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Dept> findByRoleId(Long id) {
+        List<Dept> deptList = this.deptMapper.findByRoleId(id);
+        return Optional.ofNullable(deptList).orElseGet(ArrayList::new);
     }
 
     /**

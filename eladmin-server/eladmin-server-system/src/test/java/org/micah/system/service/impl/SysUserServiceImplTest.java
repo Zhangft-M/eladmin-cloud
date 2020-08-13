@@ -1,9 +1,11 @@
 package org.micah.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
 import org.micah.core.web.page.PageResult;
 import org.micah.model.Role;
+import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
 import org.micah.model.query.UserQueryCriteria;
 import org.micah.mp.util.QueryHelpUtils;
@@ -23,6 +25,7 @@ import java.util.Set;
  * @author: Micah
  * @create: 2020-08-11 16:23
  **/
+@SpringBootTest
 class SysUserServiceImplTest {
 
     @Autowired
@@ -34,8 +37,7 @@ class SysUserServiceImplTest {
         queryCriteria.setBlurry("admin");
         queryCriteria.setId(1L);
         queryCriteria.setEnabled(true);
-        QueryWrapper wrapper = QueryHelpUtils.getWrapper(queryCriteria);
-        System.out.println(wrapper.getSqlSelect());
+        QueryWrapper<SysUser> wrapper = QueryHelpUtils.getWrapper(queryCriteria,SysUser.class);
         System.out.println("--------------------------------------");
         /**
          * (id = #{ew.paramNameValuePairs.MPGENVAL1} AND email LIKE #{ew.paramNameValuePairs.MPGENVAL2} OR username LIKE
@@ -65,8 +67,8 @@ class SysUserServiceImplTest {
         UserQueryCriteria queryCriteria = new UserQueryCriteria();
         queryCriteria.setBlurry("admin");
         Pageable pageable = PageRequest.of(1,1);
-        PageResult pageResult = this.sysUserService.queryAll(queryCriteria, pageable);
-        System.out.println(pageResult.getContent());
+        List<SysUserDto> sysUserDtos = this.sysUserService.queryAll(queryCriteria);
+        System.out.println(JSON.toJSONString(sysUserDtos));
 
     }
 

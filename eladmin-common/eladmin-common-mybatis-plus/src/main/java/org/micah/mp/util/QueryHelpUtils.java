@@ -2,7 +2,10 @@ package org.micah.mp.util;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import com.baomidou.mybatisplus.core.metadata.TableInfo;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.sun.javafx.binding.StringConstant;
 import org.micah.mp.annotation.Query;
 import org.micah.mp.annotation.type.SortType;
 import org.micah.mp.annotation.type.SelectType;
@@ -25,13 +28,19 @@ public final class QueryHelpUtils {
 
     private static final char SEPARATOR = '_';
 
-    public static <T> QueryWrapper<T> getWrapper(T queryEntity) {
-        // 初始化一个查询对象
-        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+    private static final char DOT = '.';
+
+    public static <E, T> QueryWrapper<T> getWrapper(E queryEntity, Class<T> clazz) {
         // 判断查询条件是否为空
-        if (Objects.isNull(queryEntity)) {
+        if (Objects.isNull(queryEntity) || Objects.isNull(clazz)) {
             return null;
         }
+        // 获取对应的表的名称
+        TableInfo tableInfo = TableInfoHelper.getTableInfo(clazz);
+        String tableName = tableInfo.getTableName() + DOT;
+        // 初始化一个查询对象
+        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+
         try {
             // 获取类中的所有的成员变量
             List<Field> fields = QueryHelpUtils.getAllFiles(queryEntity.getClass(), new ArrayList<>());
@@ -70,11 +79,11 @@ public final class QueryHelpUtils {
                     // SortType sortType = isSort ? query.sort() : null;
                     if (blurry.length > 0) {
                         // 初始化多字段模糊匹配查询
-                        QueryHelpUtils.createBlurryQuery(queryWrapper, blurry, val);
+                        QueryHelpUtils.createBlurryQuery(queryWrapper, blurry, val, tableName);
                         continue;
                     }
                     // 初始化基本查询条件
-                    QueryHelpUtils.createTypeQuery(selectType, attributeName, val, queryWrapper);
+                    QueryHelpUtils.createTypeQuery(selectType, attributeName, val, queryWrapper, tableName);
 
                 }
 
@@ -105,50 +114,51 @@ public final class QueryHelpUtils {
      * @param selectType    查询方式
      * @param attributeName 数据库字段名
      * @param val           值
+     * @param tableName
      */
-    private static <T> void createTypeQuery(SelectType selectType, String attributeName, Object val, QueryWrapper<T> queryWrapper) {
+    private static <T> void createTypeQuery(SelectType selectType, String attributeName, Object val, QueryWrapper<T> queryWrapper, String tableName) {
         switch (selectType) {
             case EQUAL:
-                queryWrapper.eq(attributeName, val);
+                queryWrapper.eq(tableName + attributeName, val);
                 break;
             case NOT_EQUAL:
-                queryWrapper.ne(attributeName, val);
+                queryWrapper.ne(tableName + attributeName, val);
                 break;
             case GREATER_THAN_NQ:
-                queryWrapper.gt(attributeName, val);
+                queryWrapper.gt(tableName + attributeName, val);
                 break;
             case GREATER_THAN:
-                queryWrapper.ge(attributeName, val);
+                queryWrapper.ge(tableName + attributeName, val);
                 break;
             case LESS_THAN:
-                queryWrapper.le(attributeName, val);
+                queryWrapper.le(tableName + attributeName, val);
                 break;
             case LESS_THAN_NQ:
-                queryWrapper.lt(attributeName, val);
+                queryWrapper.lt(tableName + attributeName, val);
                 break;
             case INNER_LIKE:
-                queryWrapper.like(attributeName, val);
+                queryWrapper.like(tableName + attributeName, val);
                 break;
             case LEFT_LIKE:
-                queryWrapper.likeLeft(attributeName, val);
+                queryWrapper.likeLeft(tableName + attributeName, val);
                 break;
             case RIGHT_LIKE:
-                queryWrapper.likeRight(attributeName, val);
+                queryWrapper.likeRight(tableName + attributeName, val);
                 break;
             case IN:
-                if (CollectionUtils.isNotEmpty((Collection<Long>)val)) {
-                    queryWrapper.in(attributeName, (Collection<Long>)val);
+                if (CollectionUtils.isNotEmpty((Collection<Long>) val)) {
+                    queryWrapper.in(tableName + attributeName, (Collection<Long>) val);
                 }
                 break;
             case NOT_NULL:
-                queryWrapper.isNotNull(attributeName);
+                queryWrapper.isNotNull(tableName + attributeName);
                 break;
             case IS_NULL:
-                queryWrapper.isNull(attributeName);
+                queryWrapper.isNull(tableName + attributeName);
                 break;
             case BETWEEN:
-                List<Object> between = new ArrayList<>((List<Object>)val);
-                queryWrapper.between(attributeName, between.get(0), between.get(1));
+                List<Object> between = new ArrayList<>((List<Object>) val);
+                queryWrapper.between(tableName + attributeName, between.get(0), between.get(1));
                 break;
             default:
                 break;
@@ -160,18 +170,19 @@ public final class QueryHelpUtils {
     /**
      * 生成模糊匹配查询
      *
+     * @param <T>
      * @param queryWrapper 查询条件封装类
      * @param blurry       数据库对应需要匹配的字段
      * @param val          值
-     * @param <T>
+     * @param tableName
      */
-    private static <T> void createBlurryQuery(QueryWrapper<T> queryWrapper, String[] blurry, Object val) {
+    private static <T> void createBlurryQuery(QueryWrapper<T> queryWrapper, String[] blurry, Object val, String tableName) {
         for (int i = 0; i < blurry.length; i++) {
             if (i == blurry.length - 1) {
-                queryWrapper.like(QueryHelpUtils.toUnderScoreCase(blurry[i]), val);
+                queryWrapper.like(tableName + QueryHelpUtils.toUnderScoreCase(blurry[i]), val);
                 break;
             }
-            queryWrapper.like(QueryHelpUtils.toUnderScoreCase(blurry[i]), val).or();
+            queryWrapper.like(tableName + QueryHelpUtils.toUnderScoreCase(blurry[i]), val).or();
         }
        /* if (sortType != null && sortType.name().equals(SortType.ASC.name())) {
             queryWrapper.orderByAsc(val.toString());
@@ -196,10 +207,10 @@ public final class QueryHelpUtils {
     /**
      * 驼峰命名法工具
      *
-     * @return toUnderScoreCase("helloWorld") = "hello_world"
+     * @return toUnderScoreCase(" helloWorld ") = "hello_world"
      */
-    public static String toUnderScoreCase(String s){
-        if (QueryHelpUtils.isBlank(s)){
+    public static String toUnderScoreCase(String s) {
+        if (QueryHelpUtils.isBlank(s)) {
             return null;
         }
 
@@ -216,19 +227,19 @@ public final class QueryHelpUtils {
             // 下一个字符是否是大写的
             boolean nextIsUpperCase = true;
 
-            if (i < (s.length() - 1)){
+            if (i < (s.length() - 1)) {
                 // 判断下一个字母是否为大写的
                 nextIsUpperCase = Character.isUpperCase(s.charAt(i + 1));
             }
             // 当前字母是大写
-            if (i > 0 && Character.isUpperCase(c)){
+            if (i > 0 && Character.isUpperCase(c)) {
                 // 如果前一个字母不是大写字母，当前字母是大写
-                if (!isUpperCase || !nextIsUpperCase){
+                if (!isUpperCase || !nextIsUpperCase) {
                     sb.append(SEPARATOR);
                 }
                 // 设置当前字母是大写
                 isUpperCase = true;
-            }else {
+            } else {
                 isUpperCase = false;
             }
             // 将当前的字母放入StringBuilder

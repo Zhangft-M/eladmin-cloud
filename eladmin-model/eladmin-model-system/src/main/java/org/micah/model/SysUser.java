@@ -45,6 +45,7 @@ public class SysUser extends BaseEntity implements Serializable {
     private Set<Job> jobs;
 
 
+    @TableField(exist = false)
     @ApiModelProperty(value = "用户部门")
     private Dept dept;
 

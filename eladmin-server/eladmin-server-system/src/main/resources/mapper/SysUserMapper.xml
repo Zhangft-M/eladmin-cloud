@@ -45,24 +45,30 @@
             <result property="dataScope" column="data_scope"/>
         </collection>
     </resultMap>
+    <sql id="baseUserSql">
+        ${property}.user_id,
+        ${property}.username,
+        ${property}.nick_name,
+        ${property}.gender,
+        ${property}.phone,
+        ${property}.email,
+        ${property}.avatar_name,
+        ${property}.avatar_path,
+        ${property}.password,
+        ${property}.is_admin,
+        ${property}.enabled,
+        ${property}.create_by,
+        ${property}.update_by,
+        ${property}.pwd_reset_time,
+        ${property}.create_time,
+        ${property}.update_time,
+    </sql>
 
-    <sql id="baseSql">
-        select su.user_id,
-               su.username,
-               su.nick_name,
-               su.gender,
-               su.phone,
-               su.email,
-               su.avatar_name,
-               su.avatar_path,
-               su.password,
-               su.is_admin,
-               su.enabled,
-               su.create_by,
-               su.update_by,
-               su.pwd_reset_time,
-               su.create_time,
-               su.update_time,
+    <sql id="selectAllSql">
+        select
+               <include refid="baseUserSql">
+                   <property name="property" value="sys_user"/>
+               </include>
                sj.job_id,
                sj.name as job_name,
                sr.role_id,
@@ -71,56 +77,44 @@
                sr.data_scope,
                sd.dept_id,
                sd.name as dept_name
-        from (sys_user su,sys_dept sd)
-                 left join sys_users_jobs suj on su.user_id = suj.user_id
-                 inner join sys_job sj on suj.job_id = sj.job_id
-                 left join sys_users_roles sur on su.user_id = sur.user_id
-                 inner join sys_role sr on sur.role_id = sr.role_id
-        where (sd.dept_id = su.dept_id)
+        from (sys_user,sys_dept sd)
+                 left join sys_users_jobs suj on sys_user.user_id = suj.user_id
+                 left join sys_job sj on suj.job_id = sj.job_id
+                 left join sys_users_roles sur on sys_user.user_id = sur.user_id
+                 left join sys_role sr on sur.role_id = sr.role_id
+        where (sd.dept_id = sys_user.dept_id)
     </sql>
 
     <sql id="selectUserWithRole">
-        select su.user_id,
-               su.username,
-               su.nick_name,
-               su.gender,
-               su.phone,
-               su.email,
-               su.avatar_name,
-               su.avatar_path,
-               su.password,
-               su.is_admin,
-               su.enabled,
-               su.create_by,
-               su.update_by,
-               su.pwd_reset_time,
-               su.create_time,
-               su.update_time,
+        select
+               <include refid="baseUserSql">
+                   <property name="property" value="sys_user"/>
+               </include>
                sr.role_id,
                sr.name as role_name,
                sr.level,
                sr.data_scope
-        from sys_user su
-                 left join sys_users_roles sur on su.user_id = sur.user_id
+        from sys_user
+                 left join sys_users_roles sur on sys_user.user_id = sur.user_id
                  inner join sys_role sr on sur.role_id = sr.role_id
     </sql>
 
     <select id="queryAll" resultMap="sysUserMap">
-        <include refid="baseSql"/>
+        <include refid="selectAllSql"/>
         <if test="ew != null">
             and ${ew.sqlSegment}
         </if>
     </select>
 
     <select id="queryAllWithPage" resultMap="sysUserMap">
-        <include refid="baseSql"/>
+        <include refid="selectAllSql"/>
         <if test="ew != null">
             and ${ew.sqlSegment}
         </if>
     </select>
 
     <select id="getById" resultMap="sysUserMap">
-        <include refid="baseSql"/>
+        <include refid="selectAllSql"/>
         and su.user_id = #{id}
     </select>
 

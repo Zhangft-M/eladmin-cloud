@@ -32,6 +32,9 @@ public class Menu extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;
 
+    @ApiModelProperty(value = "组件名称")
+    private String name;
+
     @JsonIgnore
     @TableField(exist = false)
     @ApiModelProperty(value = "菜单角色")

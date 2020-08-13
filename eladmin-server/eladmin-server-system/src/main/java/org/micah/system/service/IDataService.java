@@ -1,5 +1,7 @@
 package org.micah.system.service;
 
+import org.micah.model.dto.SysUserDto;
+
 import java.util.List;
 
 /**
@@ -11,8 +13,8 @@ import java.util.List;
 public interface IDataService {
     /**
      * 通过用户查询用户拥有的部门数据权限
-     * @param byName
-     * @return
+     * @param userDto /
+     * @return /
      */
-    List<Long> getDeptIds(Object byName);
+    List<Long> getDeptIds(SysUserDto userDto);
 }
