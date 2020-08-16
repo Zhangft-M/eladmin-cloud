@@ -1,5 +1,8 @@
 package org.micah.model.dto;
 
+import lombok.Data;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +11,10 @@ import java.util.List;
  * @author: Micah
  * @create: 2020-08-16 18:42
  **/
-public class UserSmallDto {
+@Data
+public class UserSmallDto implements Serializable {
+
+    private static final long serialVersionUID = 4105123798157780641L;
 
     private Long id;
 
@@ -16,7 +22,9 @@ public class UserSmallDto {
 
     private String password;
 
-    private List<MenuSmallDto> menuSmallDtos;
+    private Boolean enabled;
 
-    private List<RoleSmallDto> roleSmallDtos;
+    private List<String> roleNames;
+
+    private List<String> permissions;
 }

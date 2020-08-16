@@ -45,6 +45,23 @@
             <result property="dataScope" column="data_scope"/>
         </collection>
     </resultMap>
+
+    <resultMap id="userDetailsMap" type="org.micah.model.dto.UserSmallDto">
+        <id property="id" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="enabled" column="enabled"/>
+        <collection property="permissions" column="permissions" ofType="java.lang.String">
+            <constructor>
+                <arg column="permissions"/>
+            </constructor>
+        </collection>
+        <collection property="roleNames" column="role_name" ofType="java.lang.String">
+            <constructor>
+                <arg column="role_name"/>
+            </constructor>
+        </collection>
+    </resultMap>
     <sql id="baseUserSql">
         ${property}.user_id,
         ${property}.username,
@@ -133,5 +150,20 @@
         left join sys_users_roles sur on su.user_id = sur.user_id
         left join sys_roles_menus srm on sur.role_id = srm.role_id
         where srm.menu_id = #{id}
+    </select>
+
+    <select id="getUserDetails" resultMap="userDetailsMap">
+        select su.user_id,
+               su.username,
+               su.password,
+               su.enabled,
+               sr.name as role_name,
+               sm.permission as permissions
+        from sys_user su
+                 left join sys_users_roles sur on su.user_id = sur.user_id
+                 left join sys_role sr on sur.role_id = sr.role_id
+                 left join sys_roles_menus srm on sur.role_id = srm.role_id
+                 left join sys_menu sm on srm.menu_id = sm.menu_id
+        where su.username = #{username};
     </select>
 </mapper>

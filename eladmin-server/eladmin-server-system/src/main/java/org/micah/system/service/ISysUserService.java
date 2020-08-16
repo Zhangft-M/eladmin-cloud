@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.micah.core.web.page.PageResult;
 import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
+import org.micah.model.dto.UserSmallDto;
 import org.micah.model.query.UserQueryCriteria;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,4 +108,11 @@ public interface ISysUserService extends IService<SysUser> {
      * @return
      */
     SysUser queryByUsername(String username);
+
+    /**
+     * 通过用户名加载用户
+     * @param username
+     * @return
+     */
+    UserSmallDto getUserDetails(String username);
 }

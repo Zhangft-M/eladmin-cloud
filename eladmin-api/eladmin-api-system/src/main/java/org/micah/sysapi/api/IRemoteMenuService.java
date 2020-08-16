@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.core.constant.ServiceNameConstants;
 import org.micah.model.dto.MenuDto;
+import org.micah.model.dto.UserSmallDto;
 import org.micah.sysapi.factory.RemoteMenuFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,5 @@ import java.util.Set;
  **/
 @FeignClient(contextId = "remoteMenuService", value = ServiceNameConstants.SYS_SERVICE, fallbackFactory = RemoteMenuFallbackFactory.class)
 public interface IRemoteMenuService {
-    @GetMapping(value = "/menus/roleIds")
-    ResponseEntity<List<MenuDto>> queryByRoleIds(@RequestParam("ids") Set<Long> ids, @RequestHeader(SecurityConstants.FROM) String from);
+
 }

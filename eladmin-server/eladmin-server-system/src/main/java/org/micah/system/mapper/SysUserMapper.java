@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.micah.model.SysUser;
+import org.micah.model.dto.UserSmallDto;
 
 import java.util.List;
 
@@ -53,4 +54,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     List<SysUser> queryByMenuId(Long id);
+
+    UserSmallDto getUserDetails(String username);
 }

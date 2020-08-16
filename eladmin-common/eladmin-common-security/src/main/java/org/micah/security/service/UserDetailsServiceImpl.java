@@ -10,6 +10,7 @@ import org.micah.model.SysUser;
 import org.micah.model.dto.MenuDto;
 import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
+import org.micah.model.dto.UserSmallDto;
 import org.micah.security.component.LoginUser;
 import org.micah.security.config.LoginProperties;
 import org.micah.sysapi.api.IRemoteMenuService;
@@ -49,7 +50,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final IRemoteUserService remoteUserService;
 
 
-    private final IRemoteMenuService remoteMenuService;
 
 
     /**
@@ -62,11 +62,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     private final LoginProperties loginProperties;
 
-    public UserDetailsServiceImpl(IRemoteUserService remoteUserService,
-                                  IRemoteMenuService remoteMenuService, CacheManager cacheManager,
+    public UserDetailsServiceImpl(IRemoteUserService remoteUserService, CacheManager cacheManager,
                                   LoginProperties loginProperties) {
         this.remoteUserService = remoteUserService;
-        this.remoteMenuService = remoteMenuService;
         this.cacheManager = cacheManager;
         this.loginProperties = loginProperties;
     }
@@ -94,7 +92,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return (LoginUser) cache.get(username).get();
         }
         // 缓存不存在则调用feign获取用户信息
-        ResponseEntity<SysUser> result = this.remoteUserService.queryByUsername(username,SecurityConstants.FROM_IN);
+        UserSmallDto result = this.remoteUserService.getUserDetails(username,SecurityConstants.FROM_IN);
         UserDetails userDetails = this.getUserDetails(result);
         // 放入缓存
         if (loginProperties.getCacheEnable()) {
@@ -107,39 +105,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * 构建UserDetails
-     * @param result
+     * @param user
      * @return
      */
-    private UserDetails getUserDetails(ResponseEntity<SysUser> result) {
-        if (result == null || result.getBody() == null) {
+    private UserDetails getUserDetails(UserSmallDto user) {
+        if (user == null) {
             throw new UsernameNotFoundException("用户不存在");
         }
-        SysUser sysUser = result.getBody();
+        // SysUser sysUser = result.getBody();
         Set<String> dbAuthsSet = new HashSet<>();
-        if (CollUtil.isNotEmpty(sysUser.getRoles())) {
-            sysUser.getRoles().forEach(role -> {
-                dbAuthsSet.add(SecurityConstants.ROLE + role.getName());
+        if (CollUtil.isNotEmpty(user.getRoleNames())) {
+            user.getRoleNames().forEach(role -> {
+                dbAuthsSet.add(SecurityConstants.ROLE + role);
             });
             // 获取所有的角色
-            sysUser.getRoles().forEach(role -> dbAuthsSet.add(SecurityConstants.ROLE + role.getName()));
+            // user.ge.forEach(role -> dbAuthsSet.add(SecurityConstants.ROLE + role.getName()));
             // 根据用户的角色查询用户的菜单权限
-            Set<Long> ids = sysUser.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
-            ResponseEntity<List<MenuDto>> menuResult = this.remoteMenuService.queryByRoleIds(ids,SecurityConstants.FROM_IN);
-            List<MenuDto> menuDtos = menuResult.getBody();
-            if (menuDtos != null){
-                // 获取所有的权限
-                List<String> permissions = menuDtos.stream().distinct().filter(menuDto -> StringUtils.isNotBlank(menuDto.getPermission()))
-                        .map(MenuDto::getPermission).collect(Collectors.toList());
-                dbAuthsSet.addAll(permissions);
-            }
+            // Set<Long> ids = sysUser.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+            // ResponseEntity<List<MenuDto>> menuResult = this.remoteMenuService.queryByRoleIds(ids,SecurityConstants.FROM_IN);
+            // List<MenuDto> menuDtos = menuResult.getBody();
             // TODO: 2020/8/12 远程查询部门数据权限
             //......
-
+        }
+        if (CollUtil.isNotEmpty(user.getPermissions())){
+            dbAuthsSet.addAll(user.getPermissions());
         }
         // 封装为Collection<? extends GrantedAuthority>
         Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
-        return new LoginUser(sysUser.getUsername(), sysUser.getPassword(), sysUser.getEnabled(),
-                true, true, true, authorities, sysUser, new ArrayList<>());
+        return new LoginUser(user.getUsername(), user.getPassword(), user.getEnabled(),
+                true, true, true, authorities, new ArrayList<>());
 
     }
 }

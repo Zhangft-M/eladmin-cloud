@@ -25,16 +25,14 @@ public class LoginUser extends User implements Serializable {
 
     private static final long serialVersionUID = 5232651448040614594L;
 
-    private SysUser user;
 
     private List<Long> dataScopes;
 
 
     public LoginUser(String username, String password, boolean enabled,
                      boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
-                     Collection<? extends GrantedAuthority> authorities, SysUser user, List<Long> dataScopes) {
+                     Collection<? extends GrantedAuthority> authorities, List<Long> dataScopes) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.user = user;
         this.dataScopes = dataScopes;
     }
 }

@@ -18,6 +18,7 @@ import org.micah.exception.global.EntityExistException;
 import org.micah.exception.global.UpdateFailException;
 import org.micah.model.*;
 import org.micah.model.dto.SysUserDto;
+import org.micah.model.dto.UserSmallDto;
 import org.micah.model.mapstruct.SysUserMapStruct;
 import org.micah.model.query.UserQueryCriteria;
 import org.micah.mp.util.PageUtils;
@@ -387,6 +388,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = Optional.ofNullable(this.userMapper.queryByUsername(username)).orElseGet(SysUser::new);
         // System.out.println(sysUser);
         return sysUser;
+    }
+
+    /**
+     * 通过用户名加载用户
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public UserSmallDto getUserDetails(String username) {
+        return this.userMapper.getUserDetails(username);
     }
 
     /**

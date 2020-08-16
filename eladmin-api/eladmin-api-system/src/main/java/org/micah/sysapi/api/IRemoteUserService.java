@@ -4,6 +4,7 @@ import org.micah.core.constant.SecurityConstants;
 import org.micah.core.constant.ServiceNameConstants;
 import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
+import org.micah.model.dto.UserSmallDto;
 import org.micah.sysapi.factory.RemoteUserFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,6 @@ public interface IRemoteUserService {
      * @param username
      * @return
      */
-    @GetMapping(value = "/users/username")
-    ResponseEntity<SysUser> queryByUsername(@RequestParam("username") String username, @RequestHeader(SecurityConstants.FROM) String from);
+    @GetMapping(value = "/inner/username")
+    UserSmallDto getUserDetails(@RequestParam("username") String username, @RequestHeader(SecurityConstants.FROM) String from);
 }

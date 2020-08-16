@@ -93,6 +93,7 @@ class SysUserServiceImplTest {
 
     @Test
     void findByName() {
+        System.out.println(this.sysUserService.getUserDetails("test2"));
     }
 
     @Test
