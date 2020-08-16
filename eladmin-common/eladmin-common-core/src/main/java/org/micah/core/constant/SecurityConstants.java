@@ -6,7 +6,7 @@ package org.micah.core.constant;
  * @author: Micah
  * @create: 2020-08-03 18:59
  **/
-public class SecurityConstants {
+public final class SecurityConstants {
 
     public static final String BEARER_TOKEN_TYPE = "Bearer";
 
@@ -84,4 +84,8 @@ public class SecurityConstants {
 
 
     public static final String FROM_IN = "Y";
+
+    public static final String AUTHORITIES_KEY = "auth";
+
+    public static final String DATA_SCOPES = "data_scopes";
 }

@@ -49,6 +49,9 @@ public class SysUser extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "用户部门")
     private Dept dept;
 
+    @ApiModelProperty(value = "用户所在部门的id")
+    private Long deptId;
+
     @NotBlank
     @ApiModelProperty(value = "用户名称")
     private String username;

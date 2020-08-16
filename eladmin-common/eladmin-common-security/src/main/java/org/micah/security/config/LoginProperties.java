@@ -4,39 +4,49 @@ package org.micah.security.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 /**
  * 登录配置类
  * @author micah
  */
-
+@Primary
 @Configuration
-@ConfigurationProperties("login.config")
+@ConfigurationProperties(prefix = "security.login")
 public class LoginProperties {
+
+    public LoginProperties(boolean singleLogin, boolean cacheEnable) {
+        this.singleLogin = singleLogin;
+        this.cacheEnable = cacheEnable;
+    }
+
+    public LoginProperties() {
+    }
 
     /**
      * 账号单用户 登录
      */
-    private boolean singleLogin = false;
+    private Boolean singleLogin = false;
 
     /**
      * 用户登录信息缓存
      */
-    private boolean cacheEnable;
+    private Boolean cacheEnable = true;
 
-    public boolean isSingleLogin() {
+    public Boolean getSingleLogin() {
         return singleLogin;
     }
 
-    public boolean isCacheEnable() {
-        return cacheEnable;
-    }
-
-    public void setSingleLogin(boolean singleLogin) {
+    public void setSingleLogin(Boolean singleLogin) {
         this.singleLogin = singleLogin;
     }
 
-    public void setCacheEnable(boolean cacheEnable) {
+    public Boolean getCacheEnable() {
+        return cacheEnable;
+    }
+
+    public void setCacheEnable(Boolean cacheEnable) {
         this.cacheEnable = cacheEnable;
     }
 }

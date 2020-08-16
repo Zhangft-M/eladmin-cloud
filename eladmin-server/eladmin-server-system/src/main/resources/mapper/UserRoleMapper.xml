@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.system.mapper.UserRoleMapper">
+    <select id="selectByDeptId" resultType="org.micah.model.UserRoleRelation">
+        select sur.user_id,sur.role_id
+        from sys_users_roles sur
+                 left join sys_roles_depts srd on sur.role_id = srd.role_id
+        where srd.dept_id = #{id};
+    </select>
+</mapper>

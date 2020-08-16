@@ -106,5 +106,5 @@ public interface ISysUserService extends IService<SysUser> {
      * @param username
      * @return
      */
-    SysUserDto queryByUsername(String username);
+    SysUser queryByUsername(String username);
 }

@@ -10,6 +10,7 @@ import org.micah.model.dto.RoleDto;
 import org.micah.model.query.RoleQueryCriteria;
 import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
+import org.micah.system.mapper.RoleMapper;
 import org.micah.system.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,12 +33,17 @@ class RoleServiceImplTest {
     @Autowired
     private IRoleService roleService;
 
+    @Autowired
+    private RoleMapper mapper;
+
     @Test
     void queryAll() {
         Pageable pageable = PageRequest.of(1,100);
         RoleQueryCriteria queryCriteria = new RoleQueryCriteria();
         queryCriteria.setBlurry("管");
-        PageResult roleDtos = this.roleService.queryAll(queryCriteria,pageable);
-        System.out.println(JSON.toJSONString(roleDtos));
+        // Page<Role> rolePage = this.mapper.queryAllByPage(QueryHelpUtils.getWrapper(queryCriteria, Role.class), PageUtils.startPageAndSort(pageable));
+        // Page<Role> rolePage = this.mapper.queryAllByPage(QueryHelpUtils.getWrapper(queryCriteria, Role.class), PageUtils.startPageAndSort(pageable));
+        List<Role> roleList = this.mapper.queryAll(null);
+        System.out.println(JSON.toJSONString(roleList));
     }
 }

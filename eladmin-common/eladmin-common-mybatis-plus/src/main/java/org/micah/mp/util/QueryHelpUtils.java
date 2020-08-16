@@ -17,12 +17,16 @@ import java.util.*;
 
 /**
  * @program: eladmin-cloud
- * @description: 查询工具类
+ * @description: 查询工具类,如果需要使用QueryWrapper来自定义sql语句加入到xml文件中，则写sql语句的时候
+ *                与clazz对象有关的表不能使用别名，要不然就无法使用该工具生成的sql。例如 select * from user u where ${ew.sqlSegment}
+ *                由于工具类生成的QueryWrapper对象在mybatis-plus中会将${ew.sqlSegment}解析成 user.name = ‘xxx’ and user.age = 'xxx' 之类的语句
+ *                所以如果你指定了别名 u 那么就会报错。
+ *                在多表联查情况下，请慎用。
  * @author: Micah
  * @create: 2020-07-31 19:34
  **/
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public final class QueryHelpUtils {
 
 

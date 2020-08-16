@@ -1,75 +1,80 @@
 package org.micah.gateway.config;
 
-import java.util.Random;
-import com.google.code.kaptcha.text.impl.DefaultTextCreator;
+import java.awt.*;
+import java.util.Objects;
+
+import com.wf.captcha.*;
+import com.wf.captcha.base.Captcha;
+import org.micah.core.util.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * 验证码文本生成器
  * 
  * @author ruoyi
  */
-public class KaptchaTextCreator extends DefaultTextCreator
-{
-    private static final String[] CNUMBERS = "0,1,2,3,4,5,6,7,8,9,10".split(",");
+@Component
+public class KaptchaTextCreator {
+    
+    private final CaptchaConfig captchaConfig;
 
-    @Override
-    public String getText()
-    {
-        Integer result = 0;
-        Random random = new Random();
-        int x = random.nextInt(10);
-        int y = random.nextInt(10);
-        StringBuilder suChinese = new StringBuilder();
-        int randomoperands = (int) Math.round(Math.random() * 2);
-        if (randomoperands == 0)
-        {
-            result = x * y;
-            suChinese.append(CNUMBERS[x]);
-            suChinese.append("*");
-            suChinese.append(CNUMBERS[y]);
-        }
-        else if (randomoperands == 1)
-        {
-            if (!(x == 0) && y % x == 0)
-            {
-                result = y / x;
-                suChinese.append(CNUMBERS[y]);
-                suChinese.append("/");
-                suChinese.append(CNUMBERS[x]);
-            }
-            else
-            {
-                result = x + y;
-                suChinese.append(CNUMBERS[x]);
-                suChinese.append("+");
-                suChinese.append(CNUMBERS[y]);
+    public KaptchaTextCreator(CaptchaConfig captchaConfig) {
+        this.captchaConfig = captchaConfig;
+    }
+
+    /**
+     * 获取验证码生产类
+     *
+     * @return /
+     */
+    public Captcha getCaptcha() {
+        if (Objects.isNull(captchaConfig)) {
+            if (Objects.isNull(captchaConfig.getCodeType())) {
+                captchaConfig.setCodeType(CaptchaEnum.arithmetic);
             }
         }
-        else if (randomoperands == 2)
-        {
-            if (x >= y)
-            {
-                result = x - y;
-                suChinese.append(CNUMBERS[x]);
-                suChinese.append("-");
-                suChinese.append(CNUMBERS[y]);
-            }
-            else
-            {
-                result = y - x;
-                suChinese.append(CNUMBERS[y]);
-                suChinese.append("-");
-                suChinese.append(CNUMBERS[x]);
+        return switchCaptcha(captchaConfig);
+    }
+
+    /**
+     * 依据配置信息生产验证码
+     *
+     * @param captchaConfig 验证码配置信息
+     * @return /
+     */
+    private Captcha switchCaptcha(CaptchaConfig captchaConfig) {
+        Captcha captcha;
+        synchronized (this) {
+            switch (captchaConfig.getCodeType()) {
+                case arithmetic:
+                    // 算术类型 https://gitee.com/whvse/EasyCaptcha
+                    captcha = new ArithmeticCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight());
+                    // 几位数运算，默认是两位
+                    captcha.setLen(captchaConfig.getLength());
+                    break;
+                case chinese:
+                    captcha = new ChineseCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight());
+                    captcha.setLen(captchaConfig.getLength());
+                    break;
+                case chinese_gif:
+                    captcha = new ChineseGifCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight());
+                    captcha.setLen(captchaConfig.getLength());
+                    break;
+                case gif:
+                    captcha = new GifCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight());
+                    captcha.setLen(captchaConfig.getLength());
+                    break;
+                case spec:
+                    captcha = new SpecCaptcha(captchaConfig.getWidth(), captchaConfig.getHeight());
+                    captcha.setLen(captchaConfig.getLength());
+                    break;
+                default:
+                    throw new IllegalArgumentException("验证码配置信息错误！正确配置查看 CaptchaEnum ");
             }
         }
-        else
-        {
-            result = x + y;
-            suChinese.append(CNUMBERS[x]);
-            suChinese.append("+");
-            suChinese.append(CNUMBERS[y]);
+        if(StringUtils.isNotBlank(captchaConfig.getFontName())){
+            captcha.setFont(new Font(captchaConfig.getFontName(), Font.PLAIN, captchaConfig.getFontSize()));
         }
-        suChinese.append("=?@" + result);
-        return suChinese.toString();
+        return captcha;
     }
 }

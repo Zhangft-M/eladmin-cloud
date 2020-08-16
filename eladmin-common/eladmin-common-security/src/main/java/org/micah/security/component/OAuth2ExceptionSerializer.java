@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.SneakyThrows;
-import org.micah.core.constant.Constants;
+import org.micah.core.constant.HttpStatus;
 import org.micah.security.exception.CustomizeOAuth2Exception;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class OAuth2ExceptionSerializer extends StdSerializer<CustomizeOAuth2Exce
     @SneakyThrows
     public void serialize(CustomizeOAuth2Exception e, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeObjectField("code", Constants.FAIL);
+        jsonGenerator.writeObjectField("code", HttpStatus.NOT_IMPLEMENTED);
         jsonGenerator.writeStringField("msg", e.getMessage());
         jsonGenerator.writeStringField("data", e.getErrorCode());
         jsonGenerator.writeEndObject();

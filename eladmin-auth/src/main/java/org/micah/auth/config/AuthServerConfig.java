@@ -1,9 +1,9 @@
 package org.micah.auth.config;
 
 import lombok.RequiredArgsConstructor;
-import org.micah.core.constant.CacheConstants;
+import org.micah.core.constant.CacheKey;
 import org.micah.security.component.CustomizeWebResponseExceptionTranslator;
-import org.micah.security.service.RedisClientDetailsService;
+import org.micah.security.service.CustomClientDetailsService;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.security.component.LoginUser;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -28,6 +29,7 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @program: eladmin-cloud
@@ -62,7 +64,6 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
 
 
-
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         // 配置允许所有的客户端进行表单验证
@@ -72,12 +73,16 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // 配置加载客户端的实现
-        clients.withClientDetails(clientDetailsService());
+        clients.withClientDetails(customClientDetailsService());
     }
 
     @Bean
-    public ClientDetailsService clientDetailsService() {
-        return new RedisClientDetailsService(dataSource);
+    public ClientDetailsService customClientDetailsService() {
+        CustomClientDetailsService redisClientDetailsService = new CustomClientDetailsService(dataSource);
+        // TODO: 2020/8/16 自定义的sql来查询client的信息
+        redisClientDetailsService.setFindClientDetailsSql(SecurityConstants.DEFAULT_FIND_STATEMENT);
+        redisClientDetailsService.setSelectClientDetailsSql(SecurityConstants.DEFAULT_SELECT_STATEMENT);
+        return redisClientDetailsService;
     }
 
     @Override
@@ -95,9 +100,9 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 // 指定认证管理器
                 .authenticationManager(authenticationManager)
                 // 是否重复使用refreshToken
-                .reuseRefreshTokens(false)
+                .reuseRefreshTokens(false);
                 // 自定义异常处理
-                .exceptionTranslator(new CustomizeWebResponseExceptionTranslator());
+                // .exceptionTranslator(new CustomizeWebResponseExceptionTranslator());
     }
 
     /**
@@ -112,10 +117,16 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 if (accessToken instanceof DefaultOAuth2AccessToken){
                     LoginUser loginUser = (LoginUser) authentication.getUserAuthentication().getPrincipal();
                     // TODO: 2020/8/5 在token中后续添加权限信息
-                    authentication.getAuthorities();
+                    /*
+                     * 获取权限列表
+                     */
+                    String authorities = authentication.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(","));
                     Map<String, Object> additionalInformation = new LinkedHashMap<String, Object>(3);
                     additionalInformation.put(SecurityConstants.DETAILS_USERNAME, loginUser.getUsername());
-                    additionalInformation.put(SecurityConstants.DETAILS_USER_ID, loginUser.getUserId());
+                    additionalInformation.put(SecurityConstants.DATA_SCOPES, loginUser.getDataScopes());
+                    additionalInformation.put(SecurityConstants.AUTHORITIES_KEY,authorities);
                     ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInformation);
                 }
                 return accessToken;
@@ -131,7 +142,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     public TokenStore tokenStore() {
         RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
         // 设置保存的key的前缀
-        redisTokenStore.setPrefix(CacheConstants.OAUTH_ACCESS);
+        redisTokenStore.setPrefix(CacheKey.OAUTH_ACCESS);
         return redisTokenStore;
     }
 

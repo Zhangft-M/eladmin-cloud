@@ -8,9 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.micah.core.constant.CacheKey;
 import org.micah.core.util.FileUtils;
 import org.micah.core.web.page.PageResult;
+import org.micah.exception.global.BadRequestException;
 import org.micah.model.Dept;
+import org.micah.model.RoleDeptRelation;
+import org.micah.model.SysUser;
+import org.micah.model.UserRoleRelation;
 import org.micah.model.dto.DeptDto;
 import org.micah.model.mapstruct.DeptMapStruct;
 import org.micah.model.query.DeptQueryCriteria;
@@ -19,6 +24,9 @@ import org.micah.mp.util.QueryHelpUtils;
 import org.micah.mp.util.SortUtils;
 import org.micah.redis.util.RedisUtils;
 import org.micah.system.mapper.DeptMapper;
+import org.micah.system.mapper.RoleDeptMapper;
+import org.micah.system.mapper.SysUserMapper;
+import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.IDeptService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,15 +50,22 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
 
     private final DeptMapStruct deptMapStruct;
 
+    private final UserRoleMapper userRoleMapper;
+
+    private final RoleDeptMapper roleDeptMapper;
+
+    private final SysUserMapper userMapper;
+
     private final RedisUtils redisUtils;
 
-    private static final String DEPT_PID_KEY_PRE = "dept::pid:";
 
-    private static final String DEPT_ID_KEY_PRE = "dept::id:";
 
-    public DeptServiceImpl(DeptMapper deptMapper, DeptMapStruct deptMapStruct, RedisUtils redisUtils) {
+    public DeptServiceImpl(DeptMapper deptMapper, DeptMapStruct deptMapStruct, UserRoleMapper userRoleMapper, RoleDeptMapper roleDeptMapper, SysUserMapper userMapper, RedisUtils redisUtils) {
         this.deptMapper = deptMapper;
         this.deptMapStruct = deptMapStruct;
+        this.userRoleMapper = userRoleMapper;
+        this.roleDeptMapper = roleDeptMapper;
+        this.userMapper = userMapper;
         this.redisUtils = redisUtils;
     }
 
@@ -183,13 +198,13 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             if (resources.getPid() != null && resources.getPid() != 0) {
                 log.info("插入成功，处理父节点");
                 // 删除父节点的缓存信息
-                this.redisUtils.del(DEPT_PID_KEY_PRE + (resources.getPid() == null ? 0 : resources.getPid()));
+                this.redisUtils.del(CacheKey.DEPT_PID_KEY_PRE + (resources.getPid() == null ? 0 : resources.getPid()));
                 // 更新父节点的subCount信息
                 this.updateSubCount(resources.getPid());
             }
 
         } else {
-            log.info("插入失败:{}", resources);
+            log.error("插入失败:{}", resources);
             throw new RuntimeException("插入一条数据失败:" + resources.toString());
         }
 
@@ -226,7 +241,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         // 验证数据是否有误，即验证pid与id是否相同
         if (resources.getPid() != 0 && resources.getPid().equals(resources.getId())) {
             // 上级部门是自己，数据有误
-            log.info("数据有误，部门的id与pid相同，请修改数据,id:{},pid{}", resources.getId(), resources.getPid());
+            log.error("数据有误，部门的id与pid相同，请修改数据,id:{},pid{}", resources.getId(), resources.getPid());
             throw new IllegalArgumentException("数据有误，部门的id与pid相同，请修改数据");
         }
         // 数据无误,进行修改操作
@@ -241,7 +256,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
                 this.delCaches(resources.getId(), oldDeptPid, newDeptPid);
             } else {
                 // 只删除修改的数据的缓存
-                this.redisUtils.del(DEPT_ID_KEY_PRE + resources.getId());
+                this.redisUtils.del(CacheKey.DEPT_ID_KEY_PRE + resources.getId());
             }
         } else {
             log.info("修改失败,需要修改的数据为:{}", resources);
@@ -258,13 +273,14 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      */
     @Override
     public void delCaches(Long id, Long oldDeptPid, Long newDeptPid) {
-        // TODO: 2020/8/8 删除用户拥有的部门权限，后续处理
-        // List<User> users = userRepository.findByDeptRoleId(id);
+        // TODO: 2020/8/8 删除用户拥有的部门权限，后续处理(已处理)
+        List<UserRoleRelation> relations = this.userRoleMapper.selectByDeptId(id);
+        Set<Long> userIds = relations.stream().map(UserRoleRelation::getUserId).collect(Collectors.toSet());
         // 删除数据权限
-        // redisUtils.delByKeys("data::user:",users.stream().map(User::getId).collect(Collectors.toSet()));
-        this.redisUtils.del(DEPT_ID_KEY_PRE + id);
-        this.redisUtils.del(DEPT_PID_KEY_PRE + oldDeptPid);
-        this.redisUtils.del(DEPT_PID_KEY_PRE + newDeptPid);
+        redisUtils.delByKeys("data::user:", userIds);
+        this.redisUtils.del(CacheKey.DEPT_ID_KEY_PRE + id);
+        this.redisUtils.del(CacheKey.DEPT_PID_KEY_PRE + oldDeptPid);
+        this.redisUtils.del(CacheKey.DEPT_PID_KEY_PRE + newDeptPid);
     }
 
     /**
@@ -282,9 +298,9 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             deptIds.add(dept.getId());
             // 查询是否存在子节点
             List<Dept> deptList = this.findByPid(dept.getId());
-            if (CollUtil.isNotEmpty(deptList)){
+            if (CollUtil.isNotEmpty(deptList)) {
                 // 递归查询加入到
-                deptIds.addAll(this.getDeptIds(deptList,deptIds));
+                deptIds.addAll(this.getDeptIds(deptList, deptIds));
             }
         });
         return deptIds;
@@ -299,7 +315,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     @Override
     public List<Dept> findByRoleId(Long id) {
         List<Dept> deptList = this.deptMapper.findByRoleId(id);
-        return Optional.ofNullable(deptList).orElseGet(ArrayList::new);
+        return Optional.ofNullable(deptList).orElse(null);
     }
 
     /**
@@ -339,7 +355,18 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      * @param deptDtos
      */
     private void verification(List<DeptDto> deptDtos) {
-        // TODO: 2020/8/8 对部门与用户进行验证，看是否有部门与用户绑定或者与某个角色绑定
+        // TODO: 2020/8/8 对部门与用户进行验证，看是否有部门与用户绑定或者与某个角色绑定(已解决)
+        // 查询是否与用户绑定，即该部门下是否存在用户
+        Set<Long> deptIds = deptDtos.stream().map(DeptDto::getId).collect(Collectors.toSet());
+        Integer count = this.userMapper.selectCount(Wrappers.<SysUser>lambdaQuery().in(SysUser::getDeptId, deptIds));
+        if (count > 0) {
+            throw new BadRequestException("所选部门存在用户关联，请解除后再试！");
+        }
+        Integer count1 = this.roleDeptMapper.selectCount(Wrappers.<RoleDeptRelation>lambdaQuery()
+                .in(RoleDeptRelation::getDeptId, deptIds));
+        if (count1 > 0) {
+            throw new BadRequestException("所选部门存在角色关联，请解除后再试！");
+        }
     }
 
     /**

@@ -5,7 +5,7 @@ package org.micah.core.constant;
  * 
  * @author ruoyi
  */
-public class HttpStatus
+public final class HttpStatus
 {
     /**
      * 操作成功

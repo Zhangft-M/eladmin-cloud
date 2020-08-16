@@ -21,9 +21,15 @@ public class MenuRoleRelation implements Serializable {
 
     private static final long serialVersionUID = 6128445248522545135L;
 
-    @TableId(type = IdType.INPUT)
     private Long menuId;
 
-    @TableId(type = IdType.INPUT)
     private Long roleId;
+
+    public MenuRoleRelation() {
+    }
+
+    public MenuRoleRelation(Long menuId, Long roleId) {
+        this.menuId = menuId;
+        this.roleId = roleId;
+    }
 }

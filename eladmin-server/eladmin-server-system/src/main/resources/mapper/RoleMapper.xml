@@ -15,6 +15,7 @@
     </resultMap>
     <resultMap id="resultWithMenuAndDept" extends="roleBaseMap" type="org.micah.model.Role">
         <collection property="menus" resultMap="org.micah.system.mapper.MenuMapper.menuBaseMap"/>
+        <collection property="depts" resultMap="org.micah.system.mapper.DeptMapper.deptBaseMap"/>
     </resultMap>
     <select id="findByUserId" resultType="org.micah.model.Role">
         select sr.role_id as id,
@@ -46,10 +47,15 @@
         ,
         <include refid="org.micah.system.mapper.MenuMapper.menuSql">
             <property name="property" value="sm"/>
+        </include>,
+        <include refid="org.micah.system.mapper.DeptMapper.deptSql">
+            <property name="property" value="sd"/>
         </include>
         from sys_role
         left join sys_roles_menus srm on sys_role.role_id = srm.role_id
         left join sys_menu sm on srm.menu_id = sm.menu_id
+        left join sys_roles_depts srd on sys_role.role_id = srd.role_id
+        left join sys_dept sd on srd.dept_id = sd.dept_id
     </sql>
 
     <select id="queryAllByPage" resultMap="resultWithMenuAndDept">
@@ -75,5 +81,22 @@
                 sys_role.role_id = #{id}
             </where>
         </if>
+    </select>
+
+    <select id="findInMenuId" resultMap="roleBaseMap">
+        select
+        <include refid="roleSql">
+            <property name="property" value="sr"/>
+        </include>
+        from sys_role sr left join sys_roles_menus srm on sr.role_id = srm.role_id
+        <where>
+            srm.menu_id in
+            <if test="menuIds != null">
+                <foreach collection="menuIds" item="menuId" separator="," open="(" close=")">
+                    #{menuId}
+                </foreach>
+            </if>
+        </where>
+
     </select>
 </mapper>

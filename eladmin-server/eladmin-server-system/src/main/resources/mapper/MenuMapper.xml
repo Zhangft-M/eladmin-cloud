@@ -23,6 +23,10 @@
         <result column="type" property="type"/>
     </resultMap>
 
+    <resultMap id="menuWithRoleMap" type="org.micah.model.Menu" extends="menuBaseMap">
+        <collection property="roles" resultMap="org.micah.system.mapper.RoleMapper.roleBaseMap"/>
+    </resultMap>
+
     <sql id="menuSql">
         ${property}.menu_id,
         ${property}.pid,
@@ -44,6 +48,18 @@
         ${property}.update_time as menu_update_time
     </sql>
 
+    <sql id="baseQueryAll">
+        <include refid="menuSql">
+            <property name="property" value="sys_menu"/>
+        </include>
+        ,
+        <include refid="org.micah.system.mapper.RoleMapper.roleSql">
+            <property name="property" value="sr"/>
+        </include>
+        from sys_menu left join sys_roles_menus srm on sys_menu.menu_id = srm.menu_id
+        left join sys_role sr on srm.role_id = sr.role_id
+    </sql>
+
     <select id="queryByRoleIds" resultType="org.micah.model.Menu">
         select
         <include refid="menuSql">
@@ -57,5 +73,43 @@
                 #{id}
             </foreach>
         </where>
+    </select>
+
+    <select id="queryAll" resultMap="menuWithRoleMap">
+        select
+        <include refid="baseQueryAll"/>
+        <if test="ew != null">
+            <where>
+                ${ew.sqlSegment}
+            </where>
+        </if>
+    </select>
+    <select id="queryAllByPage" resultMap="menuWithRoleMap">
+        select
+        <include refid="baseQueryAll"/>
+        <if test="ew != null">
+            <where>
+                ${ew.sqlSegment}
+            </where>
+        </if>
+    </select>
+    <select id="queryById" resultMap="menuWithRoleMap">
+        select
+        <include refid="baseQueryAll"/>
+        <where>
+            sys_menu.menu_id = #{id}
+        </where>
+    </select>
+
+    <select id="queryByUserId" resultMap="menuBaseMap">
+        SELECT
+        <include refid="menuSql">
+            <property name="property" value="sm"/>
+        </include>
+        FROM sys_menu sm
+        LEFT JOIN sys_roles_menus srm ON sm.menu_id = srm.menu_id
+        LEFT JOIN sys_users_roles sur ON srm.role_id = sur.role_id
+        LEFT JOIN sys_user su ON sur.user_id = su.user_id
+        WHERE su.user_id = #{currentUserId}
     </select>
 </mapper>

@@ -4,24 +4,24 @@
 
     <resultMap id="deptBaseMap" type="org.micah.model.Dept">
         <id column="dept_id" property="id"/>
-        <result column="sub_count" property="subCount"/>
-        <result column="pid" property="pid"/>
+        <result column="dept_sub_count" property="subCount"/>
+        <result column="dept_pid" property="pid"/>
         <result column="dept_create_by" property="createBy"/>
         <result column="dept_create_time" property="createTime"/>
         <result column="dept_update_by" property="updateBy"/>
         <result column="dept_update_time" property="updateTime"/>
         <result column="dept_name" property="name"/>
-        <result column="enabled" property="enabled"/>
+        <result column="dept_enabled" property="enabled"/>
         <result column="dept_sort" property="deptSort"/>
     </resultMap>
 
     <sql id="deptSql">
         ${property}.dept_id,
-        ${property}.pid,
-        ${property}.sub_count,
+        ${property}.pid as dept_pid,
+        ${property}.sub_count as dept_sub_count,
         ${property}.name as dept_name,
         ${property}.dept_sort,
-        ${property}.enabled,
+        ${property}.enabled as dept_enabled,
         ${property}.create_by as dept_create_by,
         ${property}.update_by as dept_update_by,
         ${property}.create_time as dept_create_time,

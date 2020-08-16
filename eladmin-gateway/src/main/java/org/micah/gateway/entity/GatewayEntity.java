@@ -1,9 +1,14 @@
 package org.micah.gateway.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @program: spring-cloud-alibaba
@@ -14,6 +19,8 @@ import java.io.Serializable;
 @TableName("gateway")
 @Data
 public class GatewayEntity implements Serializable {
+    private static final long serialVersionUID = -3714358217961322667L;
+    @TableId(type = IdType.AUTO)
     private Integer id;
     private String routeId;
     private String routeName;
@@ -24,11 +31,14 @@ public class GatewayEntity implements Serializable {
     /**
      * 阈值，每秒请求超过该值触发限流
      */
-    private Integer count;
+    private Integer threshold;
 
     /**
      * 时间窗口，在该段时间内该接口无法访问
      */
     private Integer intervalSec;
+
+    @TableField(exist = false)
+    private Set<Predicate> predicates;
 
 }

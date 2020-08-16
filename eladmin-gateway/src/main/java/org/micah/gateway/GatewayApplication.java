@@ -1,8 +1,10 @@
 package org.micah.gateway;
 
+import org.micah.gateway.config.CaptchaConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
@@ -14,6 +16,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  **/
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableConfigurationProperties(CaptchaConfig.class)
 @MapperScan("org.micah.gateway.mapper")
 public class GatewayApplication {
     public static void main(String[] args) {

@@ -4,15 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.micah.core.constant.CacheKey;
 import org.micah.core.util.FileUtils;
 import org.micah.core.web.page.PageResult;
+import org.micah.exception.global.BadRequestException;
 import org.micah.exception.global.CreateFailException;
 import org.micah.exception.global.DeleteFailException;
 import org.micah.exception.global.EntityExistException;
 import org.micah.model.Job;
+import org.micah.model.UserJobRelation;
 import org.micah.model.dto.JobDto;
 import org.micah.model.mapstruct.JobMapStruct;
 import org.micah.model.query.JobQueryCriteria;
@@ -20,6 +22,7 @@ import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
 import org.micah.redis.util.RedisUtils;
 import org.micah.system.mapper.JobMapper;
+import org.micah.system.mapper.UserJobMapper;
 import org.micah.system.service.IJobService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,7 +41,6 @@ import java.util.Set;
  **/
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobService {
 
     private final JobMapper jobMapper;
@@ -47,7 +49,15 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
 
     private final JobMapStruct jobMapStruct;
 
-    public static final String JOB_CACHES_KEY_PRE = "job::id:";
+    private final UserJobMapper userJobMapper;
+
+
+    public JobServiceImpl(JobMapper jobMapper, RedisUtils redisUtils, JobMapStruct jobMapStruct, UserJobMapper userJobMapper) {
+        this.jobMapper = jobMapper;
+        this.redisUtils = redisUtils;
+        this.jobMapStruct = jobMapStruct;
+        this.userJobMapper = userJobMapper;
+    }
 
     /**
      * 根据条件查询所有，不分页
@@ -140,7 +150,12 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
      */
     @Override
     public void verification(Set<Long> ids) {
-        // TODO: 2020/8/10 需要UserMapper，后续添加
+        // TODO: 2020/8/10 需要UserMapper，后续添加(已解决)
+        Integer count = this.userJobMapper.selectCount(Wrappers.<UserJobRelation>lambdaQuery()
+                .in(UserJobRelation::getJobId, ids));
+        if (!count.equals(0)){
+            throw new BadRequestException("该职位与用户存在关联，无法删除");
+        }
     }
 
     /**
@@ -155,7 +170,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
         if (remove) {
             log.info("删除成功,删除的数据的id为:{}", ids);
             // 删除缓存
-            this.redisUtils.delByKeys(JOB_CACHES_KEY_PRE, ids);
+            this.redisUtils.delByKeys(CacheKey.JOB_CACHES_KEY_PRE, ids);
         } else {
             log.error("删除失败,删除的数据的id为:{}", ids);
             throw new DeleteFailException("删除失败，请联系管理员");

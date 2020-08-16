@@ -48,6 +48,7 @@
     <sql id="baseUserSql">
         ${property}.user_id,
         ${property}.username,
+        ${property}.password,
         ${property}.nick_name,
         ${property}.gender,
         ${property}.phone,
@@ -70,19 +71,19 @@
                    <property name="property" value="sys_user"/>
                </include>
                sj.job_id,
-               sj.name as job_name,
+               sj.name AS job_name,
                sr.role_id,
-               sr.name as role_name,
+               sr.name AS role_name,
                sr.level,
                sr.data_scope,
                sd.dept_id,
-               sd.name as dept_name
-        from (sys_user,sys_dept sd)
-                 left join sys_users_jobs suj on sys_user.user_id = suj.user_id
-                 left join sys_job sj on suj.job_id = sj.job_id
-                 left join sys_users_roles sur on sys_user.user_id = sur.user_id
-                 left join sys_role sr on sur.role_id = sr.role_id
-        where (sd.dept_id = sys_user.dept_id)
+               sd.name AS dept_name
+        FROM (sys_user,sys_dept sd)
+                 LEFT JOIN sys_users_jobs suj ON sys_user.user_id = suj.user_id
+                 LEFT JOIN sys_job sj ON suj.job_id = sj.job_id
+                 LEFT JOIN sys_users_roles sur ON sys_user.user_id = sur.user_id
+                 LEFT JOIN sys_role sr ON sur.role_id = sr.role_id
+        WHERE (sd.dept_id = sys_user.dept_id)
     </sql>
 
     <sql id="selectUserWithRole">
@@ -96,7 +97,7 @@
                sr.data_scope
         from sys_user
                  left join sys_users_roles sur on sys_user.user_id = sur.user_id
-                 inner join sys_role sr on sur.role_id = sr.role_id
+                 left join sys_role sr on sur.role_id = sr.role_id
     </sql>
 
     <select id="queryAll" resultMap="sysUserMap">
@@ -115,11 +116,22 @@
 
     <select id="getById" resultMap="sysUserMap">
         <include refid="selectAllSql"/>
-        and su.user_id = #{id}
+        and sys_user.user_id = #{id}
     </select>
 
     <select id="queryByUsername" resultMap="userWithRoleMap">
         <include refid="selectUserWithRole"/>
-        where su.username = #{username}
+        where sys_user.username = #{username}
+    </select>
+
+    <select id="queryByMenuId" resultMap="baseUserMap">
+        select
+        <include refid="baseUserSql">
+            <property name="property" value="sr"/>
+        </include>
+        from sys_user su
+        left join sys_users_roles sur on su.user_id = sur.user_id
+        left join sys_roles_menus srm on sur.role_id = srm.role_id
+        where srm.menu_id = #{id}
     </select>
 </mapper>

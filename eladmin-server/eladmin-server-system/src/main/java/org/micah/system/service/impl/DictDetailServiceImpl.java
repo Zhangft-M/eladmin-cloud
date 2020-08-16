@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.micah.core.constant.CacheKey;
 import org.micah.core.util.StringUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.DeleteFailException;
-import org.micah.model.Dict;
 import org.micah.model.DictDetail;
 import org.micah.model.dto.DictDetailDto;
 import org.micah.model.mapstruct.DictDetailMapStruct;
@@ -42,7 +42,7 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
 
     private final DictMapper dictMapper;
 
-    public static final String DICT_KEY_PRE = "dept::id:";
+
 
     public DictDetailServiceImpl(DictDetailMapper dictDetailMapper,
                                  DictDetailMapStruct dictDetailMapStruct,
@@ -156,6 +156,6 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
      * @param dictDetail
      */
     private void delCaches(DictDetail dictDetail) {
-        this.redisUtils.del(DICT_KEY_PRE + dictDetail.getId());
+        this.redisUtils.del(CacheKey.DICT_KEY_PRE + dictDetail.getId());
     }
 }

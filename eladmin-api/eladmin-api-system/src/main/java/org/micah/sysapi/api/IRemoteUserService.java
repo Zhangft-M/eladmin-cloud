@@ -1,11 +1,15 @@
 package org.micah.sysapi.api;
 
+import org.micah.core.constant.SecurityConstants;
 import org.micah.core.constant.ServiceNameConstants;
+import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
 import org.micah.sysapi.factory.RemoteUserFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @program: eladmin-cloud
@@ -21,5 +25,5 @@ public interface IRemoteUserService {
      * @return
      */
     @GetMapping(value = "/users/username")
-    ResponseEntity<SysUserDto> queryByUsername(String username);
+    ResponseEntity<SysUser> queryByUsername(@RequestParam("username") String username, @RequestHeader(SecurityConstants.FROM) String from);
 }

@@ -4,12 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.micah.core.constant.Constants;
 import org.micah.model.SysUser;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @program: eladmin-cloud
@@ -49,4 +46,11 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     SysUser queryByUsername(String username);
+
+    /**
+     * 通过菜单的id来查询用户
+     * @param id
+     * @return
+     */
+    List<SysUser> queryByMenuId(Long id);
 }

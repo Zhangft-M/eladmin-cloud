@@ -47,7 +47,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
 
     private final RedisUtils redisUtils;
 
-    public static final String DICT_KEY_PRE = "dept::name:";
+    public static final String DICT_KEY_PRE = "dict::name:";
 
     public DictServiceImpl(DictMapper dictMapper, DictDetailMapper dictDetailMapper, DictMapStruct mapStruct, RedisUtils redisUtils) {
         this.dictMapper = dictMapper;
@@ -139,7 +139,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
         dicts.forEach(this::delCaches);
         // 删除所有数据
         this.dictMapper.deleteBatchIds(ids);
-        // TODO: 2020/8/9 删除字典详细信息
+        // TODO: 2020/8/9 删除字典详细信息(已处理)
         dicts.forEach(dict -> {
             this.dictDetailMapper.delete(new QueryWrapper<DictDetail>().eq("dict_id",dict.getId()));
         });

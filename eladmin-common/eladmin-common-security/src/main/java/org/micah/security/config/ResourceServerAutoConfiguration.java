@@ -14,12 +14,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author: Micah
  * @create: 2020-08-04 19:59
  **/
-@ConfigurationPropertiesScan
+
 @ComponentScan("org.micah.security")
+@ConfigurationPropertiesScan
 public class ResourceServerAutoConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
 }

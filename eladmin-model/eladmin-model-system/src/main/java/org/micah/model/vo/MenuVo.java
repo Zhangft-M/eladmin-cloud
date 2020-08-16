@@ -16,7 +16,10 @@
 package org.micah.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,11 +29,14 @@ import java.util.List;
  * @author Zheng Jie
  * @date 2018-12-20
  */
-@Data
+@Setter
+@Getter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MenuVo implements Serializable {
 
     private static final long serialVersionUID = 4859687347515431585L;
+
+
     private String name;
 
     private String path;

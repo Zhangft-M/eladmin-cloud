@@ -1,13 +1,21 @@
 server:
-  port: 80
+  port: 8081
 spring:
   application:
-    name: gateway-server
+    name: system-server
   datasource:
     url: jdbc:p6spy:mysql://121.89.178.219:3306/eladmin?useUnicode=true&characterEncoding=UTF-8
     username: root
     password: missyou1127
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-
+  cloud:
+    nacos:
+      server-addr: 121.89.178.219
+  redis:
+    host: 121.89.178.219
 jwt:
   online-key: abcdefg
+security:
+  login:
+    cache-enable: true
+    single-login: true

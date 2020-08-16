@@ -73,7 +73,7 @@ public interface IRoleService extends IService<Role> {
      * @param resources /
      * @param roleDTO /
      */
-    void updateMenu(Role resources, RoleDto roleDTO);
+    void updateMenu(Role resources);
 
     /**
      * 解绑菜单
@@ -115,7 +115,7 @@ public interface IRoleService extends IService<Role> {
      * 验证是否被用户关联
      * @param ids /
      */
-    void verification(Set<Long> ids);
+    void verificationOfUser(Set<Long> ids);
 
     /**
      * 根据菜单Id查询

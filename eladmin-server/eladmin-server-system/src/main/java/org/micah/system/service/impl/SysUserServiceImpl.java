@@ -23,11 +23,13 @@ import org.micah.model.query.UserQueryCriteria;
 import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
 import org.micah.redis.util.RedisUtils;
+import org.micah.security.service.UserDetailsServiceImpl;
 import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserJobMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.ISysUserService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,15 +62,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final UserJobMapper userJobMapper;
 
+    private final UserDetailsServiceImpl userDetailsService;
+
     public static final String USER_CACHE_KEY_PRE = "user::username:";
 
     public SysUserServiceImpl(SysUserMapper userMapper, SysUserMapStruct userMapStruct,
-                              RedisUtils redisUtils, UserRoleMapper userRoleMapper, UserJobMapper userJobMapper) {
+                              RedisUtils redisUtils, UserRoleMapper userRoleMapper,
+                              UserJobMapper userJobMapper, UserDetailsServiceImpl userDetailsService) {
         this.userMapper = userMapper;
         this.userMapStruct = userMapStruct;
         this.redisUtils = redisUtils;
         this.userRoleMapper = userRoleMapper;
         this.userJobMapper = userJobMapper;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -95,7 +101,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    @SuppressWarnings("rawtypes")
     public PageResult queryAll(UserQueryCriteria queryCriteria, Pageable pageable) {
         QueryWrapper<SysUser> wrapper = null;
         if (BeanUtil.isNotEmpty(queryCriteria)) {
@@ -221,6 +226,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 UserJobRelation userJobRelation = null;
                 for (Job job : resources.getJobs()) {
                     userJobRelation = new UserJobRelation(resources.getId(), job.getId());
+                    this.userJobMapper.insert(userJobRelation);
                 }
             }
         }
@@ -377,8 +383,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public SysUserDto queryByUsername(String username) {
-        SysUser user = Optional.ofNullable(this.userMapper.queryByUsername(username)).orElseGet(SysUser::new);
-        return this.userMapStruct.toDto(user);
+    public SysUser queryByUsername(String username) {
+        SysUser sysUser = Optional.ofNullable(this.userMapper.queryByUsername(username)).orElseGet(SysUser::new);
+        // System.out.println(sysUser);
+        return sysUser;
+    }
+
+    /**
+     * 清理 登陆时 用户缓存信息
+     *
+     * @param username /
+     */
+    private void flushCache(String username) {
+        // this.userDetailsService.cleanUserCache(username);
     }
 }

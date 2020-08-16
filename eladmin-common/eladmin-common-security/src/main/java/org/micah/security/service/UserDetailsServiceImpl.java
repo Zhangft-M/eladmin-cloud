@@ -2,9 +2,11 @@ package org.micah.security.service;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.micah.core.constant.CacheConstants;
+import org.micah.core.constant.CacheKey;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.core.util.StringUtils;
+import org.micah.model.Role;
+import org.micah.model.SysUser;
 import org.micah.model.dto.MenuDto;
 import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
@@ -14,6 +16,7 @@ import org.micah.sysapi.api.IRemoteMenuService;
 import org.micah.sysapi.api.IRemoteUserService;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -60,7 +63,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final LoginProperties loginProperties;
 
     public UserDetailsServiceImpl(IRemoteUserService remoteUserService,
-                                  IRemoteMenuService remoteMenuService, CacheManager cacheManager, LoginProperties loginProperties) {
+                                  IRemoteMenuService remoteMenuService, CacheManager cacheManager,
+                                  LoginProperties loginProperties) {
         this.remoteUserService = remoteUserService;
         this.remoteMenuService = remoteMenuService;
         this.cacheManager = cacheManager;
@@ -72,7 +76,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * 设置用户信息是否被缓存
      * @param enableCache
      */
-    public void setEnableCache(boolean enableCache) {
+    public void setEnableCache(Boolean enableCache) {
         this.loginProperties.setCacheEnable(enableCache);
     }
 
@@ -84,16 +88,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Cache cache = this.cacheManager.getCache(CacheConstants.USER_DETAILS);
+        Cache cache = this.cacheManager.getCache(CacheKey.USER_DETAILS);
         if (cache != null && cache.get(username) != null) {
             // 缓存中存在，直接从缓存中获取
             return (LoginUser) cache.get(username).get();
         }
         // 缓存不存在则调用feign获取用户信息
-        ResponseEntity<SysUserDto> result = this.remoteUserService.queryByUsername(username);
+        ResponseEntity<SysUser> result = this.remoteUserService.queryByUsername(username,SecurityConstants.FROM_IN);
         UserDetails userDetails = this.getUserDetails(result);
         // 放入缓存
-        if (loginProperties.isCacheEnable()) {
+        if (loginProperties.getCacheEnable()) {
             assert cache != null;
             cache.put(username, userDetails);
         }
@@ -106,21 +110,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param result
      * @return
      */
-    private UserDetails getUserDetails(ResponseEntity<SysUserDto> result) {
+    private UserDetails getUserDetails(ResponseEntity<SysUser> result) {
         if (result == null || result.getBody() == null) {
             throw new UsernameNotFoundException("用户不存在");
         }
-        SysUserDto userDto = result.getBody();
+        SysUser sysUser = result.getBody();
         Set<String> dbAuthsSet = new HashSet<>();
-        if (CollUtil.isNotEmpty(userDto.getRoles())) {
-            userDto.getRoles().forEach(role -> {
+        if (CollUtil.isNotEmpty(sysUser.getRoles())) {
+            sysUser.getRoles().forEach(role -> {
                 dbAuthsSet.add(SecurityConstants.ROLE + role.getName());
             });
             // 获取所有的角色
-            userDto.getRoles().forEach(role -> dbAuthsSet.add(SecurityConstants.ROLE + role.getName()));
+            sysUser.getRoles().forEach(role -> dbAuthsSet.add(SecurityConstants.ROLE + role.getName()));
             // 根据用户的角色查询用户的菜单权限
-            Set<Long> ids = userDto.getRoles().stream().map(RoleSmallDto::getId).collect(Collectors.toSet());
-            ResponseEntity<List<MenuDto>> menuResult = this.remoteMenuService.queryByRoleIds(ids);
+            Set<Long> ids = sysUser.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+            ResponseEntity<List<MenuDto>> menuResult = this.remoteMenuService.queryByRoleIds(ids,SecurityConstants.FROM_IN);
             List<MenuDto> menuDtos = menuResult.getBody();
             if (menuDtos != null){
                 // 获取所有的权限
@@ -134,8 +138,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         // 封装为Collection<? extends GrantedAuthority>
         Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
-        return new LoginUser(userDto.getUsername(), userDto.getPassword(), userDto.getEnabled(),
-                true, true, true, authorities, userDto, null);
+        return new LoginUser(sysUser.getUsername(), sysUser.getPassword(), sysUser.getEnabled(),
+                true, true, true, authorities, sysUser, new ArrayList<>());
 
     }
 }

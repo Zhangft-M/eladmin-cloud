@@ -8,7 +8,7 @@ package org.micah.core.constant;
  **/
 public final class ServiceNameConstants {
 
-    public static final String LOG_SERVICE = "log-service";
+    public static final String LOG_SERVICE = "log-server";
 
-    public static final String SYS_SERVICE = "system-service";
+    public static final String SYS_SERVICE = "system-server";
 }

@@ -6,7 +6,7 @@ package org.micah.core.constant;
  * @author: Micah
  * @create: 2020-07-30 18:08
  **/
-public class SysConstants {
+public final class SysConstants {
     /**
      * 用于IP定位转换
      */
@@ -30,4 +30,13 @@ public class SysConstants {
         // IP归属地查询
         public static final String IP_URL = "http://whois.pconline.com.cn/ipJson.jsp?ip=%s&json=true";
     }
+    /**
+     * UTF-8 字符集
+     */
+    public static final String UTF8 = "UTF-8";
+
+    /**
+     * GBK 字符集
+     */
+    public static final String GBK = "GBK";
 }

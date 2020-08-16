@@ -13,6 +13,7 @@
         <module>eladmin-common-log</module>
         <module>eladmin-common-mybatis-plus</module>
         <module>eladmin-common-security</module>
+        <module>eladmin-common-swagger</module>
     </modules>
     <name>eladmin-common</name>
     <description>通用模块</description>

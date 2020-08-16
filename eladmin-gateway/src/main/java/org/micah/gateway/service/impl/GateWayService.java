@@ -6,12 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.micah.gateway.entity.GatewayEntity;
 import org.micah.gateway.mapper.GateWayMapper;
 import org.micah.gateway.service.IGateWayService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
+import org.springframework.cloud.gateway.support.NameUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,17 +29,20 @@ import java.util.*;
  * @create: 2020-07-29 15:30
  **/
 @Service
-public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> implements IGateWayService {
+public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> implements IGateWayService, InitializingBean {
 
-    @Autowired
-    private  GateWayMapper gateWayMapper;
+    private final GateWayMapper gateWayMapper;
 
     private ApplicationEventPublisher publisher;
 
-    @Autowired
-    private RouteDefinitionWriter definitionWriter;
+    private final RouteDefinitionWriter definitionWriter;
 
-    private Set<GatewayFlowRule> rules = new HashSet<>();
+    private final Set<GatewayFlowRule> rules = new HashSet<>();
+
+    public GateWayService(GateWayMapper gateWayMapper, RouteDefinitionWriter definitionWriter) {
+        this.gateWayMapper = gateWayMapper;
+        this.definitionWriter = definitionWriter;
+    }
 
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
@@ -78,20 +82,20 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
          *         - id: mygateway
          *           uri: lb://test-serve
          *           filters:
-         *             - StripPrefix=1
+         *             - StripPrefix=1 // 过滤掉服务名后面的第一个前缀,(去掉这个前缀名，再转发)
          *           predicates:
          *             - Path=/test/**
          */
         definition.setId(gatewayEntity.getRouteId());
         // 设置- Path=/test/**
         predicateDefinition.setName("Path");
-        predicateParams.put("pattern", gatewayEntity.getRoutePattern());
+        predicateParams.put(NameUtils.GENERATED_NAME_PREFIX + "0", gatewayEntity.getRoutePattern());
         predicateDefinition.setArgs(predicateParams);
         // 设置predicates
         definition.setPredicates(Arrays.asList(predicateDefinition));
         // 设置StripPrefix=1
         filterDefinition.setName("StripPrefix");
-        filterParams.put("_genkey_0", "1");
+        filterParams.put(NameUtils.GENERATED_NAME_PREFIX + "0", "1");
         filterDefinition.setArgs(filterParams);
         // 设置filters
         definition.setFilters(Arrays.asList(filterDefinition));
@@ -101,10 +105,14 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
         // 设置限流规则
         rules.add(new GatewayFlowRule(gatewayEntity.getRouteId())
                 // 限流阈值
-                .setCount(1)
+                .setCount(gatewayEntity.getThreshold())
                 // 统计时间窗口，限流后一秒之类是不能访问的
-                .setIntervalSec(1));
+                .setIntervalSec(gatewayEntity.getIntervalSec()));
         // 还可以配置其他参数，需要在数据库添加相应的字段
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.initData();
+    }
 }

@@ -43,4 +43,11 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @return
      */
     Role findById(long id);
+
+    /**
+     * 通过菜单id查询角色信息
+     * @param menuIds
+     * @return
+     */
+    List<Role> findInMenuId(List<Long> menuIds);
 }

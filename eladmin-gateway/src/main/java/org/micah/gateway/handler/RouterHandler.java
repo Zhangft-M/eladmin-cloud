@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -18,11 +19,21 @@ import java.util.List;
  * @create: 2020-07-29 16:36
  **/
 @RestController
-@RequestMapping("router")
+@RequestMapping("/router")
 @RequiredArgsConstructor
 public class RouterHandler {
 
     private final IGateWayService gateWayService;
+
+    /**
+     * 加载路由策略
+     * @return
+     */
+    @GetMapping("load")
+    public Mono<ResponseEntity<Valid>> reLoadRouters(){
+        this.gateWayService.initData();
+        return Mono.just(new ResponseEntity<>(HttpStatus.OK));
+    }
 
 
     /**
@@ -32,6 +43,7 @@ public class RouterHandler {
     @GetMapping
     public Mono<ResponseEntity<List<GatewayEntity>>> listRouters(){
         List<GatewayEntity> list = this.gateWayService.list();
+        System.out.println(list);
         return Mono.just(new ResponseEntity<>(list,HttpStatus.OK));
     }
 
@@ -49,7 +61,7 @@ public class RouterHandler {
     }
 
     /**
-     * 更新路由策略
+     * 添加路由策略
      */
     @PostMapping
     public Mono<ResponseEntity<String>> createRouters(@RequestBody GatewayEntity gatewayEntity){

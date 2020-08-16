@@ -12,6 +12,7 @@ import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
 import org.micah.model.query.UserQueryCriteria;
 import org.micah.model.vo.UserPassVo;
+import org.micah.security.annotation.Inner;
 import org.micah.security.util.SecurityUtils;
 import org.micah.system.service.*;
 import org.springframework.data.domain.Pageable;
@@ -53,8 +54,9 @@ public class SysUserController {
     // @Log("导出用户数据")
     @ApiOperation("通过用户名查询用户")
     @GetMapping(value = "/username")
-    @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<SysUserDto> queryByUsername(String username){
+    // @PreAuthorize("@el.check('user:list')")
+    @Inner
+    public ResponseEntity<SysUser> queryByUsername(String username){
         return ResponseEntity.ok(this.userService.queryByUsername(username));
     }
 
