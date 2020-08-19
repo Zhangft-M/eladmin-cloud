@@ -32,6 +32,7 @@ public class DeptDto extends BaseDTO implements Serializable {
 
     private Long pid;
 
+
     private Integer subCount;
 
     public Boolean getHasChildren() {

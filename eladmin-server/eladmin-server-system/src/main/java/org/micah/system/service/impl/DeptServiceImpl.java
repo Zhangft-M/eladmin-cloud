@@ -12,6 +12,8 @@ import org.micah.core.constant.CacheKey;
 import org.micah.core.util.FileUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.exception.global.CreateFailException;
+import org.micah.exception.global.DeleteFailException;
 import org.micah.model.Dept;
 import org.micah.model.RoleDeptRelation;
 import org.micah.model.SysUser;
@@ -85,6 +87,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             QueryWrapper<Dept> queryWrapper = SortUtils.startSort(pageable.getSort());
             List<DeptDto> deptDtoList = this.deptMapStruct.toDto(this.list(queryWrapper));
             return PageResult.success((long) deptDtoList.size(), deptDtoList);
+            DeleteFailException
         }
         // 初始化分页条件
         Page<Dept> page = PageUtils.startPageAndSort(pageable);
@@ -205,7 +208,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
 
         } else {
             log.error("插入失败:{}", resources);
-            throw new RuntimeException("插入一条数据失败:" + resources.toString());
+            throw new CreateFailException("插入一条数据失败:" + resources.toString());
         }
 
     }

@@ -17,8 +17,3 @@ spring:
 
 jwt:
   online-key: abcdefg
-security:
-  oauth2:
-    client:
-      client-id: test
-      client-secret: test

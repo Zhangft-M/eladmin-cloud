@@ -27,6 +27,7 @@ public class InnerAspect implements Ordered {
 
     private final HttpServletRequest request;
 
+    // TODO: 2020/8/17 使用了该注解只能在服务间访问，由于该切面的优先级最大，在访问的时候会最先访问该切面
     @Around("@annotation(inner)")
     @SneakyThrows
     public Object innerAround(ProceedingJoinPoint pjp, Inner inner){
@@ -35,6 +36,7 @@ public class InnerAspect implements Ordered {
             log.warn("访问接口 {} 没有权限", pjp.getSignature().getName());
             throw new AccessDeniedException("Access is denied");
         }
+
         return pjp.proceed();
     }
 

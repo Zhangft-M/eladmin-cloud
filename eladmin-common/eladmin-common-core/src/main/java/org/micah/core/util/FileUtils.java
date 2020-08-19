@@ -33,7 +33,7 @@ public class FileUtils extends FileUtil {
     /**
      * 系统的临时目录
      */
-    private static final String SYS_TEM_DIR = System.getProperty("java.io.tmpdir") + File.separator;
+    public static final String SYS_TEM_DIR = System.getProperty("java.io.tmpdir") + File.separator;
 
     /**
      * 定义GB的计算常量

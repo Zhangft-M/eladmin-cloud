@@ -19,3 +19,10 @@ security:
   login:
     cache-enable: true
     single-login: true
+  oauth2:
+    resource:
+      token-info-uri: http://auth-server:7070/oauth/check_token
+    client:
+      client-id: test
+      client-secret: test
+

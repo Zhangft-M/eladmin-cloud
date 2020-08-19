@@ -37,6 +37,9 @@ public class ResourceServerSecurityConfig extends ResourceServerConfigurerAdapte
     @Autowired
     private ResourceAuthExceptionEntryPoint exceptionEntryPoint;
 
+    @Autowired
+    private RemoteTokenServices remoteTokenServices;
+
 
     /**
      * 权限不足时的异常处理
@@ -64,7 +67,7 @@ public class ResourceServerSecurityConfig extends ResourceServerConfigurerAdapte
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-        RemoteTokenServices remoteTokenServices = new RemoteTokenServices();
+        // RemoteTokenServices remoteTokenServices = new RemoteTokenServices();
         DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
         UserAuthenticationConverter authenticationConverter = new CustomizeUserAuthenticationConverter();
         // 设置token解析器
@@ -75,6 +78,7 @@ public class ResourceServerSecurityConfig extends ResourceServerConfigurerAdapte
         // 设置RemoteTokenServices,执行check_token之后就会执行accessTokenConverter
         // 此时会使用CustomizeUserAuthenticationConverter来解析token
         remoteTokenServices.setAccessTokenConverter(accessTokenConverter);
+
 
         //全局设置
         // 设置匿名访问时的异常拦截

@@ -65,9 +65,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
 
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        // 配置允许所有的客户端进行表单验证
-        security.allowFormAuthenticationForClients().checkTokenAccess("permitAll()");
+    public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
+        oauthServer.allowFormAuthenticationForClients().checkTokenAccess("permitAll()");
     }
 
     @Override
@@ -100,9 +99,10 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 // 指定认证管理器
                 .authenticationManager(authenticationManager)
                 // 是否重复使用refreshToken
-                .reuseRefreshTokens(false);
+                .reuseRefreshTokens(false)
+                .pathMapping("/oauth/confirm_access", "/token/confirm_access")
                 // 自定义异常处理
-                // .exceptionTranslator(new CustomizeWebResponseExceptionTranslator());
+                .exceptionTranslator(new CustomizeWebResponseExceptionTranslator());
     }
 
     /**

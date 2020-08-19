@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.gen.mapper.DataBaseMapper">
+    <select id="queryAll" resultType="java.lang.String">
+        select sc.SCHEMA_NAME from information_schema.SCHEMATA sc;
+    </select>
+</mapper>

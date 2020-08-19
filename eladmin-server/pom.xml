@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>eladmin-server-system</module>
+        <module>eladmin-server-gen</module>
     </modules>
 
 

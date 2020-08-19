@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.gen.mapper.ColumnInfoMapper">
+    <select id="getDataFromInfoSch" resultType="org.micah.gen.model.SysColumnInfo">
+        select column_name, is_nullable, data_type, column_comment, column_key, extra
+        from information_schema.columns
+        where table_name = #{tableName}
+          and table_schema = #{dbName}
+        order by ordinal_position
+    </select>
+</mapper>

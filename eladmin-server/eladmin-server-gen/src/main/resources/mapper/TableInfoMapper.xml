@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.gen.mapper.TableInfoMapper">
+    <resultMap id="tableInfoMap" type="org.micah.gen.model.TableInfo">
+        <result column="table_name" property="tableName"/>
+        <result column="coding" property="coding"/>
+        <result column="engine" property="engine"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="baseQuerySql">
+        select tb.TABLE_NAME,
+               tb.TABLE_COLLATION as coding,
+               tb.ENGINE,
+               tb.TABLE_COMMENT   as remark,
+               tb.CREATE_TIME
+        from information_schema.TABLES tb
+    </sql>
+
+    <select id="queryTables" resultMap="tableInfoMap">
+        <include refid="baseQuerySql"/>
+        <where>
+            <choose>
+                <when test="dbName != null and dbName != ''">
+                    tb.TABLE_SCHEMA = #{dbName};
+                </when>
+                <otherwise>
+                    tb.TABLE_SCHEMA = (select database());
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="queryTablesByPage" resultMap="tableInfoMap">
+        <include refid="baseQuerySql"/>
+        <where>
+            <choose>
+                <when test="dbName != null and dbName != ''">
+                    tb.TABLE_SCHEMA = #{dbName} and tb.TABLE_NAME like '%'#{tableName}'%'
+                </when>
+                <otherwise>
+                    tb.TABLE_SCHEMA = (select database()) and tb.TABLE_NAME like '%'#{tableName}'%'
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+</mapper>

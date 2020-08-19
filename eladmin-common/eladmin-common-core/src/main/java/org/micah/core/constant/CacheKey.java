@@ -90,7 +90,7 @@ public class CacheKey {
     /**
      * token前缀
      */
-    public final String OAUTH_ACCESS = "oauth:access:";
+    public final String OAUTH_ACCESS = "el_oauth:access:";
 
     /**
      * 部门缓存前缀:id

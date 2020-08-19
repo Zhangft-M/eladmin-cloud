@@ -43,12 +43,14 @@ public class CustomizeUserAuthenticationConverter implements UserAuthenticationC
     public Authentication extractAuthentication(Map<String, ?> map) {
         if (map.containsKey(USERNAME)) {
             Collection<? extends GrantedAuthority> authorities = getAuthorities(map);
-            Long userId = (Long) map.get(SecurityConstants.DETAILS_USER_ID);
+            // Long userId = (Long) map.get(SecurityConstants.DETAILS_USER_ID);
             String username = (String) map.get(SecurityConstants.DETAILS_USERNAME);
             // TODO: 2020/8/10 获取dataScopes
             /*LoginUser loginUser = new LoginUser(userId,username,N_A,true,true,true,true,
                     authorities, null);*/
-            return new UsernamePasswordAuthenticationToken(null, "N/A", authorities);
+            LoginUser loginUser = new LoginUser(username,N_A,true,true,true,true,
+                    authorities,null);
+            return new UsernamePasswordAuthenticationToken(loginUser, "N/A", authorities);
         }
         return null;
     }
