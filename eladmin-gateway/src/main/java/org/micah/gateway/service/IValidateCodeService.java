@@ -4,6 +4,7 @@ import org.micah.gateway.exception.CaptchaException;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @program: eladmin-cloud
@@ -18,7 +19,7 @@ public interface IValidateCodeService {
      * @return
      */
     @SuppressWarnings("rawtypes")
-    ResponseEntity createCapcha() throws IOException, CaptchaException;
+    Map<String,Object> createCapcha() throws IOException, CaptchaException;
 
     /**
      * 校验验证码

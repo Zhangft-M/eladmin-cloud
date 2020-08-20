@@ -18,14 +18,14 @@ import java.util.Set;
  **/
 @TableName("gateway")
 @Data
-public class GatewayEntity implements Serializable {
+public class Router implements Serializable {
     private static final long serialVersionUID = -3714358217961322667L;
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String routeId;
     private String routeName;
     private String routePattern;
-    private String routeType;
+    private Integer routeType;
     private String routeUrl;
     private Boolean enable;
     /**
@@ -40,5 +40,8 @@ public class GatewayEntity implements Serializable {
 
     @TableField(exist = false)
     private Set<Predicate> predicates;
+
+    @TableField(exist = false)
+    private Set<Filter> filters;
 
 }

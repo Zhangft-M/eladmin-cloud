@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @program: eladmin-cloud
@@ -32,7 +33,7 @@ public class ValidateCodeHandler implements HandlerFunction<ServerResponse> {
     @SuppressWarnings("all")
     @Override
     public Mono<ServerResponse> handle(ServerRequest serverRequest) {
-        ResponseEntity capcha;
+        Map<String,Object> capcha;
         try {
              capcha = this.codeService.createCapcha();
         } catch (CaptchaException | IOException e) {

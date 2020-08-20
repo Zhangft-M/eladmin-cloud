@@ -1,7 +1,7 @@
 package org.micah.gateway.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.micah.gateway.entity.GatewayEntity;
+import org.micah.gateway.entity.Router;
 import org.springframework.context.ApplicationEventPublisherAware;
 
 /**
@@ -10,6 +10,6 @@ import org.springframework.context.ApplicationEventPublisherAware;
  * @author: MicahZhang
  * @create: 2020-07-29 15:27
  **/
-public interface IGateWayService extends IService<GatewayEntity>, ApplicationEventPublisherAware {
+public interface IRouterService extends IService<Router>, ApplicationEventPublisherAware {
     void initData();
 }

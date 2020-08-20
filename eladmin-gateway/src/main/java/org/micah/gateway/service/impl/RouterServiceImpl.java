@@ -3,9 +3,9 @@ package org.micah.gateway.service.impl;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.micah.gateway.entity.GatewayEntity;
-import org.micah.gateway.mapper.GateWayMapper;
-import org.micah.gateway.service.IGateWayService;
+import org.micah.gateway.entity.Router;
+import org.micah.gateway.mapper.RouterMapper;
+import org.micah.gateway.service.IRouterService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -29,9 +29,9 @@ import java.util.*;
  * @create: 2020-07-29 15:30
  **/
 @Service
-public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> implements IGateWayService, InitializingBean {
+public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> implements IRouterService, InitializingBean {
 
-    private final GateWayMapper gateWayMapper;
+    private final RouterMapper routerMapper;
 
     private ApplicationEventPublisher publisher;
 
@@ -39,8 +39,8 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
 
     private final Set<GatewayFlowRule> rules = new HashSet<>();
 
-    public GateWayService(GateWayMapper gateWayMapper, RouteDefinitionWriter definitionWriter) {
-        this.gateWayMapper = gateWayMapper;
+    public RouterServiceImpl(RouterMapper routerMapper, RouteDefinitionWriter definitionWriter) {
+        this.routerMapper = routerMapper;
         this.definitionWriter = definitionWriter;
     }
 
@@ -51,15 +51,15 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
     // 初始化数据，从数据库加载数据
     @Override
     public void initData() {
-        List<GatewayEntity> gatewayEntities = this.gateWayMapper.selectList(null);
-        gatewayEntities.forEach(this::loadRoute);
+        List<Router> routers = this.routerMapper.selectAll();
+        routers.forEach(this::loadRoute);
         // 提交事件
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
         // 加载限流规则,可以加载多条规则
         GatewayRuleManager.loadRules(rules);
     }
 
-    private void loadRoute(GatewayEntity gatewayEntity) {
+    private void loadRoute(Router router) {
         RouteDefinition definition = new RouteDefinition();
         Map<String, String> predicateParams = new HashMap<>(8);
         PredicateDefinition predicateDefinition = new PredicateDefinition();
@@ -67,12 +67,12 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
         Map<String, String> filterParams = new HashMap<>(8);
         // 判断路由状况
         URI uri = null;
-        if ("0".equals(gatewayEntity.getRouteType())) {
+        if (router.getRouteType().equals(0)) {
             // 从服务注册中心获取uri
-            uri = UriComponentsBuilder.fromUriString("lb://" + gatewayEntity.getRouteUrl()).build().toUri();
+            uri = UriComponentsBuilder.fromUriString("lb://" + router.getRouteUrl()).build().toUri();
         } else {
             // 直接获取httpUri
-            uri = UriComponentsBuilder.fromHttpUrl(gatewayEntity.getRouteUrl()).build().toUri();
+            uri = UriComponentsBuilder.fromHttpUrl(router.getRouteUrl()).build().toUri();
         }
         /**
          * spring:
@@ -86,10 +86,10 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
          *           predicates:
          *             - Path=/test/**
          */
-        definition.setId(gatewayEntity.getRouteId());
+        definition.setId(router.getRouteId());
         // 设置- Path=/test/**
         predicateDefinition.setName("Path");
-        predicateParams.put(NameUtils.GENERATED_NAME_PREFIX + "0", gatewayEntity.getRoutePattern());
+        predicateParams.put(NameUtils.GENERATED_NAME_PREFIX + "0", router.getRoutePattern());
         predicateDefinition.setArgs(predicateParams);
         // 设置predicates
         definition.setPredicates(Arrays.asList(predicateDefinition));
@@ -103,11 +103,11 @@ public class GateWayService extends ServiceImpl<GateWayMapper, GatewayEntity> im
         definition.setUri(uri);
         this.definitionWriter.save(Mono.just(definition)).subscribe();
         // 设置限流规则
-        rules.add(new GatewayFlowRule(gatewayEntity.getRouteId())
+        rules.add(new GatewayFlowRule(router.getRouteId())
                 // 限流阈值
-                .setCount(gatewayEntity.getThreshold())
+                .setCount(router.getThreshold())
                 // 统计时间窗口，限流后一秒之类是不能访问的
-                .setIntervalSec(gatewayEntity.getIntervalSec()));
+                .setIntervalSec(router.getIntervalSec()));
         // 还可以配置其他参数，需要在数据库添加相应的字段
     }
 

@@ -1,5 +1,6 @@
 package org.micah.security.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ResourceServerAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }

@@ -17,9 +17,8 @@ public class Predicate implements Serializable {
 
     private static final long serialVersionUID = 1331709878647977544L;
 
-    private Long id;
+    private Long predicateId;
 
-    private Long gatewayId;
 
     private String predicateName;
 

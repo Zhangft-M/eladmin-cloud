@@ -30,7 +30,7 @@ public class RouterFunctionConfiguration {
     public RouterFunction routerFunction(){
         return RouterFunctions
                 .route(
-                RequestPredicates.GET("/code").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)),
+                RequestPredicates.GET("/auth/code").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)),
                 validateCodeHandler);
     }
 }

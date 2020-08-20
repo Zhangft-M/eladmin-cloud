@@ -42,9 +42,8 @@ public class ValidateCodeService implements IValidateCodeService {
     }
 
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public ResponseEntity createCapcha() throws IOException, CaptchaException {
+    public Map<String,Object> createCapcha() throws IOException, CaptchaException {
         // 获取验证码
         Captcha captcha = this.kaptchaTextCreator.getCaptcha();
         // 生成一个唯一的id
@@ -54,7 +53,7 @@ public class ValidateCodeService implements IValidateCodeService {
         Map<String,Object> map = new HashMap<>();
         map.put("uuid",uuid);
         map.put("img", captcha.toBase64());
-        return ResponseEntity.ok(map);
+        return map;
     }
 
     @Override

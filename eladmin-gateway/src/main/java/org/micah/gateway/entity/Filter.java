@@ -12,13 +12,11 @@ import java.io.Serializable;
  * @create: 2020-08-15 21:39
  **/
 @Data
-public class Filters implements Serializable {
+public class Filter implements Serializable {
 
     private static final long serialVersionUID = 7528156236392922835L;
 
-    private Long id;
-
-    private Long gatewayId;
+    private Long filterId;
 
     private String filterName;
 

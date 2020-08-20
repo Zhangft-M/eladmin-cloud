@@ -1,8 +1,8 @@
 package org.micah.gateway.handler;
 
-import lombok.RequiredArgsConstructor;
-import org.micah.gateway.entity.GatewayEntity;
-import org.micah.gateway.service.IGateWayService;
+
+import org.micah.gateway.entity.Router;
+import org.micah.gateway.service.IRouterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +20,13 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/router")
-@RequiredArgsConstructor
 public class RouterHandler {
 
-    private final IGateWayService gateWayService;
+    private final IRouterService routerService;
+
+    public RouterHandler(IRouterService routerService) {
+        this.routerService = routerService;
+    }
 
     /**
      * 加载路由策略
@@ -31,7 +34,7 @@ public class RouterHandler {
      */
     @GetMapping("load")
     public Mono<ResponseEntity<Valid>> reLoadRouters(){
-        this.gateWayService.initData();
+        this.routerService.initData();
         return Mono.just(new ResponseEntity<>(HttpStatus.OK));
     }
 
@@ -41,8 +44,8 @@ public class RouterHandler {
      * @return
      */
     @GetMapping
-    public Mono<ResponseEntity<List<GatewayEntity>>> listRouters(){
-        List<GatewayEntity> list = this.gateWayService.list();
+    public Mono<ResponseEntity<List<Router>>> listRouters(){
+        List<Router> list = this.routerService.list();
         System.out.println(list);
         return Mono.just(new ResponseEntity<>(list,HttpStatus.OK));
     }
@@ -51,12 +54,12 @@ public class RouterHandler {
      * 更新路由策略
      */
     @PutMapping
-    public Mono<ResponseEntity<String>> updateRouters(@RequestBody GatewayEntity gatewayEntity){
-        boolean b = this.gateWayService.updateById(gatewayEntity);
+    public Mono<ResponseEntity<String>> updateRouters(@RequestBody Router gatewayEntity){
+        boolean b = this.routerService.updateById(gatewayEntity);
         if (!b){
             return Mono.just(new ResponseEntity<>("更新失败",HttpStatus.INTERNAL_SERVER_ERROR));
         }
-        this.gateWayService.initData();
+        this.routerService.initData();
         return Mono.just(new ResponseEntity<>("更新成功",HttpStatus.CREATED));
     }
 
@@ -64,12 +67,12 @@ public class RouterHandler {
      * 添加路由策略
      */
     @PostMapping
-    public Mono<ResponseEntity<String>> createRouters(@RequestBody GatewayEntity gatewayEntity){
-        boolean b = this.gateWayService.save(gatewayEntity);
+    public Mono<ResponseEntity<String>> createRouters(@RequestBody Router gatewayEntity){
+        boolean b = this.routerService.save(gatewayEntity);
         if (!b){
             return Mono.just(new ResponseEntity<>("添加失败",HttpStatus.INTERNAL_SERVER_ERROR));
         }
-        this.gateWayService.initData();
+        this.routerService.initData();
         return Mono.just(new ResponseEntity<>("添加成功",HttpStatus.CREATED));
     }
 
@@ -78,11 +81,11 @@ public class RouterHandler {
      */
     @DeleteMapping("{id}")
     public Mono<ResponseEntity<String>> deleteRouters(@PathVariable String id){
-        boolean b = this.gateWayService.removeById(id);
+        boolean b = this.routerService.removeById(id);
         if (!b){
             return Mono.just(new ResponseEntity<>("删除失败",HttpStatus.INTERNAL_SERVER_ERROR));
         }
-        this.gateWayService.initData();
+        this.routerService.initData();
         return Mono.just(new ResponseEntity<>("删除成功",HttpStatus.CREATED));
     }
 
