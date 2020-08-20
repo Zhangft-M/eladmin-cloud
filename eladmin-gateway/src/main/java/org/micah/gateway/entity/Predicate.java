@@ -22,9 +22,7 @@ public class Predicate implements Serializable {
 
     private String predicateName;
 
-    private String predicateKey;
-
-    private String predicateValue;
+    private String predicateVal;
 
 
 }

@@ -20,7 +20,5 @@ public class Filter implements Serializable {
 
     private String filterName;
 
-    private String filterKey;
-
     private String filterVal;
 }

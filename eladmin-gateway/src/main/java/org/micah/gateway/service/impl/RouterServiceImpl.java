@@ -3,6 +3,8 @@ package org.micah.gateway.service.impl;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Maps;
+import org.micah.gateway.entity.Filter;
 import org.micah.gateway.entity.Router;
 import org.micah.gateway.mapper.RouterMapper;
 import org.micah.gateway.service.IRouterService;
@@ -59,11 +61,15 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         GatewayRuleManager.loadRules(rules);
     }
 
+    /**
+     * 配置路由，断言和过滤器都是用shortcut形式配置，与数据库对应
+     * @param router
+     */
     private void loadRoute(Router router) {
         RouteDefinition definition = new RouteDefinition();
         Map<String, String> predicateParams = new HashMap<>(8);
-        PredicateDefinition predicateDefinition = new PredicateDefinition();
-        FilterDefinition filterDefinition = new FilterDefinition();
+        List<PredicateDefinition> predicateDefinitions = new ArrayList<>();
+        List<FilterDefinition> filterDefinitions = new ArrayList<>();
         Map<String, String> filterParams = new HashMap<>(8);
         // 判断路由状况
         URI uri = null;
@@ -88,17 +94,29 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
          */
         definition.setId(router.getRouteId());
         // 设置- Path=/test/**
-        predicateDefinition.setName("Path");
-        predicateParams.put(NameUtils.GENERATED_NAME_PREFIX + "0", router.getRoutePattern());
-        predicateDefinition.setArgs(predicateParams);
+        router.getPredicates().forEach(predicate -> {
+            // 实例化断言定义对象
+            PredicateDefinition predicateDefinition = new PredicateDefinition();
+            // 设置断言的名称
+            predicateDefinition.setName(predicate.getPredicateName());
+            String[] preValues = predicate.getPredicateVal().split(",");
+            Map<String, String> valueMap = initArgs(preValues);
+            // 设置断言的值
+            predicateDefinition.setArgs(valueMap);
+            predicateDefinitions.add(predicateDefinition);
+        });
+        for (Filter filter : router.getFilters()) {
+            FilterDefinition filterDefinition = new FilterDefinition();
+            filterDefinition.setName(filter.getFilterName());
+            String[] values = filter.getFilterVal().split(",");
+            Map<String, String> valueMap = initArgs(values);
+            filterDefinition.setArgs(valueMap);
+            filterDefinitions.add(filterDefinition);
+        }
         // 设置predicates
-        definition.setPredicates(Arrays.asList(predicateDefinition));
-        // 设置StripPrefix=1
-        filterDefinition.setName("StripPrefix");
-        filterParams.put(NameUtils.GENERATED_NAME_PREFIX + "0", "1");
-        filterDefinition.setArgs(filterParams);
+        definition.setPredicates(predicateDefinitions);
         // 设置filters
-        definition.setFilters(Arrays.asList(filterDefinition));
+        definition.setFilters(filterDefinitions);
         // 设置uri
         definition.setUri(uri);
         this.definitionWriter.save(Mono.just(definition)).subscribe();
@@ -109,6 +127,19 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
                 // 统计时间窗口，限流后一秒之类是不能访问的
                 .setIntervalSec(router.getIntervalSec()));
         // 还可以配置其他参数，需要在数据库添加相应的字段
+    }
+
+    /**
+     * 初始化断言或者过滤器的参数
+     * @param values
+     * @return
+     */
+    private Map<String, String> initArgs(String[] values) {
+        Map<String, String> valueMap = Maps.newHashMapWithExpectedSize(values.length);
+        for (int i = 0; i < values.length; i++) {
+            valueMap.put(NameUtils.GENERATED_NAME_PREFIX + i, values[i]);
+        }
+        return valueMap;
     }
 
     @Override

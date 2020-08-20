@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.gateway.mapper.RouterMapper">
+    <resultMap id="routerMap" type="org.micah.gateway.entity.Router">
+        <id property="id" column="id"/>
+        <result property="enable" column="enable"/>
+        <result property="intervalSec" column="interval_sec"/>
+        <result property="routeId" column="router_id"/>
+        <result property="routeName" column="router_name"/>
+        <result property="routeType" column="router_type"/>
+        <result property="routeUrl" column="router_url"/>
+        <result property="threshold" column="threshold"/>
+        <collection property="filters" ofType="org.micah.gateway.entity.Filter">
+            <id property="filterId" column="filter_id"/>
+            <result property="filterName" column="filter_name"/>
+            <result property="filterVal" column="filter_val"/>
+        </collection>
+        <collection property="predicates" ofType="org.micah.gateway.entity.Predicate">
+            <id property="predicateId" column="predicate_id"/>
+            <result property="predicateName" column="predicate_name"/>
+            <result property="predicateVal" column="predicate_val"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectAll" resultMap="routerMap">
+        select r.id,
+               r.router_id,
+               router_name,
+               router_type,
+               router_url,
+               r.enable,
+               threshold,
+               interval_sec,
+               f.id as filter_id,
+               filter_name,
+               filter_val,
+               p.id as predicate_id,
+               predicate_name,
+               predicate_val
+        from router r
+                 left join router_filter rf on r.id = rf.router_id
+                 left join filter f on rf.filter_id = f.id
+                 left join router_predicate rp on r.id = rp.router_id
+                 left join predicate p on rp.predicate_id = p.id;
+    </select>
+</mapper>

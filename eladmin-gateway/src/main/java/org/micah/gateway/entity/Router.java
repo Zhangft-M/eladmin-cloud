@@ -24,7 +24,6 @@ public class Router implements Serializable {
     private Integer id;
     private String routeId;
     private String routeName;
-    private String routePattern;
     private Integer routeType;
     private String routeUrl;
     private Boolean enable;
