@@ -1,5 +1,6 @@
 package org.micah.gateway.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import org.junit.jupiter.api.Test;
 import org.micah.gateway.mapper.RouterMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,6 @@ class RouterServiceImplTest {
 
     @Test
     void initData() {
-        System.out.println(routerMapper.selectAll());
+        System.out.println(JSON.toJSONString(routerMapper.selectAll()));
     }
 }

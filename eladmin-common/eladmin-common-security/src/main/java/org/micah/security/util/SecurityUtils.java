@@ -35,6 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 安全工具类
@@ -74,21 +75,14 @@ public class SecurityUtils {
     }
 
     /**
-     * 获取用户角色信息
+     * 获取用户权限信息
      *
      * @return 角色集合
      */
-    public List<Integer> getRoles() {
+    public List<String> getRoles() {
         Authentication authentication = getAuthentication();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-        List<Integer> roleIds = new ArrayList<>();
-        authorities.stream().filter(granted -> StrUtil.startWith(granted.getAuthority(), SecurityConstants.ROLE))
-                .forEach(granted -> {
-                    String id = StrUtil.removePrefix(granted.getAuthority(), SecurityConstants.ROLE);
-                    roleIds.add(Integer.parseInt(id));
-                });
-        return roleIds;
+        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
     }
 
     /**
@@ -111,8 +105,8 @@ public class SecurityUtils {
      * @return 系统用户ID
      */
     public Long getCurrentUserId() {
-        UserDetails userDetails = SecurityUtils.getUser();
-        return new JSONObject(new JSONObject(userDetails).get("user")).get("id", Long.class);
+        LoginUser userDetails = SecurityUtils.getUser();
+        return userDetails.getUserId();
     }
 
     /**

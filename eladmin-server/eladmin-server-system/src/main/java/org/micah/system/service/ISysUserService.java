@@ -6,6 +6,7 @@ import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
 import org.micah.model.dto.UserSmallDto;
 import org.micah.model.query.UserQueryCriteria;
+import org.micah.security.component.LoginUser;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -115,4 +116,6 @@ public interface ISysUserService extends IService<SysUser> {
      * @return
      */
     UserSmallDto getUserDetails(String username);
+
+    Map<String,Object> getCurrentUserInfo();
 }

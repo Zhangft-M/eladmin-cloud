@@ -100,9 +100,9 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .authenticationManager(authenticationManager)
                 // 是否重复使用refreshToken
                 .reuseRefreshTokens(false)
-                .pathMapping("/oauth/confirm_access", "/token/confirm_access")
+                .pathMapping("/oauth/confirm_access", "/token/confirm_access");
                 // 自定义异常处理
-                .exceptionTranslator(new CustomizeWebResponseExceptionTranslator());
+                // .exceptionTranslator(new CustomizeWebResponseExceptionTranslator());
     }
 
     /**
@@ -123,7 +123,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                     String authorities = authentication.getAuthorities().stream()
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.joining(","));
-                    Map<String, Object> additionalInformation = new LinkedHashMap<String, Object>(3);
+                    Map<String, Object> additionalInformation = new LinkedHashMap<String, Object>(4);
+                    additionalInformation.put(SecurityConstants.DETAILS_USER_ID,loginUser.getUserId());
                     additionalInformation.put(SecurityConstants.DETAILS_USERNAME, loginUser.getUsername());
                     additionalInformation.put(SecurityConstants.DATA_SCOPES, loginUser.getDataScopes());
                     additionalInformation.put(SecurityConstants.AUTHORITIES_KEY,authorities);

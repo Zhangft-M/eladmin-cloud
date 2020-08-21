@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 验证码文本生成器
- * 
- * @author ruoyi
+ *
  */
 @Component
 public class KaptchaTextCreator {

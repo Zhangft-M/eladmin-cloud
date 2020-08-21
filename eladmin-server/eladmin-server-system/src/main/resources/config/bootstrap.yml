@@ -13,8 +13,6 @@ spring:
       server-addr: 121.89.178.219
   redis:
     host: 121.89.178.219
-jwt:
-  online-key: abcdefg
 security:
   login:
     cache-enable: true
@@ -23,6 +21,6 @@ security:
     resource:
       token-info-uri: http://auth-server:7070/oauth/check_token
     client:
-      client-id: test
-      client-secret: test
+      client-id: admin-web
+      client-secret: 123456
 

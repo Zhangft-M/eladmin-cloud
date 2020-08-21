@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheKey;
@@ -25,11 +26,14 @@ import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
 import org.micah.redis.util.RedisUtils;
 import org.micah.security.service.UserDetailsServiceImpl;
+import org.micah.security.util.SecurityUtils;
 import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserJobMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.ISysUserService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,10 +42,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @program: eladmin-cloud
@@ -63,19 +65,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final UserJobMapper userJobMapper;
 
-    private final UserDetailsServiceImpl userDetailsService;
 
     public static final String USER_CACHE_KEY_PRE = "user::username:";
 
     public SysUserServiceImpl(SysUserMapper userMapper, SysUserMapStruct userMapStruct,
                               RedisUtils redisUtils, UserRoleMapper userRoleMapper,
-                              UserJobMapper userJobMapper, UserDetailsServiceImpl userDetailsService) {
+                              UserJobMapper userJobMapper) {
         this.userMapper = userMapper;
         this.userMapStruct = userMapStruct;
         this.redisUtils = redisUtils;
         this.userRoleMapper = userRoleMapper;
         this.userJobMapper = userJobMapper;
-        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -399,6 +399,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public UserSmallDto getUserDetails(String username) {
         return this.userMapper.getUserDetails(username);
+    }
+
+    /**
+     * 获取当前的用户信息
+     * @return /
+     */
+    @Override
+    public Map<String, Object> getCurrentUserInfo() {
+        Map<String, Object> map = Maps.newHashMapWithExpectedSize(2);
+        Long userId = SecurityUtils.getCurrentUserId();
+        SysUser sysUser = this.userMapper.getById(userId);
+        map.put("user",this.userMapStruct.toDto(sysUser));
+        if (sysUser.getIsAdmin()){
+            map.put("roles", Collections.singletonList("admin"));
+        }else {
+            Collection<GrantedAuthority> authorities = SecurityUtils.getUser().getAuthorities();
+            if (authorities == null){
+                throw new BadCredentialsException("没有登录成功");
+            }
+            List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+            map.put("roles",roles);
+        }
+        return map;
     }
 
     /**

@@ -27,7 +27,7 @@ import java.util.Objects;
  * @create: 2020-07-30 21:29
  **/
 @Slf4j
-public class RequestUtils {
+public final class RequestUtils {
 
     private static final String UNKNOWN = "unknown";
 

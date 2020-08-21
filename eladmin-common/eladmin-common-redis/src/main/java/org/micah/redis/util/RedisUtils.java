@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtils {
     private static final Logger log = LoggerFactory.getLogger(RedisUtils.class);
     private RedisTemplate<Object, Object> redisTemplate;
-    @Value("${jwt.online-key}")
-    private String onlineKey;
 
     public RedisUtils(RedisTemplate<Object, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;

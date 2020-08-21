@@ -6,8 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 验证码配置
- * 
- * @author ruoyi
  */
 @Getter
 @Setter

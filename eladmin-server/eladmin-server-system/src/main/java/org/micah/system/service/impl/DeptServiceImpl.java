@@ -87,7 +87,6 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             QueryWrapper<Dept> queryWrapper = SortUtils.startSort(pageable.getSort());
             List<DeptDto> deptDtoList = this.deptMapStruct.toDto(this.list(queryWrapper));
             return PageResult.success((long) deptDtoList.size(), deptDtoList);
-            DeleteFailException
         }
         // 初始化分页条件
         Page<Dept> page = PageUtils.startPageAndSort(pageable);

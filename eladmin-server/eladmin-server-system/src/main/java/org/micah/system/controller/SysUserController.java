@@ -52,10 +52,17 @@ public class SysUserController {
     }
 
     // @Log("导出用户数据")
+    @ApiOperation("获取当前的用户信息")
+    @GetMapping(value = "/info")
+    // @PreAuthorize("@el.check('user:list')")
+    public ResponseEntity<Map<String,Object>> getCurrentUserInfo(){
+        return ResponseEntity.ok(this.userService.getCurrentUserInfo());
+    }
+
+    // @Log("导出用户数据")
     @ApiOperation("通过用户名查询用户")
     @GetMapping(value = "/username")
     // @PreAuthorize("@el.check('user:list')")
-    @Inner
     public ResponseEntity<SysUser> queryByUsername(String username){
         return ResponseEntity.ok(this.userService.queryByUsername(username));
     }

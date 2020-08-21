@@ -8,7 +8,7 @@ import cn.hutool.core.util.StrUtil;
  * @author: Micah
  * @create: 2020-07-31 16:05
  **/
-public class StringUtils extends StrUtil {
+public final class StringUtils extends StrUtil {
 
     private static final char SEPARATOR = '_';
     /**

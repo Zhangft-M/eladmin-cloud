@@ -28,7 +28,7 @@ import java.util.Map;
  * @create: 2020-07-31 15:02
  **/
 @Slf4j
-public class FileUtils extends FileUtil {
+public final class FileUtils extends FileUtil {
 
     /**
      * 系统的临时目录

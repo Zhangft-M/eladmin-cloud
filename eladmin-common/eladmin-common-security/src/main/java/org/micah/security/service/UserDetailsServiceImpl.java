@@ -131,9 +131,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             dbAuthsSet.addAll(user.getPermissions());
         }
         // 封装为Collection<? extends GrantedAuthority>
-        Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
-        return new LoginUser(user.getUsername(), user.getPassword(), user.getEnabled(),
-                true, true, true, authorities, new ArrayList<>());
+        String[] authArray = dbAuthsSet.stream().filter(StringUtils::isNotBlank).toArray(String[]::new);
+        // 不能传入空字符串
+        List<GrantedAuthority> authorityList = AuthorityUtils.createAuthorityList(authArray);
+        // Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
+        return new LoginUser(user.getId(), user.getUsername(), user.getPassword(), user.getEnabled(),
+                true, true, true, authorityList, new ArrayList<>());
 
     }
 }

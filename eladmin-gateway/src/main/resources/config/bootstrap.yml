@@ -2,7 +2,7 @@ server:
   port: 80
 spring:
   application:
-    name: system-server
+    name: gateway-server
   datasource:
     url: jdbc:p6spy:mysql://121.89.178.219:3306/gateway?useUnicode=true&characterEncoding=UTF-8
     username: root
@@ -14,5 +14,6 @@ spring:
     nacos:
       server-addr: 121.89.178.219
 
-jwt:
-  online-key: abcdefg
+security:
+  decode:
+    private-key: MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAwf6IqDZH02M0SPLP50HkG7kKxeAWxxaUwOqJQAggnYzMKwcywPaog9MSxB35TScjmhUNKwAcX0ttgQgOiGrI0QIDAQABAkBwCSkxRI/8tClpC9ooK7SqkhZ3qvBcsFzegVUcxtTXR4sUKBsz8R1aIm2LV/ZMeoZ1xVbjbiWYiVvcGf14PCjxAiEA+vrOWSAx/SAnnc0pgK1tZz4gErYFHYWUjmi+yYPfs+UCIQDF3+wEwomPMkvMvuoEU1gTKauIjrdWfXbbYOOUefUKfQIhAM3FfBEOmG2UQ2bZosFhb2VKRjmRCridoKLxthq6CFsRAiAYnb/F49GrH82wPfvs59VoJOHzDhYey2Ly7b3CJd3nHQIhAJV0MKpSnX70d3DerJrDHD3fsUxG6t7dtz5WgzDPOlct

@@ -4,6 +4,7 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
+import org.micah.core.util.StringUtils;
 import org.micah.gateway.entity.Filter;
 import org.micah.gateway.entity.Router;
 import org.micah.gateway.mapper.RouterMapper;
@@ -54,7 +55,13 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
     @Override
     public void initData() {
         List<Router> routers = this.routerMapper.selectAll();
-        routers.forEach(this::loadRoute);
+        for (Router router : routers) {
+            // 判断是否启用该路由
+            if (router.getEnable()){
+                this.loadRoute(router);
+            }
+        }
+        // routers.forEach(this::loadRoute);
         // 提交事件
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
         // 加载限流规则,可以加载多条规则
@@ -108,9 +115,12 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         for (Filter filter : router.getFilters()) {
             FilterDefinition filterDefinition = new FilterDefinition();
             filterDefinition.setName(filter.getFilterName());
-            String[] values = filter.getFilterVal().split(",");
-            Map<String, String> valueMap = initArgs(values);
-            filterDefinition.setArgs(valueMap);
+            // 判断是否为自定义的过滤器
+            if (StringUtils.isNotBlank(filter.getFilterVal())){
+                String[] values = filter.getFilterVal().split(",");
+                Map<String, String> valueMap = initArgs(values);
+                filterDefinition.setArgs(valueMap);
+            }
             filterDefinitions.add(filterDefinition);
         }
         // 设置predicates

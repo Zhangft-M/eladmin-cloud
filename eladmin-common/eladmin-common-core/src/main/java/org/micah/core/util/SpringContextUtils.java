@@ -22,7 +22,7 @@ import java.util.List;
  **/
 @Component
 @Slf4j
-public class SpringContextUtils extends SpringUtil implements DisposableBean {
+public final class SpringContextUtils extends SpringUtil implements DisposableBean {
 
     private static ApplicationContext applicationContext = null;
     private static final List<CallBack> CALL_BACKS = new ArrayList<>();

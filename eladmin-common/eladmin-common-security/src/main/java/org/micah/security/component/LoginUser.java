@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,14 +26,16 @@ public class LoginUser extends User implements Serializable {
 
     private static final long serialVersionUID = 5232651448040614594L;
 
+    private Long userId;
 
     private List<Long> dataScopes;
 
 
-    public LoginUser(String username, String password, boolean enabled,
-                     boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
-                     Collection<? extends GrantedAuthority> authorities, List<Long> dataScopes) {
+    public LoginUser(Long userId,String username, String password, boolean enabled, boolean accountNonExpired,
+                     boolean credentialsNonExpired, boolean accountNonLocked,
+                     Collection<? extends GrantedAuthority> authorities,  List<Long> dataScopes) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.userId = userId;
         this.dataScopes = dataScopes;
     }
 }

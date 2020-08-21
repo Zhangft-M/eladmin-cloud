@@ -5,6 +5,7 @@ import org.micah.security.annotation.EnableCustomizeResourceServer;
 import org.micah.security.config.LoginProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -21,6 +22,7 @@ public class AuthApplication {
         SpringApplication.run(AuthApplication.class,args);
     }
     @Bean
+    @ConditionalOnMissingBean
     public LoginProperties loginProperties(){
         return new LoginProperties();
     }

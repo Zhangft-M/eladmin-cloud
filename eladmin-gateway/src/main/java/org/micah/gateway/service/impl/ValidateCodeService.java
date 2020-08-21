@@ -57,17 +57,15 @@ public class ValidateCodeService implements IValidateCodeService {
     }
 
     @Override
-    public void checkCapcha(String code, String codeId) throws CaptchaException {
-        if (StrUtil.isBlank(code))
-        {
+    public void checkCapcha(String key, String code) throws CaptchaException {
+        if (StrUtil.isBlank(code)) {
             throw new CaptchaException("验证码不能为空");
         }
-        if (StrUtil.isBlank(codeId))
-        {
+        if (StrUtil.isBlank(key)) {
             throw new CaptchaException("验证码已失效");
         }
-        String captcha = (String) redisUtils.get(codeId);
-        redisUtils.del(codeId);
+        String captcha = (String) redisUtils.get(key);
+        redisUtils.del(key);
 
         if (!code.equalsIgnoreCase(captcha))
         {

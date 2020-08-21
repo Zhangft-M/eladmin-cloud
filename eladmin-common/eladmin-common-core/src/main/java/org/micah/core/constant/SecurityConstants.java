@@ -88,4 +88,6 @@ public final class SecurityConstants {
     public static final String AUTHORITIES_KEY = "auth";
 
     public static final String DATA_SCOPES = "data_scopes";
+
+    public static final CharSequence REFRESH_TOKEN = "refresh_token";
 }
