@@ -30,7 +30,7 @@ public class CustomizeAccessDeniedHandler extends OAuth2AccessDeniedHandler {
     private ObjectMapper objectMapper;
 
     /**
-     * 授权拒绝处理，使用R包装
+     * 授权拒绝处理
      * @param request request
      * @param response response
      * @param authException authException

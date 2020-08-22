@@ -13,7 +13,5 @@ spring:
     username: root
     password: missyou1127
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-
-
-jwt:
-  online-key: abcdefg
+    hikari:
+      max-lifetime: 1000000

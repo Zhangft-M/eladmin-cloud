@@ -37,11 +37,9 @@ public class DeptQueryCriteria {
     @Query
     private Boolean enabled;
 
-    @Query
+    @Query(type = SelectType.EQUAL,value = "pid")
     private Long pid;
 
-    @Query(type = SelectType.IS_NULL, value = "pid")
-    private Boolean pidIsNull;
 
     @Query(type = SelectType.BETWEEN)
     private List<Timestamp> createTime;

@@ -1,5 +1,6 @@
 package org.micah.security.annotation;
 
+import org.micah.security.component.PermissionComponent;
 import org.micah.security.component.SecurityBeanDefinitionRegistrar;
 import org.micah.security.config.ResourceServerAutoConfiguration;
 import org.springframework.context.annotation.Import;
@@ -24,6 +25,6 @@ import java.lang.annotation.*;
 // 开启权限校验注解
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 // 在spring初始化的时候自动装配这两个类
-@Import({ResourceServerAutoConfiguration.class,SecurityBeanDefinitionRegistrar.class})
+@Import({ResourceServerAutoConfiguration.class,SecurityBeanDefinitionRegistrar.class, PermissionComponent.class})
 public @interface EnableCustomizeResourceServer {
 }

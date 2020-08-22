@@ -127,14 +127,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             // TODO: 2020/8/12 远程查询部门数据权限
             //......
         }
-        if (CollUtil.isNotEmpty(user.getPermissions())){
+        if (user.getIsAdmin()){
+            dbAuthsSet.add(SecurityConstants.ADMIN);
+        }else if (CollUtil.isNotEmpty(user.getPermissions())){
             dbAuthsSet.addAll(user.getPermissions());
         }
         // 封装为Collection<? extends GrantedAuthority>
         String[] authArray = dbAuthsSet.stream().filter(StringUtils::isNotBlank).toArray(String[]::new);
         // 不能传入空字符串
-        List<GrantedAuthority> authorityList = AuthorityUtils.createAuthorityList(authArray);
-        // Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
+        List<GrantedAuthority> authorityList = null;
+        if (CollUtil.isNotEmpty(dbAuthsSet)){
+            authorityList = AuthorityUtils.createAuthorityList(authArray);
+        }
         return new LoginUser(user.getId(), user.getUsername(), user.getPassword(), user.getEnabled(),
                 true, true, true, authorityList, new ArrayList<>());
 

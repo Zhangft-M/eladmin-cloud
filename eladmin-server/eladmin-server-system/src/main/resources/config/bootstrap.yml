@@ -8,6 +8,8 @@ spring:
     username: root
     password: missyou1127
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    hikari:
+      max-lifetime: 1000000
   cloud:
     nacos:
       server-addr: 121.89.178.219

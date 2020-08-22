@@ -29,7 +29,7 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "系统：岗位管理")
-@RequestMapping("/api/job")
+@RequestMapping("/job")
 public class JobController {
 
     private final IJobService jobService;

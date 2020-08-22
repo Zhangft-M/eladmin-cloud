@@ -8,6 +8,8 @@ package org.micah.core.constant;
  **/
 public final class SecurityConstants {
 
+    public static final String ADMIN = "admin";
+
     public static final String BEARER_TOKEN_TYPE = "Bearer";
 
     /**

@@ -7,10 +7,12 @@ import org.micah.security.component.ResourceAuthExceptionEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
@@ -64,6 +66,12 @@ public class ResourceServerSecurityConfig extends ResourceServerConfigurerAdapte
      */
     @Autowired
     private CustomizeBearerTokenExtractor bearerTokenExtractor;
+
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        // 去除 ROLE_ 前缀
+        return new GrantedAuthorityDefaults("");
+    }
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {

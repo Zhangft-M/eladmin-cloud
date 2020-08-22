@@ -88,7 +88,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<SysUserDto> queryAll(UserQueryCriteria queryCriteria) {
         QueryWrapper<SysUser> wrapper = null;
         if (BeanUtil.isNotEmpty(queryCriteria)) {
-            wrapper = QueryHelpUtils.getWrapper(queryCriteria,SysUser.class);
+            wrapper = QueryHelpUtils.getWrapper(queryCriteria, SysUser.class);
         }
         List<SysUser> sysUserList = this.userMapper.queryAll(wrapper);
         return this.userMapStruct.toDto(sysUserList);
@@ -105,7 +105,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public PageResult queryAll(UserQueryCriteria queryCriteria, Pageable pageable) {
         QueryWrapper<SysUser> wrapper = null;
         if (BeanUtil.isNotEmpty(queryCriteria)) {
-            wrapper = QueryHelpUtils.getWrapper(queryCriteria,SysUser.class);
+            wrapper = QueryHelpUtils.getWrapper(queryCriteria, SysUser.class);
         }
         Page<SysUser> page = PageUtils.startPageAndSort(pageable);
         Page<SysUser> sysUserPage = this.userMapper.queryAllWithPage(wrapper, page);
@@ -143,6 +143,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param resources
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void create(SysUser resources) {
         // 检验用户名和邮箱名电话号是否重复
         this.verifyUser(resources);
@@ -275,6 +276,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param resources
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateCenter(SysUser resources) {
         SysUser sysUser = Optional.ofNullable(this.userMapper.selectById(resources.getId())).orElseGet(SysUser::new);
         sysUser.setNickName(resources.getNickName());
@@ -327,6 +329,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param encode
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String username, String encode) {
         boolean update = this.update(Wrappers.<SysUser>lambdaUpdate().set(SysUser::getPassword, encode)
                 .set(SysUser::getPwdResetTime, LocalDateTime.now(ZoneId.systemDefault()))
@@ -344,6 +347,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, String> updateAvatar(MultipartFile avatar) {
         // TODO: 2020/8/12 后续搭建文件上传微服务进行操作
         return null;
@@ -356,6 +360,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param email
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateEmail(String username, String email) {
         boolean update = this.update(Wrappers.<SysUser>lambdaUpdate().set(SysUser::getEmail, email)
                 .eq(SysUser::getUsername, username));
@@ -403,6 +408,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 获取当前的用户信息
+     *
      * @return /
      */
     @Override
@@ -410,17 +416,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Map<String, Object> map = Maps.newHashMapWithExpectedSize(2);
         Long userId = SecurityUtils.getCurrentUserId();
         SysUser sysUser = this.userMapper.getById(userId);
-        map.put("user",this.userMapStruct.toDto(sysUser));
-        if (sysUser.getIsAdmin()){
-            map.put("roles", Collections.singletonList("admin"));
-        }else {
-            Collection<GrantedAuthority> authorities = SecurityUtils.getUser().getAuthorities();
-            if (authorities == null){
-                throw new BadCredentialsException("没有登录成功");
-            }
-            List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-            map.put("roles",roles);
+        map.put("user", this.userMapStruct.toDto(sysUser));
+        Collection<GrantedAuthority> authorities = SecurityUtils.getUser().getAuthorities();
+        if (authorities == null) {
+            throw new BadCredentialsException("没有登录成功");
         }
+        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        map.put("roles", roles);
         return map;
     }
 

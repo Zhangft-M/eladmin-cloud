@@ -22,6 +22,8 @@ public class UserSmallDto implements Serializable {
 
     private String password;
 
+    private Boolean isAdmin;
+
     private Boolean enabled;
 
     private List<String> roleNames;

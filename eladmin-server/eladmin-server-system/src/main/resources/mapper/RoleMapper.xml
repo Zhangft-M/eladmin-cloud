@@ -40,7 +40,6 @@
     </sql>
 
     <sql id="selectAllSql">
-        select
         <include refid="roleSql">
             <property name="property" value="sys_role"/>
         </include>
@@ -59,6 +58,7 @@
     </sql>
 
     <select id="queryAllByPage" resultMap="resultWithMenuAndDept">
+        select
         <include refid="selectAllSql"/>
         <if test="ew!=null">
             <where>
@@ -67,6 +67,7 @@
         </if>
     </select>
     <select id="queryAll" resultMap="resultWithMenuAndDept">
+        select
         <include refid="selectAllSql"/>
         <if test="ew!=null">
             <where>
@@ -75,6 +76,7 @@
         </if>
     </select>
     <select id="findById" resultMap="resultWithMenuAndDept">
+        select
         <include refid="selectAllSql"/>
         <if test="id != null">
             <where>

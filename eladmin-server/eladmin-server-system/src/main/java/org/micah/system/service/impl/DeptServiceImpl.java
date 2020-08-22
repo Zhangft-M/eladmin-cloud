@@ -88,6 +88,10 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             List<DeptDto> deptDtoList = this.deptMapStruct.toDto(this.list(queryWrapper));
             return PageResult.success((long) deptDtoList.size(), deptDtoList);
         }
+        // 查询所有的父节点
+        if (Objects.isNull(criteria.getPid())){
+            criteria.setPid(0L);
+        }
         // 初始化分页条件
         Page<Dept> page = PageUtils.startPageAndSort(pageable);
         // 初始化查询条件

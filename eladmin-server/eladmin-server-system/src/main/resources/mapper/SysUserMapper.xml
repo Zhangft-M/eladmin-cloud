@@ -3,7 +3,7 @@
 <mapper namespace="org.micah.system.mapper.SysUserMapper">
 
     <resultMap id="baseUserMap" type="org.micah.model.SysUser">
-        <id property="id" column="user_id"/>
+        <id property="id" column="id"/>
         <result property="nickName" column="nick_name"/>
         <result property="avatarName" column="avatar_name"/>
         <result property="avatarPath" column="avatar_path"/>
@@ -49,6 +49,7 @@
     <resultMap id="userDetailsMap" type="org.micah.model.dto.UserSmallDto">
         <id property="id" column="user_id"/>
         <result property="username" column="username"/>
+        <result property="isAdmin" column="is_admin"/>
         <result property="password" column="password"/>
         <result property="enabled" column="enabled"/>
         <collection property="permissions" column="permissions" ofType="java.lang.String">
@@ -63,7 +64,7 @@
         </collection>
     </resultMap>
     <sql id="baseUserSql">
-        ${property}.user_id,
+        ${property}.user_id as id,
         ${property}.username,
         ${property}.password,
         ${property}.nick_name,
@@ -83,7 +84,6 @@
     </sql>
 
     <sql id="selectAllSql">
-        select
                <include refid="baseUserSql">
                    <property name="property" value="sys_user"/>
                </include>
@@ -104,7 +104,6 @@
     </sql>
 
     <sql id="selectUserWithRole">
-        select
                <include refid="baseUserSql">
                    <property name="property" value="sys_user"/>
                </include>
@@ -118,25 +117,29 @@
     </sql>
 
     <select id="queryAll" resultMap="sysUserMap">
+        select
         <include refid="selectAllSql"/>
-        <if test="ew != null">
+        <if test="ew != null and ew.sqlSegment != ''">
             and ${ew.sqlSegment}
         </if>
     </select>
 
     <select id="queryAllWithPage" resultMap="sysUserMap">
+        select
         <include refid="selectAllSql"/>
-        <if test="ew != null">
+        <if test="ew != null and ew.sqlSegment != ''">
             and ${ew.sqlSegment}
         </if>
     </select>
 
     <select id="getById" resultMap="sysUserMap">
+        select
         <include refid="selectAllSql"/>
         and sys_user.user_id = #{id}
     </select>
 
     <select id="queryByUsername" resultMap="userWithRoleMap">
+        select
         <include refid="selectUserWithRole"/>
         where sys_user.username = #{username}
     </select>
@@ -156,6 +159,7 @@
         select su.user_id,
                su.username,
                su.password,
+               su.is_admin,
                su.enabled,
                sr.name as role_name,
                sm.permission as permissions

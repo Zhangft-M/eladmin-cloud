@@ -3,7 +3,9 @@ package org.micah.system.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.micah.core.base.BaseEntity;
 import org.micah.core.util.enums.CodeEnum;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
@@ -31,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Api(tags = "系统：用户管理")
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -54,7 +57,7 @@ public class SysUserController {
     // @Log("导出用户数据")
     @ApiOperation("获取当前的用户信息")
     @GetMapping(value = "/info")
-    // @PreAuthorize("@el.check('user:list')")
+    @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<Map<String,Object>> getCurrentUserInfo(){
         return ResponseEntity.ok(this.userService.getCurrentUserInfo());
     }
@@ -62,7 +65,7 @@ public class SysUserController {
     // @Log("导出用户数据")
     @ApiOperation("通过用户名查询用户")
     @GetMapping(value = "/username")
-    // @PreAuthorize("@el.check('user:list')")
+    @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<SysUser> queryByUsername(String username){
         return ResponseEntity.ok(this.userService.queryByUsername(username));
     }
@@ -101,7 +104,10 @@ public class SysUserController {
     @ApiOperation("新增用户")
     @PostMapping
     @PreAuthorize("@el.check('user:add')")
-    public ResponseEntity<Void> create(@Validated @RequestBody SysUser resources){
+    public ResponseEntity<Void> create(@Validated(BaseEntity.Create.class) @RequestBody SysUser resources){
+        if (!Objects.isNull(resources.getId())){
+            throw new BadRequestException("新的用户不应该存在id");
+        }
         this.checkLevel(resources);
         // 默认密码 123456
         resources.setPassword(passwordEncoder.encode("123456"));
@@ -196,6 +202,7 @@ public class SysUserController {
                 .stream().map(RoleSmallDto::getLevel).collect(Collectors.toList()));
         Integer optLevel = this.roleService.findByRoles(resources.getRoles());
         if (currentLevel > optLevel) {
+            log.info("角色的权限不足");
             throw new BadRequestException("角色权限不足");
         }
     }

@@ -270,17 +270,17 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
                 // 定义一个MenuVo对象
                 MenuVo menuVo = new MenuVo();
                 menuVo.setName(StringUtils.isNotBlank(menuDto.getComponentName()) ? menuDto.getComponentName() : menuDto.getTitle());
-                menuVo.setPath(menuDto.getId().equals(0L) ? FIRST_LEVEL_PATH_PRE + menuDto.getPath() : menuDto.getPath());
+                menuVo.setPath(menuDto.getPid().equals(0L) ? FIRST_LEVEL_PATH_PRE + menuDto.getPath() : menuDto.getPath());
                 menuVo.setHidden(menuDto.getHidden());
                 // 设置前端组件的路径
                 if (!menuDto.getIFrame()) {
                     // 如果不是外部链接
                     if (menuDto.getPid().equals(0L)) {
                         // 如果是顶级菜单
-                        menuDto.setComponent(StringUtils.isNotBlank(menuDto.getComponent()) ? menuDto.getComponent() : DEFAULT_COMPONENT);
-                    } else {
+                        menuVo.setComponent(StringUtils.isNotBlank(menuDto.getComponent()) ? menuDto.getComponent() : DEFAULT_COMPONENT);
+                    } else if (StringUtils.isNotBlank(menuDto.getComponent())){
                         // 不是顶级菜单
-                        menuDto.setComponent(menuDto.getComponent());
+                        menuVo.setComponent(menuDto.getComponent());
                     }
                 }
                 // 设置元信息

@@ -20,7 +20,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "系统-服务监控管理")
-@RequestMapping("/api/monitor")
+@RequestMapping("/monitor")
 public class MonitorController {
 
     private final IMonitorService serverService;
