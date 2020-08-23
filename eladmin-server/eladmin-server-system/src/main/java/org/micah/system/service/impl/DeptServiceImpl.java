@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheKey;
+import org.micah.core.util.BeanUtils;
 import org.micah.core.util.FileUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
@@ -25,6 +26,7 @@ import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
 import org.micah.mp.util.SortUtils;
 import org.micah.redis.util.RedisUtils;
+import org.micah.security.util.SecurityUtils;
 import org.micah.system.mapper.DeptMapper;
 import org.micah.system.mapper.RoleDeptMapper;
 import org.micah.system.mapper.SysUserMapper;
@@ -35,6 +37,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,8 +93,9 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             List<DeptDto> deptDtoList = this.deptMapStruct.toDto(this.list(queryWrapper));
             return PageResult.success((long) deptDtoList.size(), deptDtoList);
         }
+        // 该查询当有条件查询时候则按照条件查询，没有条件的时候则按照查询父节点查询
         // 查询所有的父节点
-        if (Objects.isNull(criteria.getPid())){
+        if (BeanUtils.isEmpty(criteria,"enabled")){
             criteria.setPid(0L);
         }
         // 初始化分页条件
@@ -128,6 +134,8 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
             deptDtos.addAll(this.deptMapStruct.toDto(this.findByPid(deptDto.getPid())));
             return deptDtos;
         }
+        // 查询所有的同级部门
+        deptDtos.addAll(this.deptMapStruct.toDto(this.findByPid(deptDto.getPid())));
         return this.getSuperior(this.findById(deptDto.getPid()), deptDtos);
     }
 
@@ -196,7 +204,12 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(Dept resources) {
+        if (Objects.isNull(resources.getPid())){
+            resources.setPid(0L);
+        }
         resources.setSubCount(0);
+        // resources.setCreateBy(SecurityUtils.getCurrentUsername());
+        // resources.setCreateTime(Timestamp.valueOf(LocalDateTime.now(ZoneId.systemDefault())));
         int insert = this.deptMapper.insert(resources);
         // 插入数据成功则处理父节点数据
         if (insert != 0) {
@@ -319,8 +332,8 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      * @return
      */
     @Override
-    public List<Dept> findByRoleId(Long id) {
-        List<Dept> deptList = this.deptMapper.findByRoleId(id);
+    public Set<Dept> findByRoleId(Long id) {
+        Set<Dept> deptList = this.deptMapper.findByRoleId(id);
         return Optional.ofNullable(deptList).orElse(null);
     }
 

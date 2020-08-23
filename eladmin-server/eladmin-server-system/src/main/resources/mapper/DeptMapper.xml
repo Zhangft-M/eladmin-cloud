@@ -27,8 +27,16 @@
         ${property}.create_time as dept_create_time,
         ${property}.update_time as dept_update_time
     </sql>
-    <select id="findByRoleId" resultType="org.micah.model.Dept">
-
+    <select id="findByRoleId" resultMap="deptBaseMap">
+        select
+        <include refid="deptSql">
+            <property name="property" value="sys_dept"/>
+        </include>
+        from sys_dept
+        left join sys_roles_depts srd on sys_dept.dept_id = srd.dept_id
+        <where>
+            srd.role_id = #{id}
+        </where>
     </select>
 
 </mapper>

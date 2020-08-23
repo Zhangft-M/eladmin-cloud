@@ -103,5 +103,5 @@ public interface IDeptService extends IService<Dept> {
      * @param id
      * @return
      */
-    List<Dept> findByRoleId(Long id);
+    Set<Dept> findByRoleId(Long id);
 }

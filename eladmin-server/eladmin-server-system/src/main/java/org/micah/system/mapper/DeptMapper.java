@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.micah.model.Dept;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @program: eladmin-cloud
@@ -17,5 +18,5 @@ public interface DeptMapper extends BaseMapper<Dept> {
      * @param id
      * @return
      */
-    List<Dept> findByRoleId(Long id);
+    Set<Dept> findByRoleId(Long id);
 }

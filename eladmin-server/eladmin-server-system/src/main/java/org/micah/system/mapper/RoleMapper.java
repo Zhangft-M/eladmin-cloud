@@ -49,5 +49,5 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @param menuIds
      * @return
      */
-    List<Role> findInMenuId(List<Long> menuIds);
+    List<Role> findInMenuId(@Param("menuIds") List<Long> menuIds);
 }

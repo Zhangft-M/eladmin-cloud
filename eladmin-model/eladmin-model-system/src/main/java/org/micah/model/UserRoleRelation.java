@@ -1,5 +1,6 @@
 package org.micah.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  **/
 @Setter
 @Getter
+@TableName("sys_users_roles")
 public class UserRoleRelation implements Serializable {
 
 

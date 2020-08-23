@@ -1,5 +1,6 @@
 package org.micah.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  **/
 @Setter
 @Getter
+@TableName("sys_roles_depts")
 public class RoleDeptRelation implements Serializable {
 
     private static final long serialVersionUID = -3022891112612713522L;
@@ -20,4 +22,12 @@ public class RoleDeptRelation implements Serializable {
     private Long roleId;
 
     private Long deptId;
+
+    public RoleDeptRelation() {
+    }
+
+    public RoleDeptRelation(Long roleId, Long deptId) {
+        this.roleId = roleId;
+        this.deptId = deptId;
+    }
 }

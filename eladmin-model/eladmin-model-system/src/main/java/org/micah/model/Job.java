@@ -25,7 +25,7 @@ import java.util.Objects;
 public class Job extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -6974518254523332997L;
 
-    @TableId(value = "job_id",type = IdType.ASSIGN_ID)
+    @TableId(value = "job_id",type = IdType.AUTO)
     @NotNull(groups = Update.class)
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;

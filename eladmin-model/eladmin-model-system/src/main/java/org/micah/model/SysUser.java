@@ -30,8 +30,8 @@ public class SysUser extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -3797115638759597781L;
 
 
-    @NotNull
-    @TableId(value = "user_id", type = IdType.ASSIGN_ID)
+    @NotNull(groups = {Update.class})
+    @TableId(value = "user_id", type = IdType.AUTO)
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;
 

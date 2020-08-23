@@ -27,7 +27,7 @@ import java.util.Set;
 public class Menu extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -4939539448323092939L;
 
-    @TableId(value = "menu_id",type = IdType.ASSIGN_ID)
+    @TableId(value = "menu_id",type = IdType.AUTO)
     @NotNull(groups = {Update.class})
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;

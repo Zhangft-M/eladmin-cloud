@@ -10,6 +10,6 @@ public class CustomIdGenerator implements IdentifierGenerator {
       	String bizKey = entity.getClass().getName();
         //根据bizKey调用分布式ID生成
         //返回生成的id值即可.
-        return IdWorker.getId();
+        return IdWorker.getId(bizKey);
     }
 }

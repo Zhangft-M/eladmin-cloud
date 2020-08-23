@@ -57,4 +57,11 @@ public interface MenuMapper extends BaseMapper<Menu> {
      * @return
      */
     List<Menu> queryByUserId(Long currentUserId);
+
+    /**
+     * 根据角色的id来查询角色拥有的菜单
+     * @param id
+     * @return
+     */
+    Set<Menu> queryByRoleId(Long id);
 }

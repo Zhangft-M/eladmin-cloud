@@ -112,4 +112,16 @@
         LEFT JOIN sys_user su ON sur.user_id = su.user_id
         WHERE su.user_id = #{currentUserId}
     </select>
+
+    <select id="queryByRoleId" resultMap="menuBaseMap">
+        select
+        <include refid="menuSql">
+            <property name="property" value="sys_menu"/>
+        </include>
+        from sys_menu
+        left join sys_roles_menus srm on sys_menu.menu_id = srm.menu_id
+        <where>
+            srm.role_id = #{id}
+        </where>
+    </select>
 </mapper>

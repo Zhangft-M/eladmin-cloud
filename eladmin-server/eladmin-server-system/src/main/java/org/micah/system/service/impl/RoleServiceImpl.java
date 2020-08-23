@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheKey;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.*;
-import org.micah.model.MenuRoleRelation;
-import org.micah.model.Role;
-import org.micah.model.SysUser;
-import org.micah.model.UserRoleRelation;
+import org.micah.model.*;
 import org.micah.model.dto.RoleDto;
 import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
@@ -22,9 +19,7 @@ import org.micah.model.query.RoleQueryCriteria;
 import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
 import org.micah.redis.util.RedisUtils;
-import org.micah.system.mapper.MenuRoleMapper;
-import org.micah.system.mapper.RoleMapper;
-import org.micah.system.mapper.UserRoleMapper;
+import org.micah.system.mapper.*;
 import org.micah.system.service.IRoleService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,6 +45,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
 
     private final RedisUtils redisUtils;
 
+    private final MenuMapper menuMapper;
+
+    private final DeptMapper deptMapper;
+
+    private final RoleDeptMapper roleDeptMapper;
+
     private final MenuRoleMapper roleMenuMapper;
 
     private final UserRoleMapper userRoleMapper;
@@ -58,9 +59,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
 
     private final RoleSmallMapStruct roleSmallMapStruct;
 
-    public RoleServiceImpl(RoleMapper roleMapper, RedisUtils redisUtils, MenuRoleMapper roleMenuMapper, UserRoleMapper userRoleMapper, RoleMapStruct roleMapStruct, RoleSmallMapStruct roleSmallMapStruct) {
+    public RoleServiceImpl(RoleMapper roleMapper, RedisUtils redisUtils
+            , MenuMapper menuMapper, DeptMapper deptMapper, RoleDeptMapper roleDeptMapper, MenuRoleMapper roleMenuMapper, UserRoleMapper userRoleMapper
+            , RoleMapStruct roleMapStruct, RoleSmallMapStruct roleSmallMapStruct) {
         this.roleMapper = roleMapper;
         this.redisUtils = redisUtils;
+        this.menuMapper = menuMapper;
+        this.deptMapper = deptMapper;
+        this.roleDeptMapper = roleDeptMapper;
         this.roleMenuMapper = roleMenuMapper;
         this.userRoleMapper = userRoleMapper;
         this.roleMapStruct = roleMapStruct;
@@ -125,11 +131,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
      * @param resources /
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void create(Role resources) {
         this.verifyName(resources);
         if (!this.save(resources)) {
             log.error("添加失败:{}", resources);
             throw new CreateFailException("添加失败，请联系管理员");
+        }
+        if (CollUtil.isNotEmpty(resources.getDepts())){
+            this.insertRoleDept(resources);
         }
     }
 
@@ -162,12 +172,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
      * @param resources /
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(Role resources) {
         this.verifyName(resources);
         if (!this.updateById(resources)) {
             log.error("更新失败:{}", resources);
             throw new UpdateFailException("更新失败，请联系管理员");
         }
+        // 在部门角色中间表添加数据
+        this.insertRoleDept(resources);
         // 删除缓存
         this.delCaches(resources.getId(), null);
     }
@@ -178,15 +191,19 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
      * @param ids /
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Set<Long> ids) {
         // 删除缓存信息
         for (Long id : ids) {
             this.delCaches(id, null);
+            this.untiedMenu(id);
+            this.untiedDept(id);
         }
         if (!this.removeByIds(ids)) {
             log.error("删除失败:{}", ids);
             throw new DeleteFailException("删除失败,请联系管理员");
         }
+
     }
 
     /**
@@ -203,12 +220,32 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         // 删除角色菜单中间表信息
         this.untiedMenu(resources.getId());
         // 在中间表添加数据
-        // List<MenuRoleRelation> relations = new ArrayList<>();
         List<MenuRoleRelation> relations = resources.getMenus().stream().map(menu -> {
             return new MenuRoleRelation(menu.getId(), resources.getId());
         }).collect(Collectors.toList());
         relations.forEach(this.roleMenuMapper::insert);
         this.delCaches(resources.getId(), userRoleRelations);
+    }
+
+    /**
+     * 在中间表添加数据
+     * @param resources
+     */
+    @Override
+    public void insertRoleDept(Role resources) {
+        List<RoleDeptRelation> roleDeptRelations = resources.getDepts().stream().map(dept -> {
+            return new RoleDeptRelation(resources.getId(),dept.getId());
+        }).collect(Collectors.toList());
+        roleDeptRelations.forEach(this.roleDeptMapper::insert);
+    }
+
+    /**
+     * 删除角色部门信息
+     * @param id
+     */
+    @Override
+    public void untiedDept(Long id) {
+        this.roleDeptMapper.delete(Wrappers.<RoleDeptRelation>lambdaUpdate().eq(RoleDeptRelation::getRoleId,id));
     }
 
     /**
@@ -234,7 +271,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     public PageResult queryAll(RoleQueryCriteria queryCriteria, Pageable pageable) {
         Page<Role> page = PageUtils.startPageAndSort(pageable);
         QueryWrapper<Role> queryWrapper = Optional.ofNullable(QueryHelpUtils.getWrapper(queryCriteria, Role.class)).orElseGet(QueryWrapper::new);
-        Page<Role> rolePage = this.roleMapper.queryAllByPage(queryWrapper, page);
+        // TODO: 2020/8/23 多表分页查询，会出现主表数据量变少的情况,只能分开查询,后续想办法优化
+        Page<Role> rolePage = this.roleMapper.selectPage(page,queryWrapper);
+        rolePage.getRecords().forEach(role -> {
+            Set<Menu> menus =this.menuMapper.queryByRoleId(role.getId());
+            role.setMenus(menus);
+            Set<Dept> depts = this.deptMapper.findByRoleId(role.getId());
+            role.setDepts(depts);
+        });
         return PageResult.success(rolePage.getTotal(), rolePage.getPages(), this.roleMapStruct.toDto(rolePage.getRecords()));
     }
 

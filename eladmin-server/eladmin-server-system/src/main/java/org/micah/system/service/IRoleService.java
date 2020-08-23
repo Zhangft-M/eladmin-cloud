@@ -1,8 +1,10 @@
 package org.micah.system.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.micah.core.web.page.PageResult;
 import org.micah.model.Role;
+import org.micah.model.RoleDeptRelation;
 import org.micah.model.dto.RoleDto;
 import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @program: eladmin-cloud
@@ -123,4 +126,16 @@ public interface IRoleService extends IService<Role> {
      * @return /
      */
     List<Role> findInMenuId(List<Long> menuIds);
+
+    /**
+     * 在中间表添加数据
+     * @param resources
+     */
+    void insertRoleDept(Role resources);
+
+    /**
+     * 删除角色部门信息
+     * @param id
+     */
+    void untiedDept(Long id);
 }

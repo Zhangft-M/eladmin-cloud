@@ -80,13 +80,13 @@
         ${property}.update_by,
         ${property}.pwd_reset_time,
         ${property}.create_time,
-        ${property}.update_time,
+        ${property}.update_time
     </sql>
 
     <sql id="selectAllSql">
                <include refid="baseUserSql">
                    <property name="property" value="sys_user"/>
-               </include>
+               </include>,
                sj.job_id,
                sj.name AS job_name,
                sr.role_id,
@@ -106,7 +106,7 @@
     <sql id="selectUserWithRole">
                <include refid="baseUserSql">
                    <property name="property" value="sys_user"/>
-               </include>
+               </include>,
                sr.role_id,
                sr.name as role_name,
                sr.level,
@@ -147,7 +147,7 @@
     <select id="queryByMenuId" resultMap="baseUserMap">
         select
         <include refid="baseUserSql">
-            <property name="property" value="sr"/>
+            <property name="property" value="su"/>
         </include>
         from sys_user su
         left join sys_users_roles sur on su.user_id = sur.user_id

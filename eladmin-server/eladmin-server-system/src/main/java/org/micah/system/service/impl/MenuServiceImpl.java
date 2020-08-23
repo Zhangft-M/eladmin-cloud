@@ -118,9 +118,12 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     @Override
     public PageResult queryAllByPage(MenuQueryCriteria queryCriteria, Pageable pageable) {
         Page<Menu> page = PageUtils.startPageAndSort(pageable);
+        if (BeanUtil.isEmpty(queryCriteria)){
+            queryCriteria.setPid(0L);
+        }
         QueryWrapper<Menu> wrapper = QueryHelpUtils.getWrapper(queryCriteria, Menu.class);
-        Page<Menu> menuPage = this.menuMapper.queryAllByPage(wrapper, page);
-        return PageResult.success(menuPage.getTotal(), menuPage.getPages(), menuPage.getRecords());
+        Page<Menu> menuPage = this.menuMapper.selectPage(page, wrapper);
+        return PageResult.success(menuPage.getTotal(), menuPage.getPages(), this.menuMapStruct.toDto(menuPage.getRecords()));
     }
 
     /**
@@ -141,6 +144,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      * @param resources /
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void create(Menu resources) {
         // 1.验证title是否重复
         Optional.ofNullable(this.menuMapper.selectOne(Wrappers.<Menu>lambdaQuery().eq(Menu::getTitle, resources.getTitle()))).ifPresent(
@@ -174,6 +178,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      * @param resources /
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(Menu resources) {
         // 验证上级菜单的id是否有误
         if (resources.getId().equals(resources.getPid())) {

@@ -36,9 +36,6 @@ public class MenuQueryCriteria {
     @Query(type = SelectType.BETWEEN)
     private List<LocalDateTime> createTime;
 
-    @Query(type = SelectType.IS_NULL, value = "pid")
-    private Boolean pidIsNull;
-
     @Query
     private Long pid;
 }

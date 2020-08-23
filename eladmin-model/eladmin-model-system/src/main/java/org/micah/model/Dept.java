@@ -30,7 +30,7 @@ public class Dept extends BaseEntity implements Serializable {
 
 
     @NotNull(groups = Update.class)
-    @TableId(value = "dept_id",type = IdType.ASSIGN_ID)
+    @TableId(value = "dept_id",type = IdType.AUTO)
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;
 
