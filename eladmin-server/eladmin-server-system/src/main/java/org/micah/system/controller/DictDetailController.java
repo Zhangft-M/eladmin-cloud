@@ -3,6 +3,7 @@ package org.micah.system.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
 import org.micah.model.DictDetail;
@@ -52,6 +53,7 @@ public class DictDetailController {
     }
 
     // @Log("新增字典详情")
+    @InitDate
     @ApiOperation("新增字典详情")
     @PostMapping
     @PreAuthorize("@el.check('dict:add')")
@@ -64,6 +66,7 @@ public class DictDetailController {
     }
 
     // @Log("修改字典详情")
+    @InitDate
     @ApiOperation("修改字典详情")
     @PutMapping
     @PreAuthorize("@el.check('dict:edit')")

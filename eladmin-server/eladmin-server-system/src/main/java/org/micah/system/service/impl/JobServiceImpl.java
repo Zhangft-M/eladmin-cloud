@@ -84,7 +84,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
         Page<Job> page = PageUtils.startPageAndSort(pageable);
         QueryWrapper<Job> queryWrapper = QueryHelpUtils.getWrapper(queryCriteria,Job.class);
         Page<Job> selectPage = this.jobMapper.selectPage(page, queryWrapper);
-        return PageResult.success(selectPage.getTotal(), selectPage.getPages(), selectPage.getRecords());
+        return PageResult.success(selectPage.getTotal(), selectPage.getPages(), this.jobMapStruct.toDto(selectPage.getRecords()));
     }
 
     /**

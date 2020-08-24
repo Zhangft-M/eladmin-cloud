@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Dict;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
 import org.micah.model.Role;
@@ -78,6 +79,7 @@ public class RoleController {
     }
 
     //@Log("新增角色")
+    @InitDate
     @ApiOperation("新增角色")
     @PostMapping
     @PreAuthorize("@el.check('roles:add')")
@@ -91,6 +93,7 @@ public class RoleController {
     }
 
     // @Log("修改角色")
+    @InitDate
     @ApiOperation("修改角色")
     @PutMapping
     @PreAuthorize("@el.check('roles:edit')")
@@ -101,6 +104,7 @@ public class RoleController {
     }
 
     // @Log("修改角色菜单")
+    @InitDate
     @ApiOperation("修改角色菜单")
     @PutMapping(value = "/menu")
     @PreAuthorize("@el.check('roles:edit')")

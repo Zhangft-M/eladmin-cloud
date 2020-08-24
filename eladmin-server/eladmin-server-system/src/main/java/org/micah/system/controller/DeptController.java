@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
 import org.micah.model.Dept;
@@ -69,6 +70,7 @@ public class DeptController {
     }
 
     // @Log("新增部门")
+    @InitDate
     @ApiOperation("新增部门")
     @PostMapping
     @PreAuthorize("@el.check('dept:add')")
@@ -81,6 +83,7 @@ public class DeptController {
     }
 
     // @Log("修改部门")
+    @InitDate
     @ApiOperation("修改部门")
     @PutMapping
     @PreAuthorize("@el.check('dept:edit')")

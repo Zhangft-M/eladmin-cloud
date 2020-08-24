@@ -134,17 +134,6 @@ public class LogAspect {
         log.setRequestIp(RequestUtils.getIp(request));
         // 获取用户名
         String username = this.getUsername();
-        // 在访问登录接口的时候，获取用户名
-        if (StringUtils.isBlank(username)) {
-            String loginPath = "login";
-            if (loginPath.equals(signature.getName())) {
-                try {
-                    username = new JSONObject(argList.get(0)).get("username").toString();
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("参数有误,登录方法第一个参数必须为用户名");
-                }
-            }
-        }
         log.setAddress(RequestUtils.getCityInfo(log.getRequestIp()));
         log.setMethod(methodName);
         log.setUsername(username);

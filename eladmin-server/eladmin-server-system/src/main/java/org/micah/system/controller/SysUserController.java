@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.base.BaseEntity;
 import org.micah.core.util.enums.CodeEnum;
 import org.micah.core.web.page.PageResult;
@@ -101,6 +102,7 @@ public class SysUserController {
     }
 
     // @Log("新增用户")
+    @InitDate
     @ApiOperation("新增用户")
     @PostMapping
     @PreAuthorize("@el.check('user:add')")
@@ -116,6 +118,7 @@ public class SysUserController {
     }
 
     // @Log("修改用户")
+    @InitDate
     @ApiOperation("修改用户")
     @PutMapping
     @PreAuthorize("@el.check('user:edit')")

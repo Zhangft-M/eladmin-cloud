@@ -147,7 +147,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void create(SysUser resources) {
         // 检验用户名和邮箱名电话号是否重复
         this.verifyUser(resources);
-        if (!this.save(resources)) {
+        resources.setDeptId(resources.getDept().getId());
+        if (this.save(resources)) {
+            if (CollUtil.isNotEmpty(resources.getJobs())){
+                // 插入职位信息
+                // TODO: 2020/8/24 后续使用批量插入优化
+                resources.getJobs().forEach(job -> {
+                    UserJobRelation ujr = new UserJobRelation(resources.getId(),job.getId());
+                    this.userJobMapper.insert(ujr);
+                });
+            }
+            if (CollUtil.isNotEmpty(resources.getRoles())){
+                resources.getRoles().forEach(role -> {
+                    UserRoleRelation urr = new UserRoleRelation(resources.getId(),role.getId());
+                    this.userRoleMapper.insert(urr);
+                });
+            }
+        }else {
             log.error("插入数据失败:{}", resources);
             throw new CreateFailException("插入数据失败,请联系管理员");
         }
@@ -218,7 +234,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 }
             }
         }
-        // 判断职位是否发生变化
+        // 判断职位是否发生变化,需要重写equals方法
         if (!resources.getJobs().equals(oldSysUser.getJobs())) {
             // 1.删除掉中间表的数据
             this.userJobMapper.delete(Wrappers.<UserJobRelation>lambdaQuery().
@@ -315,7 +331,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 删除缓存
             this.delCaches(user.getId(), user.getUsername());
         }
-        if (!this.removeByIds(ids)) {
+        if (this.removeByIds(ids)) {
+            // 删除关联的角色和职位信息
+            ids.forEach(id->{
+                this.userJobMapper.delete(Wrappers.<UserJobRelation>lambdaUpdate().eq(UserJobRelation::getUserId,id));
+                this.userRoleMapper.delete(Wrappers.<UserRoleRelation>lambdaUpdate().eq(UserRoleRelation::getUserId,id));
+            });
+        }else {
             log.error("删除失败:{}", ids);
             throw new DeleteFailException("删除失败，请联系管理员");
         }

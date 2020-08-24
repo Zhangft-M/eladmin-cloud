@@ -3,6 +3,7 @@ package org.micah.system.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
 import org.micah.model.Job;
@@ -52,6 +53,7 @@ public class JobController {
     }
 
     // @Log("新增岗位")
+    @InitDate
     @ApiOperation("新增岗位")
     @PostMapping
     @PreAuthorize("@el.check('job:add')")
@@ -64,6 +66,7 @@ public class JobController {
     }
 
     // @Log("修改岗位")
+    @InitDate
     @ApiOperation("修改岗位")
     @PutMapping
     @PreAuthorize("@el.check('job:edit')")

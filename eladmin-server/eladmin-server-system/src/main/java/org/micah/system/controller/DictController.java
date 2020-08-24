@@ -3,6 +3,7 @@ package org.micah.system.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
 import org.micah.model.Dict;
@@ -58,6 +59,7 @@ public class DictController {
     @ApiOperation("新增字典")
     @PostMapping
     @PreAuthorize("@el.check('dict:add')")
+    @InitDate
     public ResponseEntity<Void> create(@Validated @RequestBody Dict resources){
         if (resources.getId() != null) {
             throw new BadRequestException("A new "+ ENTITY_NAME +" cannot already have an ID");
@@ -70,6 +72,7 @@ public class DictController {
     @ApiOperation("修改字典")
     @PutMapping
     @PreAuthorize("@el.check('dict:edit')")
+    @InitDate
     public ResponseEntity<Void> update(@Validated(Dict.Update.class) @RequestBody Dict resources){
         this.dictService.updateDict(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

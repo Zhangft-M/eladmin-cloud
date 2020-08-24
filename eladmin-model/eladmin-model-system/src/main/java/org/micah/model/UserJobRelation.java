@@ -1,6 +1,7 @@
 package org.micah.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,7 @@ import java.io.Serializable;
 @Setter
 @Getter
 @TableName("sys_users_jobs")
-public class UserJobRelation implements Serializable {
+public class UserJobRelation extends Model<UserJobRelation> implements Serializable {
 
     private static final long serialVersionUID = 6302335955493076994L;
 

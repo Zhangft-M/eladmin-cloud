@@ -99,6 +99,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
      * @param resources
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void create(Dict resources) {
         int result = this.dictMapper.insert(resources);
         if (result == 0) {

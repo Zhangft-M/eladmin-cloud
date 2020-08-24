@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.micah.core.util.SpringContextUtils
+  org.micah.core.util.SpringContextUtils,\
+  org.micah.core.aspect.InitDateAspect

@@ -40,7 +40,6 @@ public class BaseEntity implements Serializable {
     private Timestamp updateTime;
 
 
-
     @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this);

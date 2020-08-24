@@ -238,8 +238,8 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         // 首先查询该父节点有多少子节点
         Integer count = this.deptMapper.selectCount(Wrappers.<Dept>lambdaQuery().eq(Dept::getPid, pid));
         // 再修改父节点的信息
-        this.deptMapper.update(null, Wrappers.<Dept>lambdaUpdate().set(Dept::getSubCount, count));
-        System.out.println(count);
+        this.deptMapper.update(null, Wrappers.<Dept>lambdaUpdate().set(Dept::getSubCount, count).eq(Dept::getId,pid));
+        // System.out.println(count);
     }
 
     /**

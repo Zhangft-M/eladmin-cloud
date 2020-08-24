@@ -21,6 +21,7 @@ import org.micah.system.mapper.DictMapper;
 import org.micah.system.service.IDictDetailService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -104,12 +105,14 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
      * @param resources
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void create(DictDetail resources) {
+        resources.setDictId(resources.getDict().getId());
         int insert = this.dictDetailMapper.insert(resources);
         if (insert != 0){
             log.info("添加成功，开始删除缓存");
             // 删除掉字典表（dict）的缓存数据
-            this.delCaches(resources);
+            this.delCaches(resources.getId());
         }else {
             log.info("添加失败:{}",resources);
             throw new DeleteFailException("添加失败"+resources.toString());
@@ -122,11 +125,12 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
      * @param resources
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateDictDetail(DictDetail resources) {
         int result = this.dictDetailMapper.updateById(resources);
         if (result != 0){
             log.info("更新成功，开始删除缓存");
-            this.delCaches(resources);
+            this.delCaches(resources.getId());
         }else {
             log.info("更新失败:{}",resources);
             throw new DeleteFailException("更新失败"+resources.toString());
@@ -139,12 +143,12 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
      * @param id
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         int result = this.dictDetailMapper.deleteById(id);
         if (result != 0){
             log.info("删除成功，开始删除缓存");
-            DictDetail dictDetail = this.dictDetailMapper.selectById(id);
-            this.delCaches(dictDetail);
+            this.delCaches(id);
         }else {
             log.info("删除失败，需要删除的数据的id为:{}",id);
             throw new DeleteFailException("删除失败，需要删除的数据的id为:"+id);
@@ -153,9 +157,9 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
 
     /**
      * 删除数据缓存
-     * @param dictDetail
+     * @param id /
      */
-    private void delCaches(DictDetail dictDetail) {
-        this.redisUtils.del(CacheKey.DICT_KEY_PRE + dictDetail.getId());
+    private void delCaches(Long id) {
+        this.redisUtils.del(CacheKey.DICT_KEY_PRE + id);
     }
 }

@@ -29,6 +29,9 @@ public class DictDetail extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;
 
+    @ApiModelProperty(value = "字典id")
+    private Long dictId;
+
     @ApiModelProperty(value = "字典标签")
     private String label;
 

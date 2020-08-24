@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
 import org.micah.model.Menu;
@@ -106,6 +107,7 @@ public class MenuController {
     }
 
     // @Log("新增菜单")
+    @InitDate
     @ApiOperation("新增菜单")
     @PostMapping
     @PreAuthorize("@el.check('menu:add')")
@@ -118,6 +120,7 @@ public class MenuController {
     }
 
     // @Log("修改菜单")
+    @InitDate
     @ApiOperation("修改菜单")
     @PutMapping
     @PreAuthorize("@el.check('menu:edit')")
