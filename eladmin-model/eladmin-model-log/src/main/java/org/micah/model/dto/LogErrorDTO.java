@@ -32,5 +32,5 @@ public class LogErrorDTO implements Serializable {
 
     private String address;
 
-    private LocalDateTime createTime;
+    private Timestamp createTime;
 }

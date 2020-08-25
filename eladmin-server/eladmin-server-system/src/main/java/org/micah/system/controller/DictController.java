@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
 import org.micah.model.Dict;
 import org.micah.model.query.DictQueryCriteria;
 import org.micah.system.service.IDictService;
@@ -31,7 +32,7 @@ public class DictController {
     private final IDictService dictService;
     private static final String ENTITY_NAME = "dict";
 
-    // @Log("导出字典数据")
+    @Log("导出字典数据")
     @ApiOperation("导出字典数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dict:list')")
@@ -39,7 +40,7 @@ public class DictController {
         this.dictService.download(this.dictService.queryAll(criteria,null,false), response);
     }
 
-    // @Log("查询字典")
+    @Log("查询字典")
     @ApiOperation("查询字典,查询所有")
     @GetMapping("/all")
     @PreAuthorize("@el.check('dict:list')")
@@ -47,7 +48,7 @@ public class DictController {
         return new ResponseEntity<>(this.dictService.queryAll(new DictQueryCriteria(),pageable,true), HttpStatus.OK);
     }
 
-    // @Log("查询字典")
+    @Log("查询字典")
     @ApiOperation("查询字典")
     @GetMapping()
     @PreAuthorize("@el.check('dict:list')")
@@ -55,7 +56,7 @@ public class DictController {
         return new ResponseEntity<>(this.dictService.queryAll(queryCriteria,pageable,true),HttpStatus.OK);
     }
 
-    // @Log("新增字典")
+    @Log("新增字典")
     @ApiOperation("新增字典")
     @PostMapping
     @PreAuthorize("@el.check('dict:add')")
@@ -68,7 +69,7 @@ public class DictController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改字典")
+    @Log("修改字典")
     @ApiOperation("修改字典")
     @PutMapping
     @PreAuthorize("@el.check('dict:edit')")
@@ -78,7 +79,7 @@ public class DictController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("删除字典")
+    @Log("删除字典")
     @ApiOperation("删除字典")
     @DeleteMapping
     @PreAuthorize("@el.check('dict:del')")

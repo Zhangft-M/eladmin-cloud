@@ -13,18 +13,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.micah</groupId>
-            <artifactId>eladmin-model-log</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.projectlombok</groupId>
-                    <artifactId>lombok</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.micah</groupId>
+            <artifactId>eladmin-api-log</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.micah.eladmin-cloud</groupId>
+                    <artifactId>eladmin-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

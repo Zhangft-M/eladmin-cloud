@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.sun.javafx.binding.StringConstant;
 import org.micah.mp.annotation.Query;
-import org.micah.mp.annotation.type.SortType;
 import org.micah.mp.annotation.type.SelectType;
 
 
@@ -63,14 +61,6 @@ public final class QueryHelpUtils {
                     // 如果该值没有指定则成员变量名与数据库字段名严格以驼峰命名方式转换
                     String attributeName = QueryHelpUtils.isBlank(query.value()) ? QueryHelpUtils.toUnderScoreCase(field.getName()) : query.value();
                     if (Objects.isNull(val)) {
-                       /* if (query.isSort()){
-                            SortType sortType = query.sort();
-                            if (sortType.name().equals(SortType.ASC.name())) {
-                                queryWrapper.orderByAsc(attributeName);
-                            } else if ( sortType.name().equals(SortType.DESC.name())) {
-                                queryWrapper.orderByDesc(attributeName);
-                            }
-                        }*/
                         continue;
                     }
                     // 多字段模糊查询,该字段与数据库中的多个字段进行模糊匹配查询
@@ -188,11 +178,6 @@ public final class QueryHelpUtils {
             }
             queryWrapper.like(tableName + QueryHelpUtils.toUnderScoreCase(blurry[i]), val).or();
         }
-       /* if (sortType != null && sortType.name().equals(SortType.ASC.name())) {
-            queryWrapper.orderByAsc(val.toString());
-        } else if (sortType != null && sortType.name().equals(SortType.DESC.name())) {
-            queryWrapper.orderByDesc(val.toString());
-        }*/
     }
 
     private static boolean isBlank(final CharSequence cs) {

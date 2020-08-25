@@ -1,8 +1,8 @@
 server:
-  port: 8081
+  port: 8083
 spring:
   application:
-    name: system-server
+    name: log-server
   datasource:
     url: jdbc:p6spy:mysql://121.89.178.219:3306/eladmin?useUnicode=true&characterEncoding=UTF-8
     username: root

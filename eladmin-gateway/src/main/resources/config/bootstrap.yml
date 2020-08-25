@@ -9,7 +9,7 @@ spring:
     password: missyou1127
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     hikari:
-      max-lifetime: 1000000
+      max-lifetime: 10000
   redis:
     host: 121.89.178.219
   cloud:

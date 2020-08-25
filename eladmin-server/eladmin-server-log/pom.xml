@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>eladmin-server</artifactId>
+        <groupId>org.micah</groupId>
+        <version>0.0.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>eladmin-server-log</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-exception</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-security</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.micah.eladmin-cloud</groupId>
+                    <artifactId>eladmin-common-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>HdrHistogram</artifactId>
+                    <groupId>org.hdrhistogram</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>

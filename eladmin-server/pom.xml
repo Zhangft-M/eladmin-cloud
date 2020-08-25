@@ -14,6 +14,7 @@
     <modules>
         <module>eladmin-server-system</module>
         <module>eladmin-server-gen</module>
+        <module>eladmin-server-log</module>
     </modules>
 
 

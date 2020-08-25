@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
+import org.micah.log.annotation.type.OperationType;
 import org.micah.model.Job;
 import org.micah.model.query.JobQueryCriteria;
 import org.micah.system.service.IJobService;
@@ -36,7 +38,7 @@ public class JobController {
     private final IJobService jobService;
     private static final String ENTITY_NAME = "job";
 
-    // @Log("导出岗位数据")
+    @Log("导出岗位数据")
     @ApiOperation("导出岗位数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('job:list')")
@@ -44,7 +46,7 @@ public class JobController {
         jobService.download(this.jobService.queryAll(queryCriteria), response);
     }
 
-    // @Log("查询岗位")
+    @Log("查询岗位")
     @ApiOperation("查询岗位")
     @GetMapping
     @PreAuthorize("@el.check('job:list','user:list')")
@@ -52,7 +54,7 @@ public class JobController {
         return new ResponseEntity<>(this.jobService.queryAll(queryCriteria, pageable), HttpStatus.OK);
     }
 
-    // @Log("新增岗位")
+    @Log(value = "新增岗位")
     @InitDate
     @ApiOperation("新增岗位")
     @PostMapping
@@ -65,7 +67,7 @@ public class JobController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改岗位")
+    @Log(value = "修改岗位")
     @InitDate
     @ApiOperation("修改岗位")
     @PutMapping
@@ -75,7 +77,7 @@ public class JobController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("删除岗位")
+    @Log("删除岗位")
     @ApiOperation("删除岗位")
     @DeleteMapping
     @PreAuthorize("@el.check('job:del')")

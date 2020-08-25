@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
 import org.micah.model.Menu;
 import org.micah.model.dto.MenuDto;
 import org.micah.model.mapstruct.MenuMapStruct;
@@ -44,11 +45,10 @@ public class MenuController {
 
     private static final String ENTITY_NAME = "menu";
 
-    // @Log("通过角色的id来查询菜单信息")
+    @Log("通过角色的id来查询菜单信息")
     @ApiOperation("通过角色的id来查询菜单信息")
     @GetMapping(value = "/roleIds")
-    // @PreAuthorize("@el.check('menu:list')")
-    @Inner
+    @PreAuthorize("@el.check('menu:list')")
     public ResponseEntity<List<MenuDto>> queryByRoleIds(@RequestParam Set<Long> ids){
         if (CollUtil.isEmpty(ids)){
             throw new IllegalArgumentException("参数有误");
@@ -57,7 +57,7 @@ public class MenuController {
         return ResponseEntity.ok(menuDto);
     }
 
-    // @Log("导出菜单数据")
+    @Log("导出菜单数据")
     @ApiOperation("导出菜单数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('menu:list')")
@@ -65,6 +65,7 @@ public class MenuController {
         this.menuService.download(this.menuService.queryAll(criteria, false), response);
     }
 
+    @Log("获取前端所需菜单")
     @GetMapping(value = "/build")
     @ApiOperation("获取前端所需菜单")
     public ResponseEntity<List<MenuVo>> buildMenus(){
@@ -74,6 +75,7 @@ public class MenuController {
         return new ResponseEntity<>(this.menuService.buildMenus(menuDtos,menuVoList), HttpStatus.OK);
     }
 
+    @Log("返回全部的菜单")
     @ApiOperation("返回全部的菜单")
     @GetMapping(value = "/lazy")
     @PreAuthorize("@el.check('menu:list','roles:list')")
@@ -81,7 +83,7 @@ public class MenuController {
         return new ResponseEntity<>(this.menuService.getMenusByPid(pid),HttpStatus.OK);
     }
 
-    // @Log("查询菜单")
+    @Log("查询菜单")
     @ApiOperation("查询菜单")
     @GetMapping
     @PreAuthorize("@el.check('menu:list')")
@@ -90,7 +92,7 @@ public class MenuController {
         return new ResponseEntity<>(pageResult,HttpStatus.OK);
     }
 
-    // @Log("查询菜单")
+    @Log("查询菜单")
     @ApiOperation("查询菜单:根据ID获取同级与上级数据")
     @PostMapping("/superior")
     @PreAuthorize("@el.check('menu:list')")
@@ -106,7 +108,7 @@ public class MenuController {
         return new ResponseEntity<>(this.menuService.getMenusByPid(0L),HttpStatus.OK);
     }
 
-    // @Log("新增菜单")
+    @Log("新增菜单")
     @InitDate
     @ApiOperation("新增菜单")
     @PostMapping
@@ -119,7 +121,7 @@ public class MenuController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改菜单")
+    @Log("修改菜单")
     @InitDate
     @ApiOperation("修改菜单")
     @PutMapping
@@ -129,7 +131,7 @@ public class MenuController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("删除菜单")
+    @Log("删除菜单")
     @ApiOperation("删除菜单")
     @DeleteMapping
     @PreAuthorize("@el.check('menu:del')")

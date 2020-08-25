@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
 import org.micah.model.Dept;
 import org.micah.model.dto.DeptDto;
 import org.micah.model.query.DeptQueryCriteria;
@@ -36,7 +37,7 @@ public class DeptController {
     private final IDeptService deptService;
     private static final String ENTITY_NAME = "dept";
 
-    // @Log("导出部门数据")
+    @Log("导出部门数据")
     @ApiOperation("导出部门数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dept:list')")
@@ -44,7 +45,7 @@ public class DeptController {
         this.deptService.download(this.deptService.queryAll(criteria, null, false), response);
     }
 
-    // @Log("查询部门")
+    @Log("查询部门")
     @ApiOperation("查询部门")
     @GetMapping()
     @PreAuthorize("@el.check('user:list','dept:list')")
@@ -53,7 +54,7 @@ public class DeptController {
         return new ResponseEntity<>(deptPages, HttpStatus.OK);
     }
 
-    // @Log("查询部门")
+    @Log("查询部门")
     @ApiOperation("查询部门:根据ID获取同级与上级数据")
     @PostMapping("/superior")
     @PreAuthorize("@el.check('user:list','dept:list')")
@@ -69,7 +70,7 @@ public class DeptController {
         return new ResponseEntity<>(this.deptService.buildTree(deptDtoList), HttpStatus.OK);
     }
 
-    // @Log("新增部门")
+    @Log("新增部门")
     @InitDate
     @ApiOperation("新增部门")
     @PostMapping
@@ -82,7 +83,7 @@ public class DeptController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改部门")
+    @Log("修改部门")
     @InitDate
     @ApiOperation("修改部门")
     @PutMapping

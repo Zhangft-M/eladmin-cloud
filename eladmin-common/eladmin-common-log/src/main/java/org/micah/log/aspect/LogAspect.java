@@ -1,19 +1,19 @@
 package org.micah.log.aspect;
 
-import cn.hutool.json.JSONObject;
+
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.micah.log.service.ILogService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.micah.core.constant.SecurityConstants;
 import org.micah.core.util.RequestUtils;
-import org.micah.core.util.StringUtils;
 import org.micah.core.util.ThrowableUtil;
-import org.micah.model.SysLog;
+import org.micah.logapi.api.IRemoteLogService;
+import org.micah.model.Log;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,8 +22,10 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 /**
@@ -37,12 +39,12 @@ import java.util.Objects;
 @Component
 public class LogAspect {
 
-    private final ILogService logService;
+    private final IRemoteLogService remoteLogService;
 
     private final ThreadLocal<Long> currentTime = new ThreadLocal<>();
 
-    public LogAspect(ILogService logService) {
-        this.logService = logService;
+    public LogAspect(IRemoteLogService remoteLogService) {
+        this.remoteLogService = remoteLogService;
     }
 
     @Pointcut("@annotation(org.micah.log.annotation.Log)")
@@ -65,13 +67,13 @@ public class LogAspect {
         // 执行原始的方法
         result = pjp.proceed();
         // 初始化log对象
-        SysLog log = new SysLog("INFO", System.currentTimeMillis() - this.currentTime.get());
+        Log log = new Log("INFO", System.currentTimeMillis() - this.currentTime.get());
         // 继续初始化log中的成员变量
         this.initLogFields(pjp, log);
         // 删除ThreadLocal中的值
         this.currentTime.remove();
         // 存储日志到数据库
-        this.logService.save(log);
+        this.remoteLogService.save(log, SecurityConstants.FROM_IN);
         return result;
     }
 
@@ -83,12 +85,13 @@ public class LogAspect {
      */
     @AfterThrowing(value = "pointcut()", throwing = "e")
     public void afterThrowingAdvice(JoinPoint pjp, Throwable e) {
-        SysLog log = new SysLog("ERROR", System.currentTimeMillis() - this.currentTime.get());
+        log.info("出现了异常:",e.getCause());
+        Log log = new Log("ERROR", System.currentTimeMillis() - this.currentTime.get());
         this.currentTime.remove();
         log.setExceptionDetail(ThrowableUtil.getStackTrace(e).getBytes());
         this.initLogFields((ProceedingJoinPoint) pjp, log);
         // 存储日志到数据库
-        this.logService.save(log);
+        this.remoteLogService.save(log,SecurityConstants.FROM_IN);
     }
 
     private String getUsername() {
@@ -106,7 +109,7 @@ public class LogAspect {
      * @param pjp 被代理的对象
      * @param log 日志实体类
      */
-    private void initLogFields(ProceedingJoinPoint pjp, SysLog log) {
+    private void initLogFields(ProceedingJoinPoint pjp, Log log) {
 
         // 获取请求对象用来获取请求的IP和客户端信息
         HttpServletRequest request = RequestUtils.getHttpServletRequest();
@@ -119,7 +122,7 @@ public class LogAspect {
         // 获取全路劲方法名
         String methodName = pjp.getTarget().getClass().getName() + "." + signature.getName() + "()";
         // 获取方法的参数值
-        List<Object> argList = Arrays.asList(pjp.getArgs());
+        Object[] argList = pjp.getArgs();
         // 初始化一个装参数的容器
         StringBuilder params = new StringBuilder("{");
         // 放入参数
@@ -139,5 +142,6 @@ public class LogAspect {
         log.setUsername(username);
         log.setParams(params.toString() + " }");
         log.setBrowser(RequestUtils.getBrowser(request));
+        log.setCreateTime(Timestamp.valueOf(LocalDateTime.now(ZoneId.systemDefault())));
     }
 }

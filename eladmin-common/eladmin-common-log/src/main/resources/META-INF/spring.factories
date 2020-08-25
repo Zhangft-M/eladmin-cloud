@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.micah.log.aspect.LogAspect,\
-  org.micah.log.service.impl.LogServiceImpl
+  org.micah.log.aspect.LogAspect

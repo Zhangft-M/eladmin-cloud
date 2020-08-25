@@ -1,13 +1,15 @@
 package org.micah.logapi.api;
 
 
+import org.micah.core.constant.SecurityConstants;
 import org.micah.core.constant.ServiceNameConstants;
 import org.micah.logapi.factory.RemoteLogFallbackFactory;
-import org.micah.model.SysLog;
+import org.micah.model.Log;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -25,8 +27,8 @@ public interface IRemoteLogService {
      * @param log 日志实体
      * @return 结果
      */
-    @PostMapping("/operlog")
-    ResponseEntity<Void> saveLog(@RequestBody SysLog log);
+    @PostMapping("/logs")
+    ResponseEntity<Void> save(@RequestBody Log log,@RequestHeader(SecurityConstants.FROM) String from);
 
     /**
      * 保存访问记录

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
 import org.micah.model.Role;
 import org.micah.model.dto.RoleDto;
 import org.micah.model.dto.RoleSmallDto;
@@ -49,7 +50,7 @@ public class RoleController {
         return new ResponseEntity<>(roleService.findById(id), HttpStatus.OK);
     }
 
-    // @Log("导出角色数据")
+    @Log("导出角色数据")
     @ApiOperation("导出角色数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('role:list')")
@@ -57,6 +58,7 @@ public class RoleController {
         roleService.download(roleService.queryAll(criteria), response);
     }
 
+    @Log("返回全部的角色")
     @ApiOperation("返回全部的角色")
     @GetMapping(value = "/all")
     @PreAuthorize("@el.check('roles:list','user:add','user:edit')")
@@ -64,7 +66,7 @@ public class RoleController {
         return new ResponseEntity<>(roleService.queryAll(),HttpStatus.OK);
     }
 
-    // @Log("查询角色")
+    @Log("查询角色")
     @ApiOperation("查询角色")
     @GetMapping
     @PreAuthorize("@el.check('roles:list')")
@@ -72,13 +74,14 @@ public class RoleController {
         return new ResponseEntity<>(roleService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
+    @Log("获取用户级别")
     @ApiOperation("获取用户级别")
     @GetMapping(value = "/level")
     public ResponseEntity<Object> getLevel(){
         return new ResponseEntity<>(Dict.create().set("level", getLevels(null)),HttpStatus.OK);
     }
 
-    //@Log("新增角色")
+    @Log("新增角色")
     @InitDate
     @ApiOperation("新增角色")
     @PostMapping
@@ -92,7 +95,7 @@ public class RoleController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改角色")
+    @Log("修改角色")
     @InitDate
     @ApiOperation("修改角色")
     @PutMapping
@@ -103,7 +106,7 @@ public class RoleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("修改角色菜单")
+    @Log("修改角色菜单")
     @InitDate
     @ApiOperation("修改角色菜单")
     @PutMapping(value = "/menu")
@@ -116,7 +119,7 @@ public class RoleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("删除角色")
+    @Log("删除角色")
     @ApiOperation("删除角色")
     @DeleteMapping
     @PreAuthorize("@el.check('roles:del')")

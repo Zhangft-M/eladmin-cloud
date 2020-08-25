@@ -3,6 +3,7 @@ package org.micah.model.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -23,5 +24,5 @@ public class LogSmallDTO implements Serializable {
 
     private String browser;
 
-    private LocalDateTime createTime;
+    private Timestamp createTime;
 }

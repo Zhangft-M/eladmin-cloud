@@ -2,6 +2,7 @@ package org.micah.system.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.micah.log.annotation.Log;
 import org.micah.model.dto.SysUserDto;
 import org.micah.system.service.IDataService;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class DataController {
         this.dataService = dataService;
     }
 
-    // @Log("导出部门数据")
+    @Log("导出部门数据")
     @ApiOperation("查询数据权限")
     @GetMapping()
     @PreAuthorize("@el.check('data:list')")

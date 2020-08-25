@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -29,14 +30,14 @@ import java.time.LocalDateTime;
 
 @Data
 @TableName("sys_log")
-public class SysLog implements Serializable {
+public class Log implements Serializable {
 
     private static final long serialVersionUID = -3486354571821490568L;
 
-    public SysLog() {
+    public Log() {
     }
 
-    @TableId(value = "log_id",type = IdType.ASSIGN_ID)
+    @TableId(value = "log_id",type = IdType.AUTO)
     private Long logId;
 
     /**
@@ -92,9 +93,9 @@ public class SysLog implements Serializable {
     /**
      * 创建日期
      */
-    private LocalDateTime createTime;
+    private Timestamp createTime;
 
-    public SysLog(String logType, Long time) {
+    public Log(String logType, Long time) {
         this.logType = logType;
         this.time = time;
     }

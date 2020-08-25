@@ -28,16 +28,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.micah</groupId>
-            <artifactId>eladmin-model-log</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.projectlombok</groupId>
-                    <artifactId>lombok</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-core</artifactId>
             <exclusions>

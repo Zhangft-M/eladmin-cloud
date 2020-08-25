@@ -54,6 +54,10 @@
                     <artifactId>HdrHistogram</artifactId>
                     <groupId>org.hdrhistogram</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.micah</groupId>
+                    <artifactId>eladmin-api-system</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -64,7 +68,7 @@
             <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-redis</artifactId>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-log</artifactId>
             <exclusions>
@@ -77,7 +81,7 @@
                     <artifactId>eladmin-common-mybatis-plus</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-exception</artifactId>

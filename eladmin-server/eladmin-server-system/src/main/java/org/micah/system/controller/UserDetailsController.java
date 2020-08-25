@@ -1,6 +1,7 @@
 package org.micah.system.controller;
 
 import io.swagger.annotations.ApiOperation;
+import org.micah.log.annotation.Log;
 import org.micah.model.SysUser;
 import org.micah.model.dto.UserSmallDto;
 import org.micah.security.annotation.Inner;
@@ -27,10 +28,10 @@ public class UserDetailsController {
         this.userService = userService;
     }
 
-    // @Log("导出用户数据")
+
+    @Inner
     @ApiOperation("通过用户名查询用户")
     @GetMapping(value = "/username")
-    @Inner
     public ResponseEntity<UserSmallDto> getUserDetails(@RequestParam String username){
         return ResponseEntity.ok(this.userService.getUserDetails(username));
     }

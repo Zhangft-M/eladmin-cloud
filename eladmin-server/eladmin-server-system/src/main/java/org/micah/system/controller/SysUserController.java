@@ -10,6 +10,7 @@ import org.micah.core.base.BaseEntity;
 import org.micah.core.util.enums.CodeEnum;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
 import org.micah.model.SysUser;
 import org.micah.model.dto.RoleSmallDto;
 import org.micah.model.dto.SysUserDto;
@@ -47,7 +48,7 @@ public class SysUserController {
     private final IRoleService roleService;
     private final IVerifyService verificationCodeService;
 
-    // @Log("导出用户数据")
+    @Log("导出用户数据")
     @ApiOperation("导出用户数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
@@ -55,7 +56,7 @@ public class SysUserController {
         this.userService.download(this.userService.queryAll(queryCriteria), response);
     }
 
-    // @Log("导出用户数据")
+    // @Log("获取当前的用户信息")
     @ApiOperation("获取当前的用户信息")
     @GetMapping(value = "/info")
     @PreAuthorize("@el.check('user:list')")
@@ -63,7 +64,7 @@ public class SysUserController {
         return ResponseEntity.ok(this.userService.getCurrentUserInfo());
     }
 
-    // @Log("导出用户数据")
+    @Log("通过用户名查询用户")
     @ApiOperation("通过用户名查询用户")
     @GetMapping(value = "/username")
     @PreAuthorize("@el.check('user:list')")
@@ -71,7 +72,7 @@ public class SysUserController {
         return ResponseEntity.ok(this.userService.queryByUsername(username));
     }
 
-    // @Log("查询用户")
+    @Log("查询用户")
     @ApiOperation("查询用户")
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
@@ -101,7 +102,7 @@ public class SysUserController {
         return new ResponseEntity<>(null,HttpStatus.OK);
     }
 
-    // @Log("新增用户")
+    @Log("新增用户")
     @InitDate
     @ApiOperation("新增用户")
     @PostMapping
@@ -117,7 +118,7 @@ public class SysUserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改用户")
+    @Log("修改用户")
     @InitDate
     @ApiOperation("修改用户")
     @PutMapping
@@ -128,7 +129,7 @@ public class SysUserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("修改用户：个人中心")
+    @Log("修改用户：个人中心")
     @ApiOperation("修改用户：个人中心")
     @PutMapping(value = "center")
     public ResponseEntity<Void> center(@Validated(SysUser.Update.class) @RequestBody SysUser resources){
@@ -139,7 +140,7 @@ public class SysUserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("删除用户")
+    @Log("删除用户")
     @ApiOperation("删除用户")
     @DeleteMapping
     @PreAuthorize("@el.check('user:del')")
@@ -159,6 +160,7 @@ public class SysUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Log("修改密码")
     @ApiOperation("修改密码")
     @PostMapping(value = "/updatePass")
     public ResponseEntity<Void> updatePass(@RequestBody UserPassVo passVo) throws Exception {
@@ -175,13 +177,14 @@ public class SysUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Log("修改头像")
     @ApiOperation("修改头像")
     @PostMapping(value = "/updateAvatar")
     public ResponseEntity<Map<String, String>> updateAvatar(@RequestParam MultipartFile avatar){
         return new ResponseEntity<>(this.userService.updateAvatar(avatar), HttpStatus.OK);
     }
 
-    // @Log("修改邮箱")
+    @Log("修改邮箱")
     @ApiOperation("修改邮箱")
     @PostMapping(value = "/updateEmail/{code}")
     public ResponseEntity<Void> updateEmail(@PathVariable String code,@RequestBody SysUser user) throws Exception {

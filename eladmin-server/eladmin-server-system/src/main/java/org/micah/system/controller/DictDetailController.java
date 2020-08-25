@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.micah.core.annotation.InitDate;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
+import org.micah.log.annotation.Log;
 import org.micah.model.DictDetail;
 import org.micah.model.dto.DictDetailDto;
 import org.micah.model.query.DictDetailQueryCriteria;
@@ -32,7 +33,7 @@ public class DictDetailController {
     private final IDictDetailService dictDetailService;
     private static final String ENTITY_NAME = "dictDetail";
 
-    // @Log("查询字典详情")
+    @Log("查询字典详情")
     @ApiOperation("查询字典详情")
     @GetMapping()
     public ResponseEntity<PageResult> query(DictDetailQueryCriteria queryCriteria,
@@ -40,7 +41,7 @@ public class DictDetailController {
         return new ResponseEntity<>(this.dictDetailService.queryAll(queryCriteria,pageable,true), HttpStatus.OK);
     }
 
-    // @Log("查询多个字典详情")
+    @Log("查询多个字典详情")
     @ApiOperation("查询多个字典详情")
     @GetMapping(value = "/map")
     public ResponseEntity<Map<String, List<DictDetailDto>>> getDictDetailMaps(@RequestParam String dictName){
@@ -52,7 +53,7 @@ public class DictDetailController {
         return new ResponseEntity<>(dictMap, HttpStatus.OK);
     }
 
-    // @Log("新增字典详情")
+    @Log("新增字典详情")
     @InitDate
     @ApiOperation("新增字典详情")
     @PostMapping
@@ -65,7 +66,7 @@ public class DictDetailController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // @Log("修改字典详情")
+    @Log("修改字典详情")
     @InitDate
     @ApiOperation("修改字典详情")
     @PutMapping
@@ -75,7 +76,7 @@ public class DictDetailController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // @Log("删除字典详情")
+    @Log("删除字典详情")
     @ApiOperation("删除字典详情")
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("@el.check('dict:del')")

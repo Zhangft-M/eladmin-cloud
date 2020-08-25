@@ -3,6 +3,7 @@ package org.micah.system.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.micah.log.annotation.Log;
 import org.micah.system.service.IMonitorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class MonitorController {
 
     private final IMonitorService serverService;
 
+    @Log("查询服务监控")
     @GetMapping
     @ApiOperation("查询服务监控")
     @PreAuthorize("@el.check('monitor:list')")

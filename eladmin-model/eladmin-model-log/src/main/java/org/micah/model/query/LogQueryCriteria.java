@@ -4,7 +4,7 @@ import lombok.Data;
 import org.micah.mp.annotation.Query;
 import org.micah.mp.annotation.type.SelectType;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -23,5 +23,5 @@ public class LogQueryCriteria {
     private String logType;
 
     @Query(type = SelectType.BETWEEN)
-    private List<LocalDateTime> createTime;
+    private List<Timestamp> createTime;
 }
