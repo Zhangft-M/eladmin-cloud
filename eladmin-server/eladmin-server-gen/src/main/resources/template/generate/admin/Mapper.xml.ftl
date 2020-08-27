@@ -3,7 +3,7 @@
 
 <mapper namespace="${package}.${moduleName}.mapper.${className}Mapper">
 
-    <resultMap id="${classname}Map" type="${package}.model.${className}">
+    <resultMap id="${className}Map" type="${package}.model.${className}">
         <#list columns as column>
             <#if column.columnKey = 'PRI'>
        <id property="${column.changeColumnName}" column="${column.columnName}"/>
@@ -11,4 +11,24 @@
        <result property="${column.changeColumnName}" column="${column.columnName}"/>
         </#list>
     </resultMap>
+
+    <sql id="baseSelectSqlWithProperties">
+        <#list columns as column>
+            <#if column_has_next>
+        ${r"${propertise}"}.${column.columnName},
+            <#else>
+        ${r"${propertise}"}.${column.columnName}
+            </#if>
+        </#list>
+    </sql>
+
+    <sql id="baseSql">
+        <#list columns as column>
+            <#if column_has_next>
+        ${column.columnName},
+            <#else>
+        ${column.columnName}
+            </#if>
+        </#list>
+    </sql>
 </mapper>

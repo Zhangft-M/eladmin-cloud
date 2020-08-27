@@ -37,7 +37,7 @@
                     <#if columns??>
                         <#list columns as column>
                             <#if column.formShow>
-                                <el-form-item label="<#if column.remark != ''>${column.remark}<#else>${column.changeColumnName}</#if>"<#if column.istNotNull> prop="${column.changeColumnName}"</#if>>
+                                <el-form-item label="<#if column.remark != ''>${column.remark}<#else>${column.changeColumnName}</#if>"<#if column.isNotNull> prop="${column.changeColumnName}"</#if>>
                                     <#if column.formType = 'Input'>
                                         <el-input v-model="form.${column.changeColumnName}" style="width: 370px;" />
                                     <#elseif column.formType = 'Textarea'>
@@ -141,7 +141,7 @@
                 rules: {
                     <#if isNotNullColumns??>
                     <#list isNotNullColumns as column>
-                    <#if column.istNotNull>
+                    <#if column.isNotNull>
                     ${column.changeColumnName}: [
                         { required: true, message: '<#if column.remark != ''>${column.remark}</#if>不能为空', trigger: 'blur' }
                     ]<#if column_has_next>,</#if>

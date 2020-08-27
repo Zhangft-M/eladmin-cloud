@@ -32,39 +32,6 @@ public class GenConfigServiceImpl extends ServiceImpl<GenConfigMapper, GenConfig
         this.genConfigMapper = genConfigMapper;
     }
 
-    /**
-     * 根据表的名称查询代码生成配置信息
-     *
-     * @param dbName /
-     * @param tableName /
-     * @return
-     */
-    @Override
-    public List<GenConfig> queryAll(String dbName, String tableName) {
-        return this.genConfigMapper.selectList(Wrappers.<GenConfig>lambdaQuery()
-                .eq(GenConfig::getDbName,dbName)
-                .eq(GenConfig::getTableName,tableName));
-    }
-
-    /**
-     * 添加代码生成配置信息
-     *
-     * @param genConfig /
-     */
-    @Override
-    public void saveGenConfig(GenConfig genConfig) {
-        // 查询是否存在相同的数据
-        GenConfig config = verifyGenConfig(genConfig);
-        if (config != null){
-            log.error("在相同的数据库中已经存在相同的表的配置");
-            throw new EntityExistException(genConfig.getClass(),"tableName",genConfig.getTableName());
-        }
-        this.generateApiPath(genConfig);
-        boolean save = this.save(genConfig);
-        if (!save){
-            throw new CreateFailException("添加配置数据失败,请联系管理员");
-        }
-    }
 
     private GenConfig verifyGenConfig(GenConfig genConfig) {
         GenConfig config = this.genConfigMapper.selectOne(Wrappers.<GenConfig>lambdaQuery()
@@ -107,17 +74,18 @@ public class GenConfigServiceImpl extends ServiceImpl<GenConfigMapper, GenConfig
      * @param genConfig /
      */
     @Override
-    public void updateGenConfig(GenConfig genConfig) {
+    public GenConfig updateGenConfig(GenConfig genConfig) {
         GenConfig otherGenConfig = this.verifyGenConfig(genConfig);
         if (otherGenConfig != null && !otherGenConfig.getId().equals(genConfig.getId())){
             log.error("在相同的数据库中已经存在相同的表的配置");
             throw new EntityExistException(genConfig.getClass(),"tableName",genConfig.getTableName());
         }
         this.generateApiPath(genConfig);
-        if (!this.updateById(genConfig)){
+        if (!this.saveOrUpdate(genConfig)){
             log.error("更新失败:{}",genConfig);
             throw new UpdateFailException("更新失败,请联系管理员");
         }
+        return genConfig;
     }
 
     @Override

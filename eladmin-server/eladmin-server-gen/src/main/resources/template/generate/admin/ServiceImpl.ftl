@@ -46,6 +46,7 @@ import java.util.*;
 * @author ${author}
 * @date ${date}
 **/
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ${className}ServiceImpl implements ${className}Service {
@@ -105,14 +106,14 @@ public class ${className}ServiceImpl implements ${className}Service {
                 </#if>
         other${changeClassName} = this.${changeClassName}Mapper.selectOne(Wrappers.<${className}>lambdaQuery().eq(resources.get${column.capitalColumnName} != null,${className}::get${column.capitalColumnName},resources.get${column.capitalColumnName}()));
         if(other${changeClassName} != null && !other${changeClassName}.get${pkCapitalColName}().equals(${changeClassName}.get${pkCapitalColName}())){
-           log.error("数据与其他数据有重复:{}", resources);
+           log.warn("数据与其他数据有重复:{}", resources);
            throw new EntityExistException(${className}.class,"${column.columnName}",resources.get${column.capitalColumnName}());
         }
             </#if>
         </#list>
     </#if>
         if(this.updateById(resources)){
-            log.error("插入失败:{}", resources);
+            log.warn("插入失败:{}", resources);
             throw new CreateFailException("插入一条数据失败,请联系管理员");
         }
     }
@@ -121,7 +122,7 @@ public class ${className}ServiceImpl implements ${className}Service {
     @Transactional(rollbackFor = Exception.class)
     public void deleteAll(Set<${pkColumnType}> ids) {
         if(!this.removeByIds(ids)){
-            log.error("删除失败:{}", ids);
+            log.warn("删除失败:{}", ids);
             throw new DeleteFailException("批量删除失败,请联系管理员")
         }
     }

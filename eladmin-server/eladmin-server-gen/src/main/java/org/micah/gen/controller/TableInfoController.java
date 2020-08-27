@@ -22,7 +22,7 @@ import java.util.List;
  **/
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/generator")
+@RequestMapping("/generator/table")
 @Api(tags = "系统：代码生成管理，获取所有的表信息")
 public class TableInfoController {
 
@@ -36,8 +36,8 @@ public class TableInfoController {
 
     @ApiOperation("查询数据库表的数据")
     @GetMapping(value = "/tables")
-    public ResponseEntity<Object> queryTables(@RequestParam(defaultValue = "") String dbName,
-                                              @RequestParam(defaultValue = "") String tableName, Pageable pageable) {
+    public ResponseEntity<PageResult> queryTables(@RequestParam(required = false) String dbName,
+                                              @RequestParam(required = false) String tableName, Pageable pageable) {
         return new ResponseEntity<>(this.tableService.queryTables(dbName, tableName, pageable), HttpStatus.OK);
     }
 

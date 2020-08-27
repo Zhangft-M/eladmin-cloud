@@ -54,7 +54,7 @@ public class ${className} implements Serializable {
             </#if>
 
         </#if>
-        <#if column.istNotNull && column.columnKey != 'PRI'>
+        <#if column.isNotNull && column.columnKey != 'PRI'>
             <#if column.columnType = 'String'>
         @NotBlank
             <#else>

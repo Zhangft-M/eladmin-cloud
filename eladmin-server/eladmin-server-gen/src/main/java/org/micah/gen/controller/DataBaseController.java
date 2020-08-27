@@ -22,7 +22,7 @@ import java.util.List;
  **/
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/database")
+@RequestMapping("/database")
 @Api(tags = "系统：代码生成器配置管理,查找所有的数据库名称")
 public class DataBaseController {
 

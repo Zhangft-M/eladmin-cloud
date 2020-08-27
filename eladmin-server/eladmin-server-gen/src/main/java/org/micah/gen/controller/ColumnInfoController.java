@@ -19,7 +19,7 @@ import java.util.List;
  * @create: 2020-08-18 15:17
  **/
 @RestController
-@RequestMapping
+@RequestMapping("/generator")
 @RequiredArgsConstructor
 public class ColumnInfoController {
 
@@ -27,10 +27,10 @@ public class ColumnInfoController {
 
     @ApiOperation("查询字段数据")
     @GetMapping(value = "/columns")
-    public ResponseEntity<List<ColumnInfo>> queryColumns(@RequestParam String dbName,
+    public ResponseEntity<PageResult> queryColumns(@RequestParam String dbName,
                                                    @RequestParam String tableName, Pageable pageable) {
         List<ColumnInfo> columnInfos = this.columnInfoService.getColumns(dbName,tableName, pageable);
-        return new ResponseEntity<>(columnInfos, HttpStatus.OK);
+        return new ResponseEntity<>(PageResult.success((long) columnInfos.size(),columnInfos), HttpStatus.OK);
     }
 
     @ApiOperation("保存字段数据")

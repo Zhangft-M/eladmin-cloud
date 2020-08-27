@@ -88,6 +88,8 @@ public class ColumnInfoServiceImpl extends ServiceImpl<ColumnInfoMapper, ColumnI
                 columnInfo.setColumnType(newInfo.getColumnType());
                 columnInfo.setExtra(newInfo.getExtra());
                 columnInfo.setKeyType(newInfo.getKeyType());
+                columnInfo.setRemark(newInfo.getRemark());
+                columnInfo.setNotNull(newInfo.getNotNull());
                 if (StringUtils.isBlank(columnInfo.getRemark())) {
                     columnInfo.setRemark(newInfo.getRemark());
                 }

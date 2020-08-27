@@ -29,6 +29,6 @@ public interface ITableInfoService extends IService<TableInfo> {
      * @param pageable 分页参数
      * @return /
      */
-    Object queryTables(String dbName, String tableName, Pageable pageable);
+    PageResult queryTables(String dbName, String tableName, Pageable pageable);
 
 }

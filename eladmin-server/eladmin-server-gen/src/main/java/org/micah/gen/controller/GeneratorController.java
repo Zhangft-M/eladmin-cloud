@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/generator")
+@RequestMapping("/generator")
 @Api(tags = "系统：代码生成管理")
 public class GeneratorController {
 

@@ -89,7 +89,7 @@ public class CodeGenUtils {
             // 使用map来存储生成的内容
             Map<String, Object> generateData = new HashMap<>(8);
             // 获取模板
-            Template template = engine.getTemplate("generate/admin" + name + ".ftl");
+            Template template = engine.getTemplate("generate/admin/" + name + ".ftl");
             // 生成对应的文件
             String render = template.render(dataMap);
             // 放入map中
@@ -101,7 +101,7 @@ public class CodeGenUtils {
         List<String> frontTemplateNames = getFrontTemplateNames();
         for (String templateName : frontTemplateNames) {
             Map<String, Object> map = new HashMap<>(1);
-            Template template = engine.getTemplate("generator/front/" + templateName + ".ftl");
+            Template template = engine.getTemplate("generate/front/" + templateName + ".ftl");
             map.put(templateName, template.render(dataMap));
             map.put("content", template.render(dataMap));
             map.put("name", templateName);
@@ -129,7 +129,7 @@ public class CodeGenUtils {
         // 生成数据
         for (String templateName : adminTemplateNames) {
             // 获取对应的模板
-            Template template = engine.getTemplate("generator/admin/" + templateName + ".ftl");
+            Template template = engine.getTemplate("generate/admin/" + templateName + ".ftl");
             String filePath = getAdminFilePath(templateName, genConfig, templateData.get("className").toString(), temPath + "admin" + File.separator);
             assert filePath != null;
             File file = new File(filePath);
@@ -146,7 +146,7 @@ public class CodeGenUtils {
         // 生成前端代码
         for (String templateName : frontTemplateNames) {
             // 获取前端模板
-            Template template = engine.getTemplate("generator/front/" + templateName + ".ftl");
+            Template template = engine.getTemplate("generate/front/" + templateName + ".ftl");
             // 前端工程目录
             String path = temPath + "web" + File.separator;
             // src下的api目录
@@ -179,7 +179,7 @@ public class CodeGenUtils {
         // 生成后端代码
         List<String> templates = getAdminTemplateName();
         for (String templateName : templates) {
-            Template template = engine.getTemplate("generator/admin/" + templateName + ".ftl");
+            Template template = engine.getTemplate("generate/admin/" + templateName + ".ftl");
             String filePath = getAdminFilePath(templateName, genConfig, genMap.get("className").toString(), System.getProperty("user.dir"));
 
             assert filePath != null;
@@ -405,11 +405,11 @@ public class CodeGenUtils {
         // 判断是否为主键
         if (PK.equals(columnInfo.getKeyType())) {
             // 存储字段为主键类型
-            columnMap.put("pkColumnType", colType);
+            templateData.put("pkColumnType", colType);
             // 存储小写开头的字段名
-            columnMap.put("pkChangeColName", changeColumnName);
+            templateData.put("pkChangeColName", changeColumnName);
             // 存储大写开头的字段名
-            columnMap.put("pkCapitalColName", capitalColumnName);
+            templateData.put("pkCapitalColName", capitalColumnName);
         }
         // 判断是否存在TimeStamp类型
         if (TIMESTAMP.equals(colType)) {

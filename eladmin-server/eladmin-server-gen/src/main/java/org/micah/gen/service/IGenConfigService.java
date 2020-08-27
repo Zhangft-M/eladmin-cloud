@@ -13,24 +13,13 @@ import java.util.List;
  **/
 public interface IGenConfigService extends IService<GenConfig> {
 
-    /**
-     * 根据表的名称查询代码生成配置信息
-     * @param tableName /
-     * @return
-     */
-    List<GenConfig> queryAll(String dbName,String tableName);
 
-    /**
-     * 添加代码生成配置信息
-     * @param genConfig
-     */
-    void saveGenConfig(GenConfig genConfig);
 
     /**
      * 更新代码生成配置
      * @param genConfig
      */
-    void updateGenConfig(GenConfig genConfig);
+    GenConfig updateGenConfig(GenConfig genConfig);
 
 
     GenConfig queryOne(String dbName, String tableName);

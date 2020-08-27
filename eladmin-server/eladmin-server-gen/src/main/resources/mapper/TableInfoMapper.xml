@@ -35,14 +35,18 @@
     <select id="queryTablesByPage" resultMap="tableInfoMap">
         <include refid="baseQuerySql"/>
         <where>
-            <choose>
-                <when test="dbName != null and dbName != ''">
-                    tb.TABLE_SCHEMA = #{dbName} and tb.TABLE_NAME like '%'#{tableName}'%'
-                </when>
-                <otherwise>
-                    tb.TABLE_SCHEMA = (select database()) and tb.TABLE_NAME like '%'#{tableName}'%'
-                </otherwise>
-            </choose>
+            <if test="dbName != null and dbName != ''">
+                tb.TABLE_SCHEMA = #{dbName}
+                <if test="tableName != null and tableName != ''">
+                    and tb.TABLE_NAME like '%'#{tableName}'%'
+                </if>
+            </if>
+            <if test="dbName == null or dbName == ''">
+                tb.TABLE_SCHEMA = (select database())
+                <if test="tableName != null and tableName != ''">
+                    and tb.TABLE_NAME like '%'#{tableName}'%'
+                </if>
+            </if>
         </where>
     </select>
 </mapper>

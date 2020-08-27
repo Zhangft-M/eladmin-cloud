@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/genConfig")
+@RequestMapping("/genConfig")
 @Api(tags = "系统：代码生成器配置管理")
 public class GenConfigController {
 
@@ -22,24 +22,19 @@ public class GenConfigController {
 
     @ApiOperation("查询")
     @GetMapping(value = "/{dbName}/{tableName}")
-    public ResponseEntity<List<GenConfig>> queryAll(@PathVariable String dbName, @PathVariable String tableName){
-        return new ResponseEntity<>(this.genConfigService.queryAll(dbName,tableName), HttpStatus.OK);
+    public ResponseEntity<GenConfig> query(@PathVariable String dbName, @PathVariable String tableName){
+        return new ResponseEntity<>(this.genConfigService.queryOne(dbName,tableName), HttpStatus.OK);
     }
 
-    @ApiOperation("增加")
-    @PostMapping
-    public ResponseEntity<Void> saveGenConfig(@Validated @RequestBody GenConfig genConfig){
-        if (genConfig.getId() != null){
-            throw new IllegalArgumentException("新的数据id不为空");
-        }
-        this.genConfigService.saveGenConfig(genConfig);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
+    /**
+     * 该接口有相同的数据修改，没有相同的数据添加
+     * @param genConfig
+     * @return
+     */
     @ApiOperation("修改")
     @PutMapping
-    public ResponseEntity<Void> updateGenConfig(@Validated @RequestBody GenConfig genConfig){
-        this.genConfigService.updateGenConfig(genConfig);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<GenConfig> updateGenConfig(@Validated @RequestBody GenConfig genConfig){
+        GenConfig config = this.genConfigService.updateGenConfig(genConfig);
+        return new ResponseEntity<>(config,HttpStatus.OK);
     }
 }
