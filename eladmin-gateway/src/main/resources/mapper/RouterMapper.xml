@@ -5,25 +5,17 @@
         <id property="id" column="id"/>
         <result property="enable" column="enable"/>
         <result property="intervalSec" column="interval_sec"/>
-        <result property="routeId" column="router_id"/>
-        <result property="routeName" column="router_name"/>
-        <result property="routeType" column="router_type"/>
-        <result property="routeUrl" column="router_url"/>
+        <result property="routerId" column="router_id"/>
+        <result property="routerName" column="router_name"/>
+        <result property="routerType" column="router_type"/>
+        <result property="routerUrl" column="router_url"/>
         <result property="threshold" column="threshold"/>
-        <collection property="filters" ofType="org.micah.gateway.entity.Filter">
-            <id property="filterId" column="filter_id"/>
-            <result property="filterName" column="filter_name"/>
-            <result property="filterVal" column="filter_val"/>
-        </collection>
-        <collection property="predicates" ofType="org.micah.gateway.entity.Predicate">
-            <id property="predicateId" column="predicate_id"/>
-            <result property="predicateName" column="predicate_name"/>
-            <result property="predicateVal" column="predicate_val"/>
-        </collection>
+        <collection property="predicates" resultMap="org.micah.gateway.mapper.PredicateMapper.predicateMap"/>
+        <collection property="filters" resultMap="org.micah.gateway.mapper.FilterMapper.filterMap"/>
     </resultMap>
 
-    <select id="selectAll" resultMap="routerMap">
-        select r.id,
+    <sql id="baseSql">
+                r.id,
                r.router_id,
                router_name,
                router_type,
@@ -42,5 +34,18 @@
                  left join filter f on rf.filter_id = f.id
                  left join router_predicate rp on r.id = rp.router_id
                  left join predicate p on rp.predicate_id = p.id;
+    </sql>
+
+    <select id="selectAll" resultMap="routerMap">
+        select
+            <include refid="baseSql"/>
+    </select>
+
+    <select id="selectById" resultMap="routerMap">
+        select
+            <include refid="baseSql"/>
+        <where>
+            r.id = #{id}
+        </where>
     </select>
 </mapper>

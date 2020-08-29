@@ -2,13 +2,19 @@ package org.micah.gateway.service.impl;
 
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import org.micah.core.util.StringUtils;
+import org.micah.core.web.page.PageResult;
 import org.micah.gateway.entity.Filter;
 import org.micah.gateway.entity.Router;
+import org.micah.gateway.mapper.FilterMapper;
+import org.micah.gateway.mapper.PredicateMapper;
 import org.micah.gateway.mapper.RouterMapper;
 import org.micah.gateway.service.IRouterService;
+import org.micah.mp.util.PageUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -36,14 +42,20 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
 
     private final RouterMapper routerMapper;
 
+    private final PredicateMapper predicateMapper;
+
+    private final FilterMapper filterMapper;
+
     private ApplicationEventPublisher publisher;
 
     private final RouteDefinitionWriter definitionWriter;
 
     private final Set<GatewayFlowRule> rules = new HashSet<>();
 
-    public RouterServiceImpl(RouterMapper routerMapper, RouteDefinitionWriter definitionWriter) {
+    public RouterServiceImpl(RouterMapper routerMapper, PredicateMapper predicateMapper, FilterMapper filterMapper, RouteDefinitionWriter definitionWriter) {
         this.routerMapper = routerMapper;
+        this.predicateMapper = predicateMapper;
+        this.filterMapper = filterMapper;
         this.definitionWriter = definitionWriter;
     }
 
@@ -69,6 +81,39 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
     }
 
     /**
+     * 通过id查询
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Router selectById(Integer id) {
+        return this.routerMapper.getById(id);
+    }
+
+    /**
+     * 查询所有的路由接口数据
+     *
+     * @return
+     */
+    @Override
+    public PageResult queryPage(int page, int size, String sort) {
+        Page<Router> page1 = new Page<>(page,size);
+        String[] sorts = sort.split(",");
+        OrderItem orderItem = new OrderItem();
+        orderItem.setAsc(StringUtils.equalsIgnoreCase("asc",sorts[1]));
+        orderItem.setColumn(sorts[0]);
+        page1.setOrders(Collections.singletonList(orderItem));
+        // 不分开查询分页会出错
+        Page<Router> routerPage = this.page(page1);
+        routerPage.getRecords().forEach(router -> {
+            router.setPredicates(this.predicateMapper.selectByRouterId(router.getId()));
+            router.setFilters(this.filterMapper.selectByRouterId(router.getId()));
+        });
+        return PageResult.success(routerPage.getTotal(),routerPage.getPages(),routerPage.getRecords());
+    }
+
+    /**
      * 配置路由，断言和过滤器都是用shortcut形式配置，与数据库对应
      * @param router
      */
@@ -80,12 +125,12 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         Map<String, String> filterParams = new HashMap<>(8);
         // 判断路由状况
         URI uri = null;
-        if (router.getRouteType().equals(0)) {
+        if (router.getRouterType().equals(0)) {
             // 从服务注册中心获取uri
-            uri = UriComponentsBuilder.fromUriString("lb://" + router.getRouteUrl()).build().toUri();
+            uri = UriComponentsBuilder.fromUriString("lb://" + router.getRouterUrl()).build().toUri();
         } else {
             // 直接获取httpUri
-            uri = UriComponentsBuilder.fromHttpUrl(router.getRouteUrl()).build().toUri();
+            uri = UriComponentsBuilder.fromHttpUrl(router.getRouterUrl()).build().toUri();
         }
         /**
          * spring:
@@ -99,7 +144,7 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
          *           predicates:
          *             - Path=/test/**
          */
-        definition.setId(router.getRouteId());
+        definition.setId(router.getRouterId());
         // 设置- Path=/test/**
         router.getPredicates().forEach(predicate -> {
             // 实例化断言定义对象
@@ -131,7 +176,7 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         definition.setUri(uri);
         this.definitionWriter.save(Mono.just(definition)).subscribe();
         // 设置限流规则
-        rules.add(new GatewayFlowRule(router.getRouteId())
+        rules.add(new GatewayFlowRule(router.getRouterId())
                 // 限流阈值
                 .setCount(router.getThreshold())
                 // 统计时间窗口，限流后一秒之类是不能访问的

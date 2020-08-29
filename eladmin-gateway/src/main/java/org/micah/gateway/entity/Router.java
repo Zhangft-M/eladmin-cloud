@@ -16,16 +16,16 @@ import java.util.Set;
  * @author: MicahZhang
  * @create: 2020-07-03 22:59
  **/
-@TableName("gateway")
+@TableName("router")
 @Data
 public class Router implements Serializable {
     private static final long serialVersionUID = -3714358217961322667L;
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private String routeId;
-    private String routeName;
-    private Integer routeType;
-    private String routeUrl;
+    private String routerId;
+    private String routerName;
+    private Integer routerType;
+    private String routerUrl;
     private Boolean enable;
     /**
      * 阈值，每秒请求超过该值触发限流

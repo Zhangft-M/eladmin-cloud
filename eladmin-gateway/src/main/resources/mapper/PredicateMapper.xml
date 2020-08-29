@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.gateway.mapper.PredicateMapper">
+    <resultMap id="predicateMap" type="org.micah.gateway.entity.Predicate">
+        <id property="predicateId" column="predicate_id"/>
+        <result property="predicateName" column="predicate_name"/>
+        <result property="predicateVal" column="predicate_val"/>
+    </resultMap>
+
+    <select id="selectByRouterId" resultMap="predicateMap">
+        select p.id as predicate_id, predicate_name, predicate_val
+        from predicate p
+                 left join router_predicate rp on p.id = rp.predicate_id
+        where rp.router_id = #{id};
+    </select>
+</mapper>

@@ -1,5 +1,7 @@
 package org.micah.gateway.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 
@@ -17,6 +19,7 @@ public class Predicate implements Serializable {
 
     private static final long serialVersionUID = 1331709878647977544L;
 
+    @TableId(value = "id",type = IdType.AUTO)
     private Long predicateId;
 
 

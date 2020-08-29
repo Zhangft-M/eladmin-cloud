@@ -42,7 +42,8 @@ public class ColumnInfoServiceImpl extends ServiceImpl<ColumnInfoMapper, ColumnI
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTableInfo(List<ColumnInfo> columnInfos) {
-        if (!this.saveBatch(columnInfos)) {
+
+        if (!this.saveOrUpdateBatch(columnInfos)) {
             log.error("批量存储失失败:{}", columnInfos);
             throw new CreateFailException("批量存储失败，请联系管理员");
         }

@@ -39,9 +39,9 @@ public class MyBatisPlusConfig {
         return new CustomIdGenerator();
     }
 
-    @Bean
+    /*@Bean
     public WebMvcConfigurer customizeWebMvcConfig(){
         return new CustomizeWebMvcConfig();
-    }
+    }*/
 
 }

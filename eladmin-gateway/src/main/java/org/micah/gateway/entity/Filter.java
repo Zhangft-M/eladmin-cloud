@@ -1,5 +1,7 @@
 package org.micah.gateway.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.Getter;
 
@@ -16,6 +18,7 @@ public class Filter implements Serializable {
 
     private static final long serialVersionUID = 7528156236392922835L;
 
+    @TableId(value = "id",type = IdType.AUTO)
     private Long filterId;
 
     private String filterName;

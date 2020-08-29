@@ -1,8 +1,11 @@
 package org.micah.gateway.handler;
 
 
+import cn.hutool.db.Page;
+import org.micah.core.web.page.PageResult;
 import org.micah.gateway.entity.Router;
 import org.micah.gateway.service.IRouterService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,10 +47,21 @@ public class RouterHandler {
      * @return
      */
     @GetMapping
-    public Mono<ResponseEntity<List<Router>>> listRouters(){
-        List<Router> list = this.routerService.list();
-        System.out.println(list);
+    public Mono<ResponseEntity<PageResult>> listRouters(@RequestParam int page,@RequestParam int size,@RequestParam String sort){
+        PageResult list = this.routerService.queryPage(page,size,sort);
+        // System.out.println(list);
         return Mono.just(new ResponseEntity<>(list,HttpStatus.OK));
+    }
+
+    /**
+     * 查询所有的路由策略
+     * @return
+     */
+    @GetMapping("{id}")
+    public Mono<ResponseEntity<Router>> getById(@PathVariable Integer id){
+        Router router = this.routerService.selectById(id);
+        // System.out.println(list);
+        return Mono.just(new ResponseEntity<>(router,HttpStatus.OK));
     }
 
     /**

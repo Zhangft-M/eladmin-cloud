@@ -20,4 +20,11 @@ public interface RouterMapper extends BaseMapper<Router> {
      * @return
      */
     List<Router> selectAll();
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    Router getById(Integer id);
 }
