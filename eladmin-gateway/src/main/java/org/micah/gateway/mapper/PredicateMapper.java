@@ -17,5 +17,5 @@ public interface PredicateMapper extends BaseMapper<Predicate> {
      * @param id
      * @return
      */
-    Set<Predicate> selectByRouterId(Integer id);
+    Set<Predicate> selectByRouterId(Long id);
 }

@@ -1,20 +1,22 @@
 package org.micah.gateway.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.micah.core.util.StringUtils;
 import org.micah.core.web.page.PageResult;
-import org.micah.gateway.entity.Filter;
-import org.micah.gateway.entity.Router;
-import org.micah.gateway.mapper.FilterMapper;
-import org.micah.gateway.mapper.PredicateMapper;
-import org.micah.gateway.mapper.RouterMapper;
+import org.micah.gateway.entity.*;
+import org.micah.gateway.entity.query.RouterQueryCriteria;
+import org.micah.gateway.mapper.*;
 import org.micah.gateway.service.IRouterService;
-import org.micah.mp.util.PageUtils;
+import org.micah.mp.util.QueryHelpUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
@@ -24,6 +26,7 @@ import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
 import org.springframework.cloud.gateway.support.NameUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
@@ -37,6 +40,7 @@ import java.util.*;
  * @author: MicahZhang
  * @create: 2020-07-29 15:30
  **/
+@Slf4j
 @Service
 public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> implements IRouterService, InitializingBean {
 
@@ -46,16 +50,22 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
 
     private final FilterMapper filterMapper;
 
+    private final RouterPredicateMapper routerPredicateMapper;
+
+    private final RouterFilterMapper routerFilterMapper;
+
     private ApplicationEventPublisher publisher;
 
     private final RouteDefinitionWriter definitionWriter;
 
     private final Set<GatewayFlowRule> rules = new HashSet<>();
 
-    public RouterServiceImpl(RouterMapper routerMapper, PredicateMapper predicateMapper, FilterMapper filterMapper, RouteDefinitionWriter definitionWriter) {
+    public RouterServiceImpl(RouterMapper routerMapper, PredicateMapper predicateMapper, FilterMapper filterMapper, RouterPredicateMapper routerPredicateMapper, RouterFilterMapper routerFilterMapper, RouteDefinitionWriter definitionWriter) {
         this.routerMapper = routerMapper;
         this.predicateMapper = predicateMapper;
         this.filterMapper = filterMapper;
+        this.routerPredicateMapper = routerPredicateMapper;
+        this.routerFilterMapper = routerFilterMapper;
         this.definitionWriter = definitionWriter;
     }
 
@@ -87,8 +97,46 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
      * @return
      */
     @Override
-    public Router selectById(Integer id) {
+    public Router selectById(Long id) {
         return this.routerMapper.getById(id);
+    }
+
+    /**
+     * 更新路由断言
+     *
+     * @param router
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRouterPredicate(Router router) {
+        this.routerPredicateMapper.delete(Wrappers.<RouterPredicateRelation>lambdaUpdate()
+                .eq(RouterPredicateRelation::getRouterId,router.getId()));
+        Set<Predicate> predicates = router.getPredicates();
+        if (CollUtil.isNotEmpty(predicates)){
+            predicates.forEach(predicate -> {
+                RouterPredicateRelation rpr = new RouterPredicateRelation(router.getId(),predicate.getPredicateId());
+                rpr.insert();
+            });
+        }
+    }
+
+    /**
+     * 跟新路由过滤器
+     *
+     * @param router
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRouterFilter(Router router) {
+        this.routerFilterMapper.delete(Wrappers.<RouterFilterRelation>lambdaUpdate()
+                .eq(RouterFilterRelation::getRouterId,router.getId()));
+        Set<Filter> filters = router.getFilters();
+        if (CollUtil.isNotEmpty(filters)){
+            filters.forEach(filter -> {
+                RouterFilterRelation rfr = new RouterFilterRelation(router.getId(),filter.getFilterId());
+                rfr.insert();
+            });
+        }
     }
 
     /**
@@ -97,7 +145,7 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
      * @return
      */
     @Override
-    public PageResult queryPage(int page, int size, String sort) {
+    public PageResult queryPage(RouterQueryCriteria criteria, int page, int size, String sort) {
         Page<Router> page1 = new Page<>(page,size);
         String[] sorts = sort.split(",");
         OrderItem orderItem = new OrderItem();
@@ -105,7 +153,8 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         orderItem.setColumn(sorts[0]);
         page1.setOrders(Collections.singletonList(orderItem));
         // 不分开查询分页会出错
-        Page<Router> routerPage = this.page(page1);
+        QueryWrapper<Router> wrapper = QueryHelpUtils.getWrapper(criteria, Router.class);
+        Page<Router> routerPage = this.page(page1,wrapper);
         routerPage.getRecords().forEach(router -> {
             router.setPredicates(this.predicateMapper.selectByRouterId(router.getId()));
             router.setFilters(this.filterMapper.selectByRouterId(router.getId()));
@@ -200,5 +249,24 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
     @Override
     public void afterPropertiesSet() throws Exception {
         this.initData();
+    }
+
+    /**
+     * 根据id删除
+     *
+     * @param ids
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByIds(Set<Long> ids) {
+        boolean b = this.removeByIds(ids);
+        if (!b){
+            log.warn("删除失败");
+            throw new RuntimeException("删除失败");
+        }
+        ids.forEach(id->{
+            this.routerFilterMapper.delete(Wrappers.<RouterFilterRelation>lambdaUpdate().eq(RouterFilterRelation::getRouterId,id));
+            this.routerPredicateMapper.delete(Wrappers.<RouterPredicateRelation>lambdaUpdate().eq(RouterPredicateRelation::getRouterId,id));
+        });
     }
 }

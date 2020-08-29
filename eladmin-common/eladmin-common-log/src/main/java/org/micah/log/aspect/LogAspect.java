@@ -86,6 +86,7 @@ public class LogAspect {
     @AfterThrowing(value = "pointcut()", throwing = "e")
     public void afterThrowingAdvice(JoinPoint pjp, Throwable e) {
         log.info("出现了异常:",e.getCause());
+        // TODO: 2020/8/29 异常日志会出现空指针异常，待解决
         Log log = new Log("ERROR", System.currentTimeMillis() - this.currentTime.get());
         this.currentTime.remove();
         log.setExceptionDetail(ThrowableUtil.getStackTrace(e).getBytes());

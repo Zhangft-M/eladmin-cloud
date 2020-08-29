@@ -1,6 +1,6 @@
 
 
-package ${package}.service.dto;
+package ${package}.model.query;
 
 import lombok.Data;
 <#if queryHasTimestamp>

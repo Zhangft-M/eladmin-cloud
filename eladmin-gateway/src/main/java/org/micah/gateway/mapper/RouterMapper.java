@@ -26,5 +26,5 @@ public interface RouterMapper extends BaseMapper<Router> {
      * @param id
      * @return
      */
-    Router getById(Integer id);
+    Router getById(Long id);
 }

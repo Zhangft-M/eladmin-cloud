@@ -21,7 +21,7 @@ import java.util.Set;
 public class Router implements Serializable {
     private static final long serialVersionUID = -3714358217961322667L;
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
     private String routerId;
     private String routerName;
     private Integer routerType;

@@ -71,7 +71,8 @@ public class ${className}Controller {
         if(resource.getId != null){
             throw new IllegalArgumentException("新的数据id不为空");
         }
-        return new ResponseEntity<>(this.${changeClassName}Service.create(resources),HttpStatus.CREATED);
+        this.${changeClassName}Service.create(resources)
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping

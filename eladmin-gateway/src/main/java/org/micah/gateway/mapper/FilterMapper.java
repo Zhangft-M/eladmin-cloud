@@ -17,5 +17,5 @@ public interface FilterMapper extends BaseMapper<Filter> {
      * @param id
      * @return
      */
-    Set<Filter> selectByRouterId(Integer id);
+    Set<Filter> selectByRouterId(Long id);
 }

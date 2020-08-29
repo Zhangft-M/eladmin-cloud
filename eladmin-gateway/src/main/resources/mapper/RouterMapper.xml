@@ -33,7 +33,7 @@
                  left join router_filter rf on r.id = rf.router_id
                  left join filter f on rf.filter_id = f.id
                  left join router_predicate rp on r.id = rp.router_id
-                 left join predicate p on rp.predicate_id = p.id;
+                 left join predicate p on rp.predicate_id = p.id
     </sql>
 
     <select id="selectAll" resultMap="routerMap">
@@ -41,7 +41,7 @@
             <include refid="baseSql"/>
     </select>
 
-    <select id="selectById" resultMap="routerMap">
+    <select id="getById" resultMap="routerMap">
         select
             <include refid="baseSql"/>
         <where>
