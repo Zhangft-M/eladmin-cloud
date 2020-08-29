@@ -86,7 +86,6 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      */
     @Override
     public PageResult queryAll(DeptQueryCriteria criteria, Pageable pageable, boolean isQuery) {
-        // TODO: 2020/8/29 测试异常
         if (!isQuery) {
             // 如果不是进行查询，只是用来导出数据
             // 进行排序查询

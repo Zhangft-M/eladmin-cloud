@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class LogErrorDTO implements Serializable {
 
     private static final long serialVersionUID = 4557209617190236452L;
+
     private Long id;
 
     private String username;

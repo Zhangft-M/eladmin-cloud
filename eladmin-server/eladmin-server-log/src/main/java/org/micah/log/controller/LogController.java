@@ -80,14 +80,15 @@ public class LogController {
     @PreAuthorize("@el.check('')")
     public ResponseEntity<PageResult> queryErrorLog(LogQueryCriteria criteria, Pageable pageable){
         criteria.setLogType("ERROR");
-        return new ResponseEntity<>(this.logService.queryAll(criteria,pageable), HttpStatus.OK);
+        PageResult result = this.logService.queryAll(criteria, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @Log("日志异常详情查询")
     @GetMapping(value = "/error/{id}")
     @ApiOperation("日志异常详情查询")
     @PreAuthorize("@el.check('')")
-    public ResponseEntity<Dict> queryErrorLogs(@PathVariable Long id){
+    public ResponseEntity<Object> queryErrorLogs(@PathVariable Long id){
         return new ResponseEntity<>(this.logService.findByErrDetail(id), HttpStatus.OK);
     }
 
@@ -96,7 +97,7 @@ public class LogController {
     @PostMapping()
     @ApiOperation("内部接口:保存日志")
     public ResponseEntity<Void> save(@RequestBody org.micah.model.Log log){
-        if (!Objects.isNull(log.getLogId())){
+        if (!Objects.isNull(log.getId())){
             throw new BadRequestException("A new "+ ENTITY_NAME +" cannot already have an ID");
         }
         this.logService.saveLog(log);

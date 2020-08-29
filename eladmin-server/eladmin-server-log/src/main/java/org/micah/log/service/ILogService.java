@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: eladmin-cloud
@@ -52,7 +53,7 @@ public interface ILogService extends IService<Log> {
      * @param id
      * @return
      */
-    Dict findByErrDetail(Long id);
+    Object findByErrDetail(Long id);
 
     /**
      * 删除错误日志

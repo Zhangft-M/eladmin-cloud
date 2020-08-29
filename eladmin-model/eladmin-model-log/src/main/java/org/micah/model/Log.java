@@ -38,7 +38,7 @@ public class Log implements Serializable {
     }
 
     @TableId(value = "log_id",type = IdType.AUTO)
-    private Long logId;
+    private Long id;
 
     /**
      * 操作用户

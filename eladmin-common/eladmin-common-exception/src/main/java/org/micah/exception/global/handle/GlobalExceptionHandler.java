@@ -36,7 +36,8 @@ import static org.springframework.http.HttpStatus.NOT_MODIFIED;
  * @date 2018-11-23
  */
 @Slf4j
-@RestControllerAdvice("org.micah.*.controller")
+@RestControllerAdvice(basePackages = {"org.micah.system.controller",
+        "org.micah.gen.controller","org.micah.log.controller"})
 public class GlobalExceptionHandler {
 
     /**

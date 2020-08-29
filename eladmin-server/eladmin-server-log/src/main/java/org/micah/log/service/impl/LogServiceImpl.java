@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,10 +111,10 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements ILogS
      * @return
      */
     @Override
-    public Dict findByErrDetail(Long id) {
+    public Object findByErrDetail(Long id) {
         Log log = Optional.ofNullable(this.getById(id)).orElse(null);
-        byte[] details = Objects.isNull(log) ? "".getBytes() : log.getExceptionDetail();
-        return Dict.create().set("exception",details);
+        byte[] details = Objects.isNull(log.getExceptionDetail()) ? "".getBytes() : log.getExceptionDetail();
+        return Dict.create().set("exception",new String(details, StandardCharsets.UTF_8));
     }
 
     /**
