@@ -31,6 +31,8 @@ import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserJobMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.ISysUserService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -53,6 +55,7 @@ import java.util.stream.Collectors;
  **/
 @Service
 @Slf4j
+@CacheConfig(cacheNames = "user")
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
     private final SysUserMapper userMapper;
@@ -66,7 +69,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final UserJobMapper userJobMapper;
 
 
-    public static final String USER_CACHE_KEY_PRE = "user::username:";
 
     public SysUserServiceImpl(SysUserMapper userMapper, SysUserMapStruct userMapStruct,
                               RedisUtils redisUtils, UserRoleMapper userRoleMapper,
@@ -126,7 +128,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 通过用户名查询用户
+     * 通过用户名查询用户基本信息
      *
      * @param currentUsername
      * @return
@@ -184,7 +186,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 验证通过后查看修改后的数据与原来的数据的用户名是否发生改变
         if (!oldSysUser.getUsername().equals(resources.getUsername())) {
             // 删除缓存数据
-            this.redisUtils.del(USER_CACHE_KEY_PRE + oldSysUser.getUsername());
+            this.redisUtils.del( CacheKey.USER_NAME+ oldSysUser.getUsername());
         }
         // 如果用户被禁用，则清除用户登陆的信息
         if (!resources.getEnabled()) {
@@ -313,6 +315,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
+    @Cacheable(key = "'id:' + #p0")
     public SysUserDto findById(Long id) {
         SysUser sysUser = Optional.ofNullable(this.userMapper.getById(id)).orElseGet(SysUser::new);
         return this.userMapStruct.toDto(sysUser);
@@ -405,25 +408,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 通过用户名查询用户
+     * 通过用户名查询用户信息和用户角色详细信息
      *
      * @param username
      * @return
      */
     @Override
     public SysUser queryByUsername(String username) {
-        SysUser sysUser = Optional.ofNullable(this.userMapper.queryByUsername(username)).orElseGet(SysUser::new);
         // System.out.println(sysUser);
-        return sysUser;
+        return Optional.ofNullable(this.userMapper.queryByUsername(username)).orElseGet(SysUser::new);
     }
 
     /**
-     * 通过用户名加载用户
+     * 通过用户名加载用户和角色基本信息
      *
      * @param username
      * @return
      */
     @Override
+    @Cacheable(key = "'username:' + #p0")
     public UserSmallDto getUserDetails(String username) {
         return this.userMapper.getUserDetails(username);
     }

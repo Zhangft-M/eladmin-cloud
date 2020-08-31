@@ -33,6 +33,7 @@ import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.IDeptService;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
  **/
 @Slf4j
 @Service
+@CacheConfig(cacheNames = "dept")
 public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements IDeptService {
 
     private final DeptMapper deptMapper;
@@ -65,7 +67,6 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     private final SysUserMapper userMapper;
 
     private final RedisUtils redisUtils;
-
 
 
     public DeptServiceImpl(DeptMapper deptMapper, DeptMapStruct deptMapStruct, UserRoleMapper userRoleMapper, RoleDeptMapper roleDeptMapper, SysUserMapper userMapper, RedisUtils redisUtils) {
@@ -96,7 +97,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         }
         // 该查询当有条件查询时候则按照条件查询，没有条件的时候则按照查询父节点查询
         // 查询所有的父节点
-        if (BeanUtils.isEmpty(criteria,"enabled")){
+        if (BeanUtils.isEmpty(criteria, "enabled")) {
             criteria.setPid(0L);
         }
         // 初始化分页条件
@@ -114,6 +115,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      * @return
      */
     @Override
+    @Cacheable(key = "'id'+ #p0")
     public DeptDto findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("参数为空");
@@ -205,7 +207,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(Dept resources) {
-        if (Objects.isNull(resources.getPid())){
+        if (Objects.isNull(resources.getPid())) {
             resources.setPid(0L);
         }
         resources.setSubCount(0);
@@ -239,7 +241,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         // 首先查询该父节点有多少子节点
         Integer count = this.deptMapper.selectCount(Wrappers.<Dept>lambdaQuery().eq(Dept::getPid, pid));
         // 再修改父节点的信息
-        this.deptMapper.update(null, Wrappers.<Dept>lambdaUpdate().set(Dept::getSubCount, count).eq(Dept::getId,pid));
+        this.deptMapper.update(null, Wrappers.<Dept>lambdaUpdate().set(Dept::getSubCount, count).eq(Dept::getId, pid));
         // System.out.println(count);
     }
 
@@ -345,6 +347,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
      * @return
      */
     @Override
+    @Cacheable(key = "'pid' + #p0")
     public List<Dept> findByPid(Long id) {
         return this.deptMapper.selectList(Wrappers.<Dept>lambdaQuery().eq(Dept::getPid, id));
     }

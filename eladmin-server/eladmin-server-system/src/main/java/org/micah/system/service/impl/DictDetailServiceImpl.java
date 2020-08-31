@@ -8,6 +8,7 @@ import org.micah.core.constant.CacheKey;
 import org.micah.core.util.StringUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.DeleteFailException;
+import org.micah.model.Dict;
 import org.micah.model.DictDetail;
 import org.micah.model.dto.DictDetailDto;
 import org.micah.model.mapstruct.DictDetailMapStruct;
@@ -19,6 +20,8 @@ import org.micah.redis.util.RedisUtils;
 import org.micah.system.mapper.DictDetailMapper;
 import org.micah.system.mapper.DictMapper;
 import org.micah.system.service.IDictDetailService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,7 @@ import java.util.List;
  **/
 @Slf4j
 @Service
+@CacheConfig(cacheNames = "dict")
 public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDetail> implements IDictDetailService {
 
     private final DictDetailMapper dictDetailMapper;
@@ -94,6 +98,7 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
      * @return
      */
     @Override
+    @Cacheable(key = "'name:' + #p0")
     public List<DictDetailDto> getDictByName(String name) {
         Page<DictDetail> dictDetailPage = this.dictDetailMapper.selectByDictName(null, name);
         return this.dictDetailMapStruct.toDto(dictDetailPage.getRecords());
@@ -112,7 +117,7 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
         if (insert != 0){
             log.info("添加成功，开始删除缓存");
             // 删除掉字典表（dict）的缓存数据
-            this.delCaches(resources.getId());
+            this.delCaches(resources.getDict().getName());
         }else {
             log.info("添加失败:{}",resources);
             throw new DeleteFailException("添加失败"+resources.toString());
@@ -130,7 +135,7 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
         int result = this.dictDetailMapper.updateById(resources);
         if (result != 0){
             log.info("更新成功，开始删除缓存");
-            this.delCaches(resources.getId());
+            this.delCaches(resources.getDict().getName());
         }else {
             log.info("更新失败:{}",resources);
             throw new DeleteFailException("更新失败"+resources.toString());
@@ -145,10 +150,11 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
+        Dict dict = this.dictMapper.selectById(this.dictDetailMapper.selectById(id).getDictId());
         int result = this.dictDetailMapper.deleteById(id);
         if (result != 0){
             log.info("删除成功，开始删除缓存");
-            this.delCaches(id);
+            this.delCaches(dict.getName());
         }else {
             log.info("删除失败，需要删除的数据的id为:{}",id);
             throw new DeleteFailException("删除失败，需要删除的数据的id为:"+id);
@@ -157,9 +163,9 @@ public class DictDetailServiceImpl extends ServiceImpl<DictDetailMapper, DictDet
 
     /**
      * 删除数据缓存
-     * @param id /
+     * @param name /
      */
-    private void delCaches(Long id) {
-        this.redisUtils.del(CacheKey.DICT_KEY_PRE + id);
+    private void delCaches(String name) {
+        this.redisUtils.del(CacheKey.DICT_KEY_PRE + name);
     }
 }

@@ -21,7 +21,7 @@ import java.util.List;
 @Configuration
 public class GatewayConfiguration {
 
-    /*private final List<ViewResolver> viewResolvers;
+    private final List<ViewResolver> viewResolvers;
     private final ServerCodecConfigurer serverCodecConfigurer;
 
     public GatewayConfiguration(ObjectProvider<List<ViewResolver>> viewResolversProvider,
@@ -43,5 +43,5 @@ public class GatewayConfiguration {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public GlobalFilter sentinelGatewayFilter() {
         return new SentinelGatewayFilter();
-    }*/
+    }
 }

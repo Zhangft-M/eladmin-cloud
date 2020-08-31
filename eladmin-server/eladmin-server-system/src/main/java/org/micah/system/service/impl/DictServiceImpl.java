@@ -72,7 +72,6 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
             return PageResult.success((long) dictList.size(), dictList);
         }
         // 查询数据，根据条件查询
-        // Page<Dict> startPage = PageUtils.startPage(page, size);
         Page<Dict> page = PageUtils.startPageAndSort(pageable);
         QueryWrapper<Dict> queryWrapper = QueryHelpUtils.getWrapper(queryCriteria,Dict.class);
         Page<Dict> selectPage = this.dictMapper.selectPage(page, queryWrapper);
@@ -152,6 +151,6 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
      * @param dict
      */
     private void delCaches(Dict dict) {
-        this.redisUtils.del(DICT_KEY_PRE + dict.getId());
+        this.redisUtils.del(DICT_KEY_PRE + dict.getName());
     }
 }

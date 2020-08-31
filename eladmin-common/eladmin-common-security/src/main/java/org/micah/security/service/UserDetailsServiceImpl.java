@@ -118,12 +118,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             user.getRoleNames().forEach(role -> {
                 dbAuthsSet.add(SecurityConstants.ROLE + role);
             });
-            // 获取所有的角色
-            // user.ge.forEach(role -> dbAuthsSet.add(SecurityConstants.ROLE + role.getName()));
-            // 根据用户的角色查询用户的菜单权限
-            // Set<Long> ids = sysUser.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
-            // ResponseEntity<List<MenuDto>> menuResult = this.remoteMenuService.queryByRoleIds(ids,SecurityConstants.FROM_IN);
-            // List<MenuDto> menuDtos = menuResult.getBody();
             // TODO: 2020/8/12 远程查询部门数据权限
             //......
         }

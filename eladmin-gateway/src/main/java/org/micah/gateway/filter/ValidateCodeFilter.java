@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.core.util.StringUtils;
+import org.micah.gateway.config.IgnoreClientConfiguration;
 import org.micah.gateway.exception.CaptchaException;
 import org.micah.gateway.service.IValidateCodeService;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +40,14 @@ import java.util.Map;
 public class ValidateCodeFilter extends AbstractGatewayFilterFactory<Object> {
 
     private final IValidateCodeService validateCodeService;
+
+    private final IgnoreClientConfiguration ignoreClients;
+
+    private static final String BASIC_ = "Basic ";
+
+    private static final String CODE = "code";
+
+    private static final String UUID = "uuid";
 
     @Override
     public GatewayFilter apply(Object config) {
@@ -54,9 +65,15 @@ public class ValidateCodeFilter extends AbstractGatewayFilterFactory<Object> {
                 if (StringUtils.equals(SecurityConstants.REFRESH_TOKEN,grandType)){
                     return chain.filter(exchange);
                 }
+                // 主要是对swagger认证进行放行
+                List<String> clients = ignoreClients.getClients();
+                String clientId = request.getQueryParams().getFirst("client_id");
+                if (clients.contains(clientId)) {
+                    return chain.filter(exchange);
+                }
                 // 处理登录请求
-                String code = request.getQueryParams().getFirst("code");
-                String uuid = request.getQueryParams().getFirst("uuid");
+                String code = request.getQueryParams().getFirst(CODE);
+                String uuid = request.getQueryParams().getFirst(UUID);
                 try {
                     validateCodeService.checkCapcha(uuid,code);
                 } catch (CaptchaException e) {

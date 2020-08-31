@@ -21,6 +21,8 @@ import org.micah.mp.util.QueryHelpUtils;
 import org.micah.redis.util.RedisUtils;
 import org.micah.system.mapper.*;
 import org.micah.system.service.IRoleService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,7 @@ import java.util.stream.Collectors;
  **/
 @Service
 @Slf4j
+@CacheConfig(cacheNames = "role")
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IRoleService {
 
     private final RoleMapper roleMapper;
@@ -120,6 +123,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
      * @return /
      */
     @Override
+    @Cacheable(key = "'id:' + #p0")
     public RoleDto findById(long id) {
         Role role = Optional.ofNullable(this.roleMapper.findById(id)).orElse(null);
         return this.roleMapStruct.toDto(role);

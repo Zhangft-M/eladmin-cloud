@@ -19,6 +19,7 @@
 
     <select id="selectByDictName" resultMap="detailMap">
         select sd.dict_id as id,
+               sd.name,
                sdd.detail_id,
                sdd.label,
                sdd.value,

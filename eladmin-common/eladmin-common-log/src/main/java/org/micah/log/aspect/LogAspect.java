@@ -141,7 +141,7 @@ public class LogAspect {
         log.setAddress(RequestUtils.getCityInfo(log.getRequestIp()));
         log.setMethod(methodName);
         log.setUsername(username);
-        log.setParams(params.toString() + " }");
+        log.setParams("{"+params.toString() + " }");
         log.setBrowser(RequestUtils.getBrowser(request));
         log.setCreateTime(Timestamp.valueOf(LocalDateTime.now(ZoneId.systemDefault())));
     }

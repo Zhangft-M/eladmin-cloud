@@ -105,7 +105,7 @@ public class CacheKey {
     /**
      *  字典缓存前缀
      */
-    public final String DICT_KEY_PRE = "dict::id:";
+    public final String DICT_KEY_PRE = "dict::name:";
 
     /**
      * 职位缓存前缀

@@ -29,6 +29,8 @@ import org.micah.system.mapper.MenuMapper;
 import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.service.IMenuService;
 import org.micah.system.service.IRoleService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,7 @@ import java.util.stream.Collectors;
  **/
 @Service
 @Slf4j
+@CacheConfig(cacheNames = "menu")
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IMenuService {
 
     private final MenuMapper menuMapper;
@@ -133,6 +136,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      * @return /
      */
     @Override
+    @Cacheable(key = "'id' + #p0")
     public MenuDto findById(Long id) {
         Menu menu = this.menuMapper.queryById(id);
         return this.menuMapStruct.toDto(menu);
@@ -380,6 +384,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      * @return /
      */
     @Override
+    @Cacheable(key = "'pid:' + #p0")
     public List<MenuDto> getMenusByPid(Long pid) {
         List<Menu> menuList = this.menuMapper.selectList(Wrappers.<Menu>lambdaQuery().eq(pid != null, Menu::getPid, pid));
         return Optional.ofNullable(this.menuMapStruct.toDto(menuList)).orElseGet(ArrayList::new);
@@ -422,6 +427,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
      * @return /
      */
     @Override
+    @Cacheable(key = "'user:' + #p0")
     public List<MenuDto> findByUser(Long currentUserId) {
         List<Menu> menus = this.menuMapper.queryByUserId(currentUserId);
         return Optional.ofNullable(this.menuMapStruct.toDto(menus)).orElseGet(ArrayList::new);
@@ -488,6 +494,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
         // 根据当前的菜单查询与菜单关联的用户
         List<SysUser> users = this.userMapper.queryByMenuId(id);
         redisUtils.del(CacheKey.MENU_ID_KEY_PRE + id);
+        // 删除当前用户的菜单缓存
         redisUtils.delByKeys(CacheKey.MENU_USER_KEY_PRE, users.stream().map(SysUser::getId).collect(Collectors.toSet()));
         redisUtils.del(CacheKey.MENU_PID_KEY_PRE + (oldPid == null ? 0 : oldPid));
         redisUtils.del(CacheKey.MENU_PID_KEY_PRE + (newPid == null ? 0 : newPid));

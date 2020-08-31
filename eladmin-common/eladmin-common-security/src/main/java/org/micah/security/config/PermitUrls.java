@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
  **/
 
 @Configuration
+@RefreshScope
 @ConfigurationProperties(prefix = "security.oauth2.ignore")
 public class PermitUrls implements InitializingBean, ApplicationContextAware {
 
