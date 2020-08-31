@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  **/
 
 @Configuration
-@ConfigurationProperties(prefix = "security.oauth2.permit")
+@ConfigurationProperties(prefix = "security.oauth2.ignore")
 public class PermitUrls implements InitializingBean, ApplicationContextAware {
 
     /**

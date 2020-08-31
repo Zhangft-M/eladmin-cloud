@@ -17,5 +17,16 @@
         <module>eladmin-server-log</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-swagger</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>

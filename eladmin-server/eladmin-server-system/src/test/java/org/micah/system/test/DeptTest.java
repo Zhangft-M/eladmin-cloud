@@ -1,5 +1,6 @@
 package org.micah.system.test;
 
+import org.jasypt.encryption.StringEncryptor;
 import org.junit.jupiter.api.Test;
 import org.micah.core.web.page.PageResult;
 import org.micah.model.Dept;
@@ -26,6 +27,9 @@ public class DeptTest {
 
     @Autowired
     private DeptServiceImpl deptService;
+
+    @Autowired
+    private StringEncryptor stringEncryptor;
 
     @Autowired
     private DeptController deptController;
@@ -56,6 +60,8 @@ public class DeptTest {
     @Test
     public void CountByPidTest(){
         // this.deptService.updateSubCount(7L);
+        System.out.println("root加密");
+        System.out.println(this.stringEncryptor.encrypt("missyou1127"));
     }
 
     @Test

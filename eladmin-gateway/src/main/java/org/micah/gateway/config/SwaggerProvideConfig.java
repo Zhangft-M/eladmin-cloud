@@ -2,11 +2,15 @@ package org.micah.gateway.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.config.GatewayProperties;
+import org.springframework.cloud.gateway.handler.AsyncPredicate;
 import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.route.RouteDefinition;
+import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.support.NameUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.server.ServerWebExchange;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 
@@ -24,35 +28,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SwaggerProvideConfig implements SwaggerResourcesProvider {
 
-    private static final String API_URI = "/v2/api-docs";
+    public static final String API_URI = "/v2/api-docs";
 
     private static final String PATH = "Path";
 
-    private static final String AUTH_ID = "eladmin-auth";
+    private static final String AUTH_ID = "auth-server";
 
     private static final String ZERO = "0";
 
-    private final RouteLocator routeLocator;
-
-    private final GatewayProperties gatewayProperties;
+    private final RouteDefinitionLocator definitionLocator;
 
 
 
     @Override
     public List<SwaggerResource> get() {
         List<SwaggerResource> resources = new ArrayList<>();
-        List<String> routes = new ArrayList<>();
-        // 获取每个路由的唯一路由id
-        this.routeLocator.getRoutes().subscribe(route -> routes.add(route.getId()));
-        // 遍历路由配置
-        gatewayProperties.getRoutes().stream().filter(routeDefinition -> routes.contains(routeDefinition.getId()))
-                .forEach(routeDefinition -> routeDefinition.getPredicates()
-                        .stream().filter(predicateDefinition -> PATH.equalsIgnoreCase(predicateDefinition.getName()))
-                        .filter(predicateDefinition -> !AUTH_ID.equalsIgnoreCase(routeDefinition.getId()))
-                        .forEach(predicateDefinition -> {
-                            resources.add(this.swaggerResource(routeDefinition.getId(),predicateDefinition.getArgs()
-                                    .get(NameUtils.GENERATED_NAME_PREFIX+ZERO).replace("/**",API_URI)));
-                        }));
+        this.definitionLocator.getRouteDefinitions().subscribe(routeDefinition -> routeDefinition.getPredicates()
+                .stream().filter(predicateDefinition -> PATH.equalsIgnoreCase(predicateDefinition.getName()))
+                .filter(predicateDefinition -> !AUTH_ID.equalsIgnoreCase(routeDefinition.getId()))
+                .forEach(predicateDefinition -> {
+                    resources.add(this.swaggerResource(routeDefinition.getId(),predicateDefinition.getArgs()
+                            .get(NameUtils.GENERATED_NAME_PREFIX+ZERO).replace("/**",API_URI)));
+                }));
         return resources;
     }
 

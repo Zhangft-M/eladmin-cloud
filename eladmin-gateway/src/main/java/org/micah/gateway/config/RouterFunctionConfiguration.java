@@ -2,6 +2,9 @@ package org.micah.gateway.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.micah.gateway.handler.SwaggerResourceHandler;
+import org.micah.gateway.handler.SwaggerSecurityHandler;
+import org.micah.gateway.handler.SwaggerUiHandler;
 import org.micah.gateway.handler.ValidateCodeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,8 +25,13 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 @RequiredArgsConstructor
 public class RouterFunctionConfiguration {
 
-    @Autowired
-    private ValidateCodeHandler validateCodeHandler;
+    private final ValidateCodeHandler validateCodeHandler;
+
+    private final SwaggerResourceHandler swaggerResourceHandler;
+
+    private final SwaggerSecurityHandler swaggerSecurityHandler;
+
+    private final SwaggerUiHandler swaggerUiHandler;
 
     @SuppressWarnings("rawtypes")
     @Bean
@@ -31,6 +39,12 @@ public class RouterFunctionConfiguration {
         return RouterFunctions
                 .route(
                 RequestPredicates.GET("/auth/code").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)),
-                validateCodeHandler);
+                validateCodeHandler)
+                .andRoute(RequestPredicates.GET("/swagger-resources").and(RequestPredicates.accept(MediaType.ALL)),
+                        swaggerResourceHandler)
+                .andRoute(RequestPredicates.GET("/swagger-resources/configuration/ui")
+                        .and(RequestPredicates.accept(MediaType.ALL)), swaggerUiHandler)
+                .andRoute(RequestPredicates.GET("/swagger-resources/configuration/security")
+                        .and(RequestPredicates.accept(MediaType.ALL)), swaggerSecurityHandler);
     }
 }

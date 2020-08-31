@@ -18,6 +18,7 @@ import org.micah.gateway.mapper.*;
 import org.micah.gateway.service.IRouterService;
 import org.micah.mp.util.QueryHelpUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
@@ -46,6 +47,8 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
 
     private final RouterMapper routerMapper;
 
+    private final GatewayProperties gatewayProperties;
+
     private final PredicateMapper predicateMapper;
 
     private final FilterMapper filterMapper;
@@ -60,8 +63,9 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
 
     private final Set<GatewayFlowRule> rules = new HashSet<>();
 
-    public RouterServiceImpl(RouterMapper routerMapper, PredicateMapper predicateMapper, FilterMapper filterMapper, RouterPredicateMapper routerPredicateMapper, RouterFilterMapper routerFilterMapper, RouteDefinitionWriter definitionWriter) {
+    public RouterServiceImpl(RouterMapper routerMapper, GatewayProperties gatewayProperties, PredicateMapper predicateMapper, FilterMapper filterMapper, RouterPredicateMapper routerPredicateMapper, RouterFilterMapper routerFilterMapper, RouteDefinitionWriter definitionWriter) {
         this.routerMapper = routerMapper;
+        this.gatewayProperties = gatewayProperties;
         this.predicateMapper = predicateMapper;
         this.filterMapper = filterMapper;
         this.routerPredicateMapper = routerPredicateMapper;
@@ -223,6 +227,7 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         definition.setFilters(filterDefinitions);
         // 设置uri
         definition.setUri(uri);
+
         this.definitionWriter.save(Mono.just(definition)).subscribe();
         // 设置限流规则
         rules.add(new GatewayFlowRule(router.getRouterId())

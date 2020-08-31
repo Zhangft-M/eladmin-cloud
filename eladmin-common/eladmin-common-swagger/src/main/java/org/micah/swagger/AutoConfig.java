@@ -46,7 +46,7 @@ public class AutoConfig {
             swaggerProperties.getBasePath().add(BASE_PATH);
         }
         // noinspection unchecked
-        List<Predicate<String>> basePath = new ArrayList();
+        List<Predicate<String>> basePath = new ArrayList<>();
         swaggerProperties.getBasePath().forEach(path -> basePath.add(PathSelectors.ant(path)));
 
         // exclude-path处理

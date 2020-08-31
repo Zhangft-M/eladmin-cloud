@@ -32,6 +32,7 @@ import org.micah.system.mapper.RoleDeptMapper;
 import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.IDeptService;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
