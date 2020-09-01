@@ -1,8 +1,12 @@
 package org.micah.core.base;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.micah.core.excel.TimeStampCustomConverter;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -21,12 +25,16 @@ public class BaseDTO implements Serializable {
 
     private static final long serialVersionUID = 6671254728536647457L;
 
+    @ExcelIgnore
     private String createBy;
 
+    @ExcelIgnore
     private String updatedBy;
 
+    @ExcelProperty(value = "创建日期",converter = TimeStampCustomConverter.class)
     private Timestamp createTime;
 
+    @ExcelProperty(value = "更新日期",converter = TimeStampCustomConverter.class)
     private Timestamp updateTime;
 
     @Override

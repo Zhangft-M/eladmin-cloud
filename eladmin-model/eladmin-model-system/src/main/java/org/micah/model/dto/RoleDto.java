@@ -15,6 +15,8 @@
  */
 package org.micah.model.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.micah.core.base.BaseDTO;
@@ -29,6 +31,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@ExcelIgnoreUnannotated
 public class RoleDto extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = -7468473541196674282L;
@@ -38,12 +41,16 @@ public class RoleDto extends BaseDTO implements Serializable {
 
     private Set<DeptDto> depts;
 
+    @ExcelProperty("名称")
     private String name;
 
+    @ExcelProperty("数据域")
     private String dataScope;
 
+    @ExcelProperty("操作等级")
     private Integer level;
 
+    @ExcelProperty("描述")
     private String description;
 
     @Override

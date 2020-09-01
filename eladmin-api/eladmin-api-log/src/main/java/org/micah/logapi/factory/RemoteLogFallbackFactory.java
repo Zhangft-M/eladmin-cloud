@@ -17,16 +17,16 @@ public class RemoteLogFallbackFactory implements FallbackFactory<IRemoteLogServi
     @Override
     public IRemoteLogService create(Throwable throwable) {
         log.error("插入日志失败:case{}",throwable.getCause().toString());
-        return new IRemoteLogService() {
-            @Override
-            public ResponseEntity<Void> save(Log log, String from) {
-                return null;
-            }
+       return new IRemoteLogService() {
+           @Override
+           public ResponseEntity<Void> save(Log log, String from) {
+               return null;
+           }
 
-            @Override
-            public ResponseEntity<Boolean> saveLogininfor(String username, String status, String message) {
-                return null;
-            }
-        };
+           @Override
+           public ResponseEntity<Boolean> saveLoginInfo(String username, String status, String message, String from) {
+               return null;
+           }
+       };
     }
 }

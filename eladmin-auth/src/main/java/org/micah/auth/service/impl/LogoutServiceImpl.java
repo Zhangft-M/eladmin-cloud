@@ -2,6 +2,7 @@ package org.micah.auth.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.micah.auth.service.ILogoutService;
+import org.micah.core.constant.CacheKey;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.core.util.StringUtils;
 import org.micah.logapi.api.IRemoteLogService;
@@ -42,13 +43,6 @@ public class LogoutServiceImpl implements ILogoutService {
             this.tokenStore.removeAccessToken(oAuth2AccessToken);
             // 清空刷新token
             this.tokenStore.removeRefreshToken(oAuth2AccessToken.getRefreshToken());
-            // 获取additionalInformation
-            Map<String, Object> map = oAuth2AccessToken.getAdditionalInformation();
-            if (map.containsKey(SecurityConstants.DETAILS_USERNAME)){
-                // 获取用户名
-                String username = (String) map.get(SecurityConstants.DETAILS_USERNAME);
-                this.remoteLogService.saveLogininfor(username,SecurityConstants.LOGOUT,"注销成功");
-            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();

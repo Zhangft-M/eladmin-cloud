@@ -38,7 +38,7 @@ public interface IRemoteLogService {
      * @param message 消息
      * @return 结果
      */
-    @PostMapping("/logininfor")
-    ResponseEntity<Boolean> saveLogininfor(@RequestParam("username") String username, @RequestParam("status") String status,
-                              @RequestParam("message") String message);
+    @PostMapping("/logs/loginInfo")
+    ResponseEntity<Boolean> saveLoginInfo(@RequestParam("username") String username, @RequestParam("status") String status,
+                              @RequestParam("message") String message,@RequestHeader(SecurityConstants.FROM) String from);
 }

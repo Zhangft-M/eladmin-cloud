@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 /**
@@ -94,7 +97,7 @@ public class LogController {
 
 
     @Inner
-    @PostMapping()
+    @PostMapping
     @ApiOperation("内部接口:保存日志")
     public ResponseEntity<Void> save(@RequestBody org.micah.model.Log log){
         if (!Objects.isNull(log.getId())){
@@ -103,6 +106,7 @@ public class LogController {
         this.logService.saveLog(log);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @Log("删除所有ERROR日志")
     @DeleteMapping(value = "/del/error")

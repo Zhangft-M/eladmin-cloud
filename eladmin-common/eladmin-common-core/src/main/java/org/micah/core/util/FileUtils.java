@@ -334,12 +334,14 @@ public final class FileUtils extends FileUtil {
     public static <T> void downloadFailedUsingJson(HttpServletResponse response, String fileName, Class<T> clazz, List<?> data, String sheetName) throws IOException {
         // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
         try {
-            response.setContentType("application/vnd.ms-excel");
+            // response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String fName = URLEncoder.encode(fileName, "UTF-8");
             //String sName = URLEncoder.encode(sheetName,"UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + fName + ".xlsx");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+            //test.xls是弹出下载对话框的文件名，不能为中文，中文请自行编码
+            response.setHeader("Content-Disposition", "attachment;filename=file.xlsx");
             // 这里需要设置不关闭流
             EasyExcel.write(response.getOutputStream(), clazz)
                     .autoCloseStream(Boolean.FALSE)

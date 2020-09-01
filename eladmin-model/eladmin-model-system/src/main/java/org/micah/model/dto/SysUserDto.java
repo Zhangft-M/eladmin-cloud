@@ -15,10 +15,13 @@
  */
 package org.micah.model.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.micah.core.base.BaseDTO;
+import org.micah.core.excel.BoolCustomConverter;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -30,6 +33,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@ExcelIgnoreUnannotated
 public class SysUserDto extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = 967234921171721967L;
@@ -43,14 +47,19 @@ public class SysUserDto extends BaseDTO implements Serializable {
 
     private Long deptId;
 
+    @ExcelProperty("用户名")
     private String username;
 
+    @ExcelProperty("昵称")
     private String nickName;
 
+    @ExcelProperty("邮箱")
     private String email;
 
+    @ExcelProperty("手机号")
     private String phone;
 
+    @ExcelProperty("性别")
     private String gender;
 
     private String avatarName;
@@ -60,8 +69,10 @@ public class SysUserDto extends BaseDTO implements Serializable {
     @JsonIgnore
     private String password;
 
+    @ExcelProperty(value = "是否启用",converter = BoolCustomConverter.class)
     private Boolean enabled;
 
+    @ExcelProperty(value = "是否为管理员",converter = BoolCustomConverter.class)
     @JsonIgnore
     private Boolean isAdmin = false;
 

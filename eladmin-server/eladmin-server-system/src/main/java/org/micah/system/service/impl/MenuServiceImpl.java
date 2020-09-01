@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheKey;
+import org.micah.core.util.FileUtils;
 import org.micah.core.util.StringUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.BadRequestException;
@@ -368,13 +369,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     /**
      * 导出
      *
-     * @param queryAll 待导出的数据
+     * @param data 待导出的数据
      * @param response /
      * @throws IOException /
      */
     @Override
-    public void download(List<MenuDto> queryAll, HttpServletResponse response) throws IOException {
+    public void download(List<MenuDto> data, HttpServletResponse response) throws IOException {
         // TODO: 2020/8/15 后续处理导出数据
+        FileUtils.downloadFailedUsingJson(response,"menu-info",MenuDto.class,data,"sheet1");
     }
 
     /**

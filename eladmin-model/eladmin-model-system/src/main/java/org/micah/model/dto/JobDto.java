@@ -15,10 +15,13 @@
  */
 package org.micah.model.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.micah.core.base.BaseDTO;
+import org.micah.core.excel.BoolCustomConverter;
 
 import java.io.Serializable;
 
@@ -29,6 +32,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
+@ExcelIgnoreUnannotated
 public class JobDto extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = -6588451143478372790L;
@@ -36,8 +40,10 @@ public class JobDto extends BaseDTO implements Serializable {
 
     private Integer jobSort;
 
+    @ExcelProperty("职位名称")
     private String name;
 
+    @ExcelProperty(value = "是否启用",converter = BoolCustomConverter.class)
     private Boolean enabled;
 
     public JobDto(String name, Boolean enabled) {

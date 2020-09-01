@@ -3,6 +3,7 @@ package org.micah.auth.controller;
 import lombok.RequiredArgsConstructor;
 import org.micah.auth.service.ILogoutService;
 import org.micah.core.util.StringUtils;
+import org.micah.log.annotation.Log;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,8 @@ public class LogoutController {
 
 
     private final ILogoutService tokenService;
+
+
 
     @DeleteMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {

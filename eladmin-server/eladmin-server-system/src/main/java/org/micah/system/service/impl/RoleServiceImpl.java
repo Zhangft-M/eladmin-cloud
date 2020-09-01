@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheKey;
+import org.micah.core.util.FileUtils;
 import org.micah.core.web.page.PageResult;
 import org.micah.exception.global.*;
 import org.micah.model.*;
@@ -301,13 +302,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     /**
      * 导出数据
      *
-     * @param queryAll 待导出的数据
+     * @param data 待导出的数据
      * @param response /
      * @throws IOException /
      */
     @Override
-    public void download(List<RoleDto> queryAll, HttpServletResponse response) throws IOException {
-
+    public void download(List<RoleDto> data, HttpServletResponse response) throws IOException {
+        FileUtils.downloadFailedUsingJson(response,"role-info",RoleDto.class,data,"sheet1");
     }
 
     /**

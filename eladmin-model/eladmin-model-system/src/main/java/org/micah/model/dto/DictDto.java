@@ -15,6 +15,9 @@
  */
 package org.micah.model.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.micah.core.base.BaseDTO;
@@ -28,14 +31,18 @@ import java.util.List;
 */
 @Getter
 @Setter
+@ExcelIgnoreUnannotated
 public class DictDto extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = -1575519627265071484L;
+
     private Long id;
 
     private List<DictDetailDto> dictDetails;
 
+    @ExcelProperty("字典名称")
     private String name;
 
+    @ExcelProperty("字典描述")
     private String description;
 }
