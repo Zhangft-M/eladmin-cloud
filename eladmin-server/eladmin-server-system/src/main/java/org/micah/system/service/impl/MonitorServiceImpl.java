@@ -94,7 +94,7 @@ public class MonitorServiceImpl implements IMonitorService {
             // 获取可以使用的大小
             diskInfo.put("available",FileUtils.transformSize(fileStore.getUsableSpace()));
             // 获取可以使用的比率
-            diskInfo.put("usageRate", df.format(fileStore.getUsableSpace()/(double)fileStore.getTotalSpace() * 100));
+            diskInfo.put("usageRate", df.format((fileStore.getTotalSpace()-fileStore.getUsableSpace())/(double)fileStore.getTotalSpace() * 100));
         }
         return diskInfo;
     }

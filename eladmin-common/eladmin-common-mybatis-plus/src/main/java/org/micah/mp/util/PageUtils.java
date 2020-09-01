@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,21 @@ public final class PageUtils {
         }).collect(Collectors.toList());
         p.addOrder(orderItems);
         return p;
+    }
+
+    /**
+     * List 分页
+     */
+    public static List<?> toPage(int page, int size , List<?> list) {
+        int fromIndex = page * size;
+        int toIndex = page * size + size;
+        if(fromIndex > list.size()){
+            return new ArrayList<>();
+        } else if(toIndex >= list.size()) {
+            return list.subList(fromIndex,list.size());
+        } else {
+            return list.subList(fromIndex,toIndex);
+        }
     }
 
 }

@@ -136,4 +136,6 @@ public class CacheKey {
      * 用户缓存前缀:username
      */
     public final String USER_CACHE_KEY_PRE = "user::username:";
+
+    public final String ONLINE_USER = "online:user:";
 }

@@ -1,13 +1,16 @@
 package org.micah.auth.config;
 
 import lombok.RequiredArgsConstructor;
+import org.micah.auth.service.IOnlineUserService;
 import org.micah.core.constant.CacheKey;
 import org.micah.security.component.CustomizeWebResponseExceptionTranslator;
 import org.micah.security.service.CustomClientDetailsService;
 import org.micah.core.constant.SecurityConstants;
 import org.micah.security.component.LoginUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +29,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,6 +50,12 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      */
     private final AuthenticationManager authenticationManager;
 
+
+    /**
+     * 在线用户管理
+     */
+    private IOnlineUserService onlineUserService;
+
     /**
      * 数据源，使用sql查询客户端信息
      */
@@ -60,6 +70,12 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      * UserDetailsService,用来加载用户对象
      */
     private final UserDetailsService userDetailsService;
+
+
+    @Autowired
+    public void setOnlineUserService(IOnlineUserService onlineUserService) {
+        this.onlineUserService = onlineUserService;
+    }
 
 
 
@@ -91,7 +107,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 // 配置请求方式
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET,HttpMethod.POST)
                 // 配置token的存储位置
-                .tokenStore(tokenStore())
+                .tokenStore(redisTokenStore())
                 // 自定义生成token
                 .tokenEnhancer(tokenEnhancer())
                 // 配置认证方式，这里选择用户账号密码认证
@@ -129,6 +145,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                     additionalInformation.put(SecurityConstants.DATA_SCOPES, loginUser.getDataScopes());
                     additionalInformation.put(SecurityConstants.AUTHORITIES_KEY,authorities);
                     ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInformation);
+                    onlineUserService.saveOnlineUser(accessToken);
                 }
                 return accessToken;
             }
@@ -140,7 +157,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      * @return TokenStore
      */
     @Bean
-    public TokenStore tokenStore() {
+    public TokenStore redisTokenStore() {
         RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
         // 设置保存的key的前缀
         redisTokenStore.setPrefix(CacheKey.OAUTH_ACCESS);
