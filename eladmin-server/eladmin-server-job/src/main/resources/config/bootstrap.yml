@@ -1,0 +1,28 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: job-server
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1
+      config:
+        server-addr: ${spring.cloud.nacos.server-addr}
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+        file-extension: yml
+xxl:
+  job:
+    admin-addresses: http://127.0.0.1:8088/xxl-job-admin
+    access-token:
+    app-name: xxl-job-executor
+    address:
+    ip:
+    port: 9999
+    log-path: /data/applogs/xxl-job/jobhandler
+    log-retention-days: 30
+
+
+

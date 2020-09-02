@@ -43,6 +43,7 @@
         <module>eladmin-model</module>
         <module>eladmin-auth</module>
         <module>eladmin-server</module>
+        <module>eladmin-job-admin</module>
     </modules>
 
 

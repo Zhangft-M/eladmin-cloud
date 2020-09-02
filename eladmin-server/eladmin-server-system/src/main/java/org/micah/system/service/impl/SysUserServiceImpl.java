@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.constant.CacheKey;
@@ -31,14 +32,19 @@ import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserJobMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.ISysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +62,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @CacheConfig(cacheNames = "user")
+@RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
     private final SysUserMapper userMapper;
@@ -68,17 +75,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final UserJobMapper userJobMapper;
 
+    /**
+     * restTemplate提供远程访问功能,给RemoteTokenServices提供支持
+     */
+    private final RestTemplate lbRestTemplate;
 
-
-    public SysUserServiceImpl(SysUserMapper userMapper, SysUserMapStruct userMapStruct,
-                              RedisUtils redisUtils, UserRoleMapper userRoleMapper,
-                              UserJobMapper userJobMapper) {
-        this.userMapper = userMapper;
-        this.userMapStruct = userMapStruct;
-        this.redisUtils = redisUtils;
-        this.userRoleMapper = userRoleMapper;
-        this.userJobMapper = userJobMapper;
-    }
 
     /**
      * 查询所有，不进行分页
@@ -191,6 +192,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 如果用户被禁用，则清除用户登陆的信息
         if (!resources.getEnabled()) {
             // TODO: 2020/8/11 需要使用在线业务服务进行操作
+            HashMap<String, Long> args = Maps.newHashMapWithExpectedSize(1);
+            args.put("ids",resources.getId());
+            HttpEntity<Map<String,Long>> httpEntity = new HttpEntity<>(args);
+            this.lbRestTemplate.exchange("http://auth-server/oauth/online",HttpMethod.DELETE,httpEntity,Void.class);
         }
         /**
          * 示例请求数据
