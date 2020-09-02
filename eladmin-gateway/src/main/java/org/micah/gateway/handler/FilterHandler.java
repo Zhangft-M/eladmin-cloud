@@ -7,6 +7,7 @@ import org.micah.gateway.entity.Predicate;
 import org.micah.gateway.entity.query.FilterQueryCriteria;
 import org.micah.gateway.service.IFilterService;
 import org.micah.gateway.service.IPredicateService;
+import org.micah.gateway.service.IRouterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,8 @@ import java.util.Set;
 public class FilterHandler {
 
     private final IFilterService filterService;
+
+    private final IRouterService routerService;
 
     /**
      * 查询所有的过滤策略
@@ -56,12 +59,14 @@ public class FilterHandler {
     @PutMapping
     public ResponseEntity<Void> updateFilter(@Validated @RequestBody Filter resources){
         this.filterService.updateFilter(resources);
+        this.routerService.initData();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
     public ResponseEntity<Void> delete(@RequestBody Set<Long> ids) {
         this.filterService.deleteAll(ids);
+        this.routerService.initData();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

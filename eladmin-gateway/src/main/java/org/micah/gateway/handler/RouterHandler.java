@@ -9,6 +9,7 @@ import org.micah.gateway.service.IRouterService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -103,6 +104,7 @@ public class RouterHandler {
      * 添加路由策略
      */
     @PostMapping
+    @Transactional(rollbackFor = Exception.class)
     public Mono<ResponseEntity<String>> createRouters(@RequestBody Router gatewayEntity){
         boolean b = this.routerService.save(gatewayEntity);
         if (!b){

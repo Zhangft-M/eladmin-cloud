@@ -478,10 +478,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     private void verifyIframe(Menu resources) {
         if (resources.getIFrame()) {
             String path = resources.getPath();
-            if (StringUtils.startWithIgnoreCase(path, HTTP_PRE) || StringUtils.startWithIgnoreCase(path, HTTPS_PRE)) {
-                return;
+            if (!(StringUtils.startWithIgnoreCase(path, HTTP_PRE) || StringUtils.startWithIgnoreCase(path, HTTPS_PRE))) {
+                throw new BadRequestException("The external link must start with http:// or https://");
             }
-            throw new BadRequestException("外链必须以http://或者https://开头");
         }
     }
 

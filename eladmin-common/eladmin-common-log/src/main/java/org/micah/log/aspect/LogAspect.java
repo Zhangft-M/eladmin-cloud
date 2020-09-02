@@ -95,6 +95,17 @@ public class LogAspect {
         log.setExceptionDetail(ThrowableUtil.getStackTrace(e).getBytes());
         this.initLogFields((ProceedingJoinPoint) pjp, log, username);
         // 存储日志到数据库
+        // TODO: 2020/9/2 有些异常详情feign序列化会抛出异常无法解析，还没好的方法解决(已解决)
+        // 不适用压缩传输
+        /**
+         * 更改feign的设置
+         * feign:
+         *  compression:
+         *    request:
+         *      enabled: false
+         *    response:
+         *      enabled: false
+         */
         this.remoteLogService.save(log,SecurityConstants.FROM_IN);
     }
 

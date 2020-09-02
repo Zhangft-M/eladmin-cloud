@@ -5,6 +5,7 @@ import org.micah.core.web.page.PageResult;
 import org.micah.gateway.entity.Predicate;
 import org.micah.gateway.entity.query.PredicateQueryCriteria;
 import org.micah.gateway.service.IPredicateService;
+import org.micah.gateway.service.IRouterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ import java.util.Set;
 public class PredicateHandler {
 
     private final IPredicateService predicateService;
+
+    private final IRouterService routerService;
 
     /**
      * 查询所有的路由策略
@@ -57,6 +60,7 @@ public class PredicateHandler {
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<Void> updatePredicate(@Validated @RequestBody Predicate resources){
         this.predicateService.updateById(resources);
+        this.routerService.initData();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -64,6 +68,7 @@ public class PredicateHandler {
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<Void> delete(@RequestBody Set<Long> ids) {
         this.predicateService.deleteByIds(ids);
+        this.routerService.initData();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.util.StringUtils;
 import org.micah.core.web.page.PageResult;
@@ -43,11 +44,10 @@ import java.util.*;
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> implements IRouterService, InitializingBean {
 
     private final RouterMapper routerMapper;
-
-    private final GatewayProperties gatewayProperties;
 
     private final PredicateMapper predicateMapper;
 
@@ -61,17 +61,14 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
 
     private final RouteDefinitionWriter definitionWriter;
 
+    private static final Map<String,String> DEFAULT_ARGS = new HashMap<>();
+
     private final Set<GatewayFlowRule> rules = new HashSet<>();
 
-    public RouterServiceImpl(RouterMapper routerMapper, GatewayProperties gatewayProperties, PredicateMapper predicateMapper, FilterMapper filterMapper, RouterPredicateMapper routerPredicateMapper, RouterFilterMapper routerFilterMapper, RouteDefinitionWriter definitionWriter) {
-        this.routerMapper = routerMapper;
-        this.gatewayProperties = gatewayProperties;
-        this.predicateMapper = predicateMapper;
-        this.filterMapper = filterMapper;
-        this.routerPredicateMapper = routerPredicateMapper;
-        this.routerFilterMapper = routerFilterMapper;
-        this.definitionWriter = definitionWriter;
+    static {
+        DEFAULT_ARGS.put("N/A","N/A");
     }
+
 
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
@@ -172,10 +169,8 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
      */
     private void loadRoute(Router router) {
         RouteDefinition definition = new RouteDefinition();
-        Map<String, String> predicateParams = new HashMap<>(8);
         List<PredicateDefinition> predicateDefinitions = new ArrayList<>();
         List<FilterDefinition> filterDefinitions = new ArrayList<>();
-        Map<String, String> filterParams = new HashMap<>(8);
         // 判断路由状况
         URI uri = null;
         if (router.getRouterType().equals(0)) {
@@ -198,36 +193,47 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
          *             - Path=/test/**
          */
         definition.setId(router.getRouterId());
+        // 设置uri
+        definition.setUri(uri);
         // 设置- Path=/test/**
-        router.getPredicates().forEach(predicate -> {
-            // 实例化断言定义对象
+        if (CollUtil.isNotEmpty(router.getPredicates())){
+            router.getPredicates().forEach(predicate -> {
+                // 实例化断言定义对象
+                PredicateDefinition predicateDefinition = new PredicateDefinition();
+                // 设置断言的名称
+                predicateDefinition.setName(predicate.getPredicateName());
+                String[] preValues = predicate.getPredicateVal().split(",");
+                Map<String, String> valueMap = initArgs(preValues);
+                // 设置断言的值
+                predicateDefinition.setArgs(valueMap);
+                predicateDefinitions.add(predicateDefinition);
+            });
+        }else {
             PredicateDefinition predicateDefinition = new PredicateDefinition();
-            // 设置断言的名称
-            predicateDefinition.setName(predicate.getPredicateName());
-            String[] preValues = predicate.getPredicateVal().split(",");
-            Map<String, String> valueMap = initArgs(preValues);
-            // 设置断言的值
-            predicateDefinition.setArgs(valueMap);
+            predicateDefinition.setName("Path");
+            predicateDefinition.setArgs(DEFAULT_ARGS);
             predicateDefinitions.add(predicateDefinition);
-        });
-        for (Filter filter : router.getFilters()) {
-            FilterDefinition filterDefinition = new FilterDefinition();
-            filterDefinition.setName(filter.getFilterName());
-            // 判断是否为自定义的过滤器
-            if (StringUtils.isNotBlank(filter.getFilterVal())){
-                String[] values = filter.getFilterVal().split(",");
-                Map<String, String> valueMap = initArgs(values);
-                filterDefinition.setArgs(valueMap);
+        }
+        if (CollUtil.isNotEmpty(router.getFilters())){
+            for (Filter filter : router.getFilters()) {
+                FilterDefinition filterDefinition = new FilterDefinition();
+                filterDefinition.setName(filter.getFilterName());
+                // 判断是否为自定义的过滤器
+                if (StringUtils.isNotBlank(filter.getFilterVal())){
+                    String[] values = filter.getFilterVal().split(",");
+                    Map<String, String> valueMap = initArgs(values);
+                    filterDefinition.setArgs(valueMap);
+                }
+                filterDefinitions.add(filterDefinition);
             }
-            filterDefinitions.add(filterDefinition);
+        }else {
+            FilterDefinition filterDefinition = new FilterDefinition();
+            filterDefinition.setName("N/A");
         }
         // 设置predicates
         definition.setPredicates(predicateDefinitions);
         // 设置filters
         definition.setFilters(filterDefinitions);
-        // 设置uri
-        definition.setUri(uri);
-
         this.definitionWriter.save(Mono.just(definition)).subscribe();
         // 设置限流规则
         rules.add(new GatewayFlowRule(router.getRouterId())
