@@ -14,11 +14,11 @@
 * limitations under the License.
 */
 
-package ${package}.service;
+package org.micah.mnt.service;
 
-import ${package}.model.${className};
-import ${package}.model.dto.${className}Dto;
-import ${package}.model.query.${className}QueryCriteria;
+import org.micah.model.ServerDeploy;
+import org.micah.model.dto.ServerDeployDto;
+import org.micah.model.query.ServerDeployQueryCriteria;
 import org.micah.core.web.page.PageResult;
 import org.springframework.data.domain.Pageable;
 import java.util.Set;
@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @description ${className}服务接口
-* @author ${author}
-* @date ${date}
+* @description ServerDeploy服务接口
+* @author micah
+* @date 2020-09-03
 **/
-public interface I${className}Service extends IService<${className}>{
+public interface IServerDeployService extends IService<ServerDeploy>{
 
     /**
     * 查询数据分页
@@ -41,40 +41,40 @@ public interface I${className}Service extends IService<${className}>{
     * @param pageable 分页参数
     * @return PageResult 分页结果集
     */
-    PageResult queryAll(${className}QueryCriteria criteria, Pageable pageable);
+    PageResult queryAll(ServerDeployQueryCriteria criteria, Pageable pageable);
 
     /**
     * 查询所有数据不分页
     * @param criteria 条件参数
-    * @return List<${className}Dto>
+    * @return List<ServerDeployDto>
     */
-    List<${className}Dto> queryAll(${className}QueryCriteria criteria);
+    List<ServerDeployDto> queryAll(ServerDeployQueryCriteria criteria);
 
     /**
      * 根据ID查询
-     * @param ${pkChangeColName} ID
-     * @return ${className}Dto
+     * @param serverId ID
+     * @return ServerDeployDto
      */
-    ${className}Dto findById(${pkColumnType} ${pkChangeColName});
+    ServerDeployDto findById(Long serverId);
 
     /**
      * 创建
      * @param resources /
-     * @return ${className}Dto
+     * @return ServerDeployDto
      */
-    ${className}Dto create(${className} resources);
+    ServerDeployDto create(ServerDeploy resources);
 
     /**
      * 更新数据
      * @param resources /
      */
-    void update${className}(${className} resources);
+    void updateServerDeploy(ServerDeploy resources);
 
     /**
      * 批量删除
      * @param ids /
      */
-    void deleteAll(Set<${pkColumnType}> ids);
+    void deleteAll(Set<Long> ids);
 
     /**
      * 导出数据
@@ -82,5 +82,5 @@ public interface I${className}Service extends IService<${className}>{
      * @param response /
      * @throws IOException /
      */
-    void download(List<${className}Dto> data, HttpServletResponse response) throws IOException;
+    void download(List<ServerDeployDto> data, HttpServletResponse response) throws IOException;
 }

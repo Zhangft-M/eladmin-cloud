@@ -29,7 +29,6 @@ public class GeneratorController {
 
     private final IGeneratorService generatorService;
     private final IGenConfigService genConfigService;
-    private final ITableInfoService tableInfoService;
     private final IColumnInfoService columnInfoService;
 
     @Value("${generator.enabled}")

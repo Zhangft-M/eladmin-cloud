@@ -16,6 +16,7 @@
         <module>eladmin-server-gen</module>
         <module>eladmin-server-log</module>
         <module>eladmin-server-job</module>
+        <module>eladmin-server-mnt</module>
     </modules>
 
     <dependencies>

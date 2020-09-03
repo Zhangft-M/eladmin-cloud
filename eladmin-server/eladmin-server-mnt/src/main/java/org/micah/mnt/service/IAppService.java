@@ -14,11 +14,11 @@
 * limitations under the License.
 */
 
-package ${package}.service;
+package org.micah.mnt.service;
 
-import ${package}.model.${className};
-import ${package}.model.dto.${className}Dto;
-import ${package}.model.query.${className}QueryCriteria;
+import org.micah.model.App;
+import org.micah.model.dto.AppDto;
+import org.micah.model.query.AppQueryCriteria;
 import org.micah.core.web.page.PageResult;
 import org.springframework.data.domain.Pageable;
 import java.util.Set;
@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @description ${className}服务接口
-* @author ${author}
-* @date ${date}
+* @description MntApp服务接口
+* @author Micah
+* @date 2020-09-03
 **/
-public interface I${className}Service extends IService<${className}>{
+public interface IAppService extends IService<App>{
 
     /**
     * 查询数据分页
@@ -41,46 +41,46 @@ public interface I${className}Service extends IService<${className}>{
     * @param pageable 分页参数
     * @return PageResult 分页结果集
     */
-    PageResult queryAll(${className}QueryCriteria criteria, Pageable pageable);
+    PageResult queryAll(AppQueryCriteria criteria, Pageable pageable);
 
     /**
     * 查询所有数据不分页
     * @param criteria 条件参数
-    * @return List<${className}Dto>
+    * @return List<MntAppDto>
     */
-    List<${className}Dto> queryAll(${className}QueryCriteria criteria);
+    List<AppDto> queryAll(AppQueryCriteria criteria);
 
     /**
      * 根据ID查询
-     * @param ${pkChangeColName} ID
-     * @return ${className}Dto
+     * @param appId ID
+     * @return MntAppDto
      */
-    ${className}Dto findById(${pkColumnType} ${pkChangeColName});
+    AppDto findById(Long appId);
 
     /**
      * 创建
      * @param resources /
-     * @return ${className}Dto
+     * @return MntAppDto
      */
-    ${className}Dto create(${className} resources);
+    AppDto create(App resources);
 
     /**
      * 更新数据
      * @param resources /
      */
-    void update${className}(${className} resources);
+    void updateMntApp(App resources);
 
     /**
      * 批量删除
      * @param ids /
      */
-    void deleteAll(Set<${pkColumnType}> ids);
+    void deleteAll(Set<Long> ids);
 
     /**
      * 导出数据
-     * @param data 待导出的数据
+     * @param all 待导出的数据
      * @param response /
      * @throws IOException /
      */
-    void download(List<${className}Dto> data, HttpServletResponse response) throws IOException;
+    void download(List<AppDto> all, HttpServletResponse response) throws IOException;
 }

@@ -19,8 +19,8 @@ import org.micah.log.annotation.Log;
 import org.micah.core.web.page.PageResult;
 import ${package}.model.${className};
 import ${package}.model.dto.${className}Dto;
-import ${package}.service.${className}Service;
 import ${package}.model.query.${className}QueryCriteria;
+import ${package}.service.I${className}Service;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.IllegalArgumentException
+import java.lang.IllegalArgumentException;
 
-java.util.Set;
+import java.util.Set;
 
 /**
 * @author ${author}
@@ -67,11 +67,11 @@ public class ${className}Controller {
     @Log("新增${apiAlias}")
     @ApiOperation("新增${apiAlias}")
     @PreAuthorize("@el.check('${changeClassName}:add')")
-    public ResponseEntity<Void> create(@Validated @RequestBody ${className} resource){
-        if(resource.getId != null){
+    public ResponseEntity<Void> create(@Validated @RequestBody ${className} resources){
+        if(resources.getId() != null){
             throw new IllegalArgumentException("新的数据id不为空");
         }
-        this.${changeClassName}Service.create(resources)
+        this.${changeClassName}Service.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

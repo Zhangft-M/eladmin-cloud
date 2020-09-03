@@ -1,20 +1,18 @@
-
-
 package ${package}.model.query;
 
 import lombok.Data;
 <#if queryHasTimestamp>
-    import java.sql.Timestamp;
+import java.sql.Timestamp;
 </#if>
 <#if queryHasBigDecimal>
-    import java.math.BigDecimal;
+import java.math.BigDecimal;
 </#if>
 <#if betweens??>
-    import java.util.List;
+import java.util.List;
 </#if>
 <#if queryColumns??>
-    import org.micah.mp.annotation.Query;
-    import org.micah.mp.annotation.type.SelectType;
+import org.micah.mp.annotation.Query;
+import org.micah.mp.annotation.type.SelectType;
 </#if>
 
 /**

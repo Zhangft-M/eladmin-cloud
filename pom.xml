@@ -204,6 +204,11 @@
                 <artifactId>eladmin-model-system</artifactId>
                 <version>${eladmin-model.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.micah</groupId>
+                <artifactId>eladmin-model-mnt</artifactId>
+                <version>${eladmin-model.version}</version>
+            </dependency>
 <!--            sql分析-->
             <dependency>
                 <groupId>p6spy</groupId>

@@ -48,6 +48,7 @@ public class CodeGenUtils {
         adminTemplateNames.add("Controller");
         adminTemplateNames.add("Dto");
         adminTemplateNames.add("Entity");
+        adminTemplateNames.add("MapStruct");
         adminTemplateNames.add("IService");
         adminTemplateNames.add("Mapper");
         adminTemplateNames.add("QueryCriteria");
@@ -245,11 +246,11 @@ public class CodeGenUtils {
      * @return
      */
     private String getFrontFilePath(String templateName, String apiPath, String path, String apiName) {
-        if ("api".equals(templateName)) {
+        if ("Api".equals(templateName)) {
             return apiPath + File.separator + apiName + ".js";
         }
 
-        if ("index".equals(templateName)) {
+        if ("Index".equals(templateName)) {
             return path + File.separator + "index.vue";
         }
 
@@ -279,10 +280,10 @@ public class CodeGenUtils {
         }
 
         if ("Controller".equals(templateName)) {
-            return packagePath + "rest" + File.separator + className + "Controller.java";
+            return packagePath + "controller" + File.separator + className + "Controller.java";
         }
 
-        if ("Service".equals(templateName)) {
+        if ("IService".equals(templateName)) {
             return packagePath + "service" + File.separator + "I" + className + "Service.java";
         }
 

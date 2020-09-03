@@ -14,11 +14,11 @@
 * limitations under the License.
 */
 
-package ${package}.service;
+package org.micah.mnt.service;
 
-import ${package}.model.${className};
-import ${package}.model.dto.${className}Dto;
-import ${package}.model.query.${className}QueryCriteria;
+import org.micah.model.Database;
+import org.micah.model.dto.DatabaseDto;
+import org.micah.model.query.DatabaseQueryCriteria;
 import org.micah.core.web.page.PageResult;
 import org.springframework.data.domain.Pageable;
 import java.util.Set;
@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @description ${className}服务接口
-* @author ${author}
-* @date ${date}
+* @description Database服务接口
+* @author Micah
+* @date 2020-09-03
 **/
-public interface I${className}Service extends IService<${className}>{
+public interface IDatabaseService extends IService<Database>{
 
     /**
     * 查询数据分页
@@ -41,40 +41,40 @@ public interface I${className}Service extends IService<${className}>{
     * @param pageable 分页参数
     * @return PageResult 分页结果集
     */
-    PageResult queryAll(${className}QueryCriteria criteria, Pageable pageable);
+    PageResult queryAll(DatabaseQueryCriteria criteria, Pageable pageable);
 
     /**
     * 查询所有数据不分页
     * @param criteria 条件参数
-    * @return List<${className}Dto>
+    * @return List<DatabaseDto>
     */
-    List<${className}Dto> queryAll(${className}QueryCriteria criteria);
+    List<DatabaseDto> queryAll(DatabaseQueryCriteria criteria);
 
     /**
      * 根据ID查询
-     * @param ${pkChangeColName} ID
-     * @return ${className}Dto
+     * @param dbId ID
+     * @return DatabaseDto
      */
-    ${className}Dto findById(${pkColumnType} ${pkChangeColName});
+    DatabaseDto findById(String dbId);
 
     /**
      * 创建
      * @param resources /
-     * @return ${className}Dto
+     * @return DatabaseDto
      */
-    ${className}Dto create(${className} resources);
+    DatabaseDto create(Database resources);
 
     /**
      * 更新数据
      * @param resources /
      */
-    void update${className}(${className} resources);
+    void updateDatabase(Database resources);
 
     /**
      * 批量删除
      * @param ids /
      */
-    void deleteAll(Set<${pkColumnType}> ids);
+    void deleteAll(Set<String> ids);
 
     /**
      * 导出数据
@@ -82,5 +82,5 @@ public interface I${className}Service extends IService<${className}>{
      * @param response /
      * @throws IOException /
      */
-    void download(List<${className}Dto> data, HttpServletResponse response) throws IOException;
+    void download(List<DatabaseDto> data, HttpServletResponse response) throws IOException;
 }

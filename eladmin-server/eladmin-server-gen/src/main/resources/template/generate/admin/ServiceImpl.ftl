@@ -17,26 +17,28 @@ import org.micah.core.web.page.PageResult;
 import ${package}.mapper.${className}Mapper;
 import ${package}.model.dto.${className}Dto;
 import ${package}.model.query.${className}QueryCriteria;
-import ${package}.service.mapstruct.${className}MapStruct;
+import ${package}.model.mapstruct.${className}MapStruct;
+import ${package}.service.I${className}Service;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 <#if !auto && pkColumnType = 'Long'>
-    import cn.hutool.core.lang.Snowflake;
-    import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 </#if>
 <#if !auto && pkColumnType = 'String'>
-    import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.IdUtil;
 </#if>
-import java.lang.IllegalArgumentException
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page
-import org.micah.mp.util.QueryHelpUtils
+import java.lang.IllegalArgumentException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.micah.mp.util.QueryHelpUtils;
 import org.springframework.data.domain.Pageable;
-import me.zhengjie.utils.PageUtil;
-import me.zhengjie.utils.QueryHelp;
+import org.micah.mp.util.PageUtils;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import org.micah.exception.global.CreateFailException
-import org.micah.exception.global.DeleteFailException
+import org.micah.exception.global.CreateFailException;
+import org.micah.exception.global.DeleteFailException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import java.util.*;
 
@@ -49,7 +51,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ${className}ServiceImpl implements ${className}Service {
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper,${className}> implements I${className}Service {
 
     private final ${className}Mapper ${changeClassName}Mapper;
 
@@ -65,13 +67,12 @@ public class ${className}ServiceImpl implements ${className}Service {
     }
 
     @Override
-    public List<${className}Dto> queryAll(${className}QueryCriteria ${changeClassName}criteria){
-        QueryWrapper<${className}> wrapper = QueryHelpUtils.getWrapper(${changeClassName}Criteria, ${className}.class);
-        return this.${changeClassName}MapStruct.toDto(this.list(wrapper))
+    public List<${className}Dto> queryAll(${className}QueryCriteria criteria){
+        QueryWrapper<${className}> wrapper = QueryHelpUtils.getWrapper(criteria, ${className}.class);
+        return this.${changeClassName}MapStruct.toDto(this.list(wrapper));
     }
 
     @Override
-    @Transactional
     public ${className}Dto findById(${pkColumnType} ${pkChangeColName}) {
         if (${pkChangeColName} == null) {
             throw new IllegalArgumentException("参数为空");
@@ -92,12 +93,16 @@ public class ${className}ServiceImpl implements ${className}Service {
             </#if>
         </#list>
     </#if>
-        return ${changeClassName}MapStruct.toDto(this.${changeClassName}Mapper.insert(resources));
+        if(!this.save(resources)){
+            log.warn("插入失败:{}", resources);
+            throw new CreateFailException("插入一条数据失败,请联系管理员");
+        }
+        return ${changeClassName}MapStruct.toDto(resources);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(${className} resources) {
+    public void update${className}(${className} resources) {
     <#if columns??>
         <#list columns as column>
             <#if column.columnKey = 'UNI'>
@@ -113,8 +118,8 @@ public class ${className}ServiceImpl implements ${className}Service {
         </#list>
     </#if>
         if(this.updateById(resources)){
-            log.warn("插入失败:{}", resources);
-            throw new CreateFailException("插入一条数据失败,请联系管理员");
+            log.warn("更新失败:{}", resources);
+            throw new CreateFailException("更新一条数据失败,请联系管理员");
         }
     }
 
@@ -123,7 +128,7 @@ public class ${className}ServiceImpl implements ${className}Service {
     public void deleteAll(Set<${pkColumnType}> ids) {
         if(!this.removeByIds(ids)){
             log.warn("删除失败:{}", ids);
-            throw new DeleteFailException("批量删除失败,请联系管理员")
+            throw new DeleteFailException("批量删除失败,请联系管理员");
         }
     }
 

@@ -21,7 +21,7 @@ import lombok.Data;
     import java.sql.Timestamp;
 </#if>
 <#if hasBigDecimal>
-    import java.math.BigDecimal;
+import java.math.BigDecimal;
 </#if>
 import java.io.Serializable;
 <#if !auto && pkColumnType = 'Long'>
@@ -41,9 +41,9 @@ public class ${className}Dto implements Serializable {
 <#list columns as column>
 
     <#if column.remark != ''>
-        /**
-         * ${column.remark}
-         */
+    /**
+     * ${column.remark}
+     */
     </#if>
     <#if column.columnKey = 'PRI'>
         <#if !auto && pkColumnType = 'Long'>

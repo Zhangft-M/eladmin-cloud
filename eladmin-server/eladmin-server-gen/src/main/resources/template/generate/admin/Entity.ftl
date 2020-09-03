@@ -21,10 +21,11 @@ import io.swagger.annotations.ApiModelProperty;
 <#if isNotNullColumns??>
 import javax.validation.constraints.*;
 </#if>
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 <#if hasTimestamp>
-    import java.sql.Timestamp;
+import java.sql.Timestamp;
 </#if>
 <#if hasBigDecimal>
     import java.math.BigDecimal;
@@ -32,7 +33,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 
 /**
-* @website https://el-admin.vip
 * @description /
 * @author ${author}
 * @date ${date}
@@ -69,3 +69,4 @@ public class ${className} implements Serializable {
         private ${column.columnType} ${column.changeColumnName};
     </#list>
 </#if>
+}
