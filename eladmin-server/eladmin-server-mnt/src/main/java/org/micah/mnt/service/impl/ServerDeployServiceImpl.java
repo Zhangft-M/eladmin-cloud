@@ -84,7 +84,7 @@ public class ServerDeployServiceImpl extends ServiceImpl<ServerDeployMapper, Ser
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateServerDeploy(ServerDeploy resources) {
-        if (this.updateById(resources)) {
+        if (!this.updateById(resources)) {
             log.warn("更新失败:{}", resources);
             throw new CreateFailException("更新一条数据失败,请联系管理员");
         }

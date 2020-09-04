@@ -32,7 +32,7 @@ import java.util.Objects;
 */
 @Getter
 @Setter
-@TableName(value="mnt_server_deploy")
+@TableName(value="mnt_server")
 public class ServerDeploy extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -6495323779876870978L;

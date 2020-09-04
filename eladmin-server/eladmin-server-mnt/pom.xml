@@ -40,6 +40,10 @@
         </dependency>
         <dependency>
             <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
             <artifactId>eladmin-common-security</artifactId>
             <exclusions>
                 <exclusion>

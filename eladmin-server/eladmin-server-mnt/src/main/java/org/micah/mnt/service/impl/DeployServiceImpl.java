@@ -120,6 +120,7 @@ public class DeployServiceImpl extends ServiceImpl<DeployMapper,Deploy> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateDeploy(Deploy resources) {
+        resources.setAppId(resources.getApp().getId());
         if(!this.updateById(resources)){
             log.warn("更新失败:{}", resources);
             throw new CreateFailException("更新一条数据失败,请联系管理员");

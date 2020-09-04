@@ -79,7 +79,7 @@ public class DeployHistoryServiceImpl extends ServiceImpl<DeployHistoryMapper,De
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateDeployHistory(DeployHistory resources) {
-        if(this.updateById(resources)){
+        if(!this.updateById(resources)){
             log.warn("更新失败:{}", resources);
             throw new CreateFailException("更新一条数据失败,请联系管理员");
         }

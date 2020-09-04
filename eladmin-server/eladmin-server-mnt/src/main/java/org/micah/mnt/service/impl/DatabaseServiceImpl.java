@@ -90,7 +90,7 @@ public class DatabaseServiceImpl extends ServiceImpl<DatabaseMapper,Database> im
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateDatabase(Database resources) {
-        if(this.updateById(resources)){
+        if(!this.updateById(resources)){
             log.warn("插入失败:{}", resources);
             throw new CreateFailException("插入一条数据失败,请联系管理员");
         }

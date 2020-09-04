@@ -81,7 +81,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper,App> implements IAppSe
     @Transactional(rollbackFor = Exception.class)
     public void updateMntApp(App resources) {
         this.verification(resources);
-        if(this.updateById(resources)){
+        if(!this.updateById(resources)){
             log.warn("更新失败:{}", resources);
             throw new CreateFailException("更新一条数据失败,请联系管理员");
         }

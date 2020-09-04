@@ -90,14 +90,6 @@ public class SqlUtils {
             dataSource.setJdbcUrl(url);
             dataSource.setUsername(username);
             dataSource.setPassword(password);
-            // 配置获取连接等待超时的时间
-            dataSource.setConnectionTimeout(3000);
-            // 配置初始化大小、最小、最大
-            dataSource.setMaximumPoolSize(10);
-            // 配置一旦重试多次失败后等待多久再继续重试连接，单位是毫秒
-            dataSource.setConnectionTimeout(18000);
-            // 这个特性能解决 MySQL 服务器8小时关闭连接的问题
-            dataSource.setIdleTimeout(25200000);
             map.put(key, dataSource);
             return dataSource;
         } else {
@@ -229,15 +221,18 @@ public class SqlUtils {
      * 批量执行sql
      * @param sqls
      */
-    @SneakyThrows
-    public void batchExecute(Connection connection , List<String> sqls){
+    public void batchExecute(Connection connection , List<String> sqls) throws Exception{
         // 获取执行对象
         Statement statement = connection.createStatement();
         sqls.forEach(sql->{
             if (sql.endsWith(";")){
                 sql = sql.substring(0, sql.length() - 1);
             }
-            statement.addBatch(sql);
+            try {
+                statement.addBatch(sql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
         statement.executeBatch();
     }
