@@ -36,7 +36,7 @@ public class DeployHistory implements Serializable {
     private static final long serialVersionUID = -6893972018160017554L;
     @TableId(value = "history_id",type = IdType.AUTO)
 	@ApiModelProperty(value = "ID", hidden = true)
-    private String id;
+    private Long id;
 
     @ApiModelProperty(value = "应用名称")
     private String appName;

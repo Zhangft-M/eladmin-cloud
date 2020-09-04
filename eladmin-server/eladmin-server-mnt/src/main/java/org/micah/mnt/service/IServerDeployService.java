@@ -83,4 +83,18 @@ public interface IServerDeployService extends IService<ServerDeploy>{
      * @throws IOException /
      */
     void download(List<ServerDeployDto> data, HttpServletResponse response) throws IOException;
+
+    /**
+     * 通过ip查询
+     * @param ip
+     * @return
+     */
+    ServerDeployDto findByIp(String ip);
+
+    /**
+     * 测试服务器连接
+     * @param resources
+     * @return
+     */
+    Boolean testConnect(ServerDeploy resources);
 }

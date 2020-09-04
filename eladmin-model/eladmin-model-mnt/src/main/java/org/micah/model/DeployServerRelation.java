@@ -16,12 +16,15 @@
 
 package org.micah.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.*;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 /**
@@ -31,6 +34,8 @@ import java.io.Serializable;
 **/
 @Data
 @TableName("mnt_deploy_server")
+@AllArgsConstructor
+@NoArgsConstructor
 public class DeployServerRelation implements Serializable {
 
     private static final long serialVersionUID = 1L;

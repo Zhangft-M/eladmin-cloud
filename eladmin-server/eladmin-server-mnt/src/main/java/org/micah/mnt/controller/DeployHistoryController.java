@@ -63,26 +63,6 @@ public class DeployHistoryController {
         return new ResponseEntity<>(this.deployHistoryService.queryAll(deployHistoryCriteria,pageable),HttpStatus.OK);
     }
 
-    @PostMapping
-    @Log("新增deployHistory")
-    @ApiOperation("新增deployHistory")
-    @PreAuthorize("@el.check('deployHistory:add')")
-    public ResponseEntity<Void> create(@Validated @RequestBody DeployHistory resources){
-        if(resources.getId() != null){
-            throw new IllegalArgumentException("新的数据id不为空");
-        }
-        this.deployHistoryService.create(resources);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @PutMapping
-    @Log("修改deployHistory")
-    @ApiOperation("修改deployHistory")
-    @PreAuthorize("@el.check('deployHistory:edit')")
-    public ResponseEntity<Void> updateDeployHistory(@Validated @RequestBody DeployHistory resources){
-        this.deployHistoryService.updateDeployHistory(resources);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 
     @Log("删除deployHistory")
     @ApiOperation("删除deployHistory")

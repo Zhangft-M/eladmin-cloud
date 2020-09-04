@@ -29,7 +29,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.IllegalArgumentException;
 
@@ -91,5 +95,22 @@ public class DatabaseController {
     public ResponseEntity<Void> delete(@RequestBody Set<String> ids) {
         this.databaseService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Log("测试数据库链接")
+    @ApiOperation(value = "测试数据库链接")
+    @PostMapping("/testConnect")
+    @PreAuthorize("@el.check('database:testConnect')")
+    public ResponseEntity<Boolean> testConnect(@Validated @RequestBody Database resources){
+        return new ResponseEntity<>(databaseService.testConnection(resources),HttpStatus.CREATED);
+    }
+
+    @Log("执行SQL脚本")
+    @ApiOperation(value = "执行SQL脚本")
+    @PostMapping(value = "/upload")
+    @PreAuthorize("@el.check('database:add')")
+    public ResponseEntity<String> executeSqlFile(@RequestBody MultipartFile file, HttpServletRequest request)throws Exception{
+        String id = request.getParameter("id");
+        return new ResponseEntity<>(this.databaseService.executeSqlFile(id,file),HttpStatus.OK);
     }
 }

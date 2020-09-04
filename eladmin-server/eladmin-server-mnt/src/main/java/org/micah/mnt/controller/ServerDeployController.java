@@ -92,4 +92,12 @@ public class ServerDeployController {
         this.serverDeployService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @Log("测试连接服务器")
+    @ApiOperation(value = "测试连接服务器")
+    @PostMapping("/testConnect")
+    @PreAuthorize("@el.check('serverDeploy:add')")
+    public ResponseEntity<Boolean> testConnect(@Validated @RequestBody ServerDeploy resources){
+        return new ResponseEntity<>(serverDeployService.testConnect(resources),HttpStatus.CREATED);
+    }
 }

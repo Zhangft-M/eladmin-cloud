@@ -93,7 +93,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper,${cl
             </#if>
         </#list>
     </#if>
-        if(!this.save(resources)){
+        if(!this.save(resources)) {
             log.warn("插入失败:{}", resources);
             throw new CreateFailException("插入一条数据失败,请联系管理员");
         }
@@ -117,7 +117,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper,${cl
             </#if>
         </#list>
     </#if>
-        if(this.updateById(resources)){
+        if(!this.updateById(resources)){
             log.warn("更新失败:{}", resources);
             throw new CreateFailException("更新一条数据失败,请联系管理员");
         }

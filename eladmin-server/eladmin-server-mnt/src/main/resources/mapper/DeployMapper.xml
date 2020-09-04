@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.mnt.mapper.DeployMapper">
+
+    <resultMap id="deployResultMap" type="org.micah.model.Deploy">
+        <id column="deploy_id" property="id"/>
+        <result column="deploy_create_by" property="createBy"/>
+        <result column="deploy_create_time" property="createTime"/>
+        <result column="deploy_update_by" property="updateBy"/>
+        <result column="deploy_update_time" property="updateTime"/>
+        <association property="app" resultMap="org.micah.mnt.mapper.AppMapper.appResultMap"/>
+        <collection property="deploys" resultMap="org.micah.mnt.mapper.ServerDeployMapper.deployServerMap"/>
+    </resultMap>
+
+    <sql id="baseDeploySql">
+        ${property}.deploy_id,
+        ${property}.create_by as deploy_create_by,
+        ${property}.update_by as deploy_update_by,
+        ${property}.create_time as deploy_create_time,
+        ${property}.update_time as deploy_update_time
+    </sql>
+
+    <select id="queryAll" resultMap="deployResultMap">
+        select 
+               <include refid="baseDeploySql">
+                   <property name="property" value="md"/>
+               </include>,
+               <include refid="org.micah.mnt.mapper.AppMapper.appBaseSql">
+                   <property name="property" value="ma"/>
+               </include>,
+               <include refid="org.micah.mnt.mapper.ServerDeployMapper.baseServerSql">
+                   <property name="property" value="ms"/>
+               </include>
+        from (mnt_deploy md,eladmin_2.mnt_app ma)
+                 left join mnt_deploy_server mds on md.deploy_id = mds.deploy_id
+                 left join mnt_server ms on mds.server_id = ms.server_id
+        where md.app_id = ma.app_id
+        <if test="ew != null and ew.sqlSegment != ''">
+            and ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="findById" resultMap="deployResultMap">
+        select
+        <include refid="baseDeploySql">
+            <property name="property" value="md"/>
+        </include>,
+        <include refid="org.micah.mnt.mapper.AppMapper.appBaseSql">
+            <property name="property" value="ma"/>
+        </include>,
+        <include refid="org.micah.mnt.mapper.ServerDeployMapper.baseServerSql">
+            <property name="property" value="ms"/>
+        </include>
+        from (mnt_deploy md,eladmin_2.mnt_app ma)
+        left join mnt_deploy_server mds on md.deploy_id = mds.deploy_id
+        left join mnt_server ms on mds.server_id = ms.server_id
+        where md.app_id = ma.app_id and md.id = #{deployId}
+    </select>
+
+</mapper>

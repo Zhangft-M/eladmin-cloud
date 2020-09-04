@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.mnt.mapper.AppMapper">
+    <resultMap id="appResultMap" type="org.micah.model.App">
+        <id column="app_id" property="id"/>
+        <result column="app_name" property="name"/>
+        <result column="deploy_path" property="deployPath"/>
+        <result column="backup_path" property="backupPath"/>
+        <result column="deploy_script" property="deployScript"/>
+        <result column="app_port" property="port"/>
+        <result column="upload_path" property="uploadPath"/>
+        <result column="app_create_by" property="createBy"/>
+        <result column="app_update_by" property="updateBy"/>
+        <result column="app_create_time" property="createTime"/>
+        <result column="app_update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="appBaseSql">
+        ${property}.app_id,
+        ${property}.name as app_name,
+        ${property}.upload_path,
+        ${property}.deploy_path,
+        ${property}.backup_path,
+        ${property}.port as app_port,
+        ${property}.start_script,
+        ${property}.deploy_script,
+        ${property}.create_by as app_create_by,
+        ${property}.update_by as app_update_by,
+        ${property}.create_time as app_create_time,
+        ${property}.update_time as app_update_time
+    </sql>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.micah.mnt.mapper.ServerDeployMapper">
+
+    <resultMap id="deployServerMap" type="org.micah.model.ServerDeploy">
+        <id column="server_id" property="id"/>
+        <result column="server_name" property="name"/>
+        <result column="server_port" property="port"/>
+        <result column="account" property="account"/>
+        <result column="password" property="password"/>
+        <result column="ip" property="ip"/>
+        <result column="server_update_time" property="updateTime"/>
+        <result column="server_create_time" property="createTime"/>
+        <result column="server_update_by" property="updateBy"/>
+        <result column="server_create_by" property="createBy"/>
+    </resultMap>
+
+    <sql id="baseServerSql">
+        ${property}.server_id,
+        ${property}.account,
+        ${property}.ip,
+        ${property}.name as server_name,
+        ${property}.password,
+        ${property}.port as server_port,
+        ${property}.create_by as server_create_by,
+        ${property}.update_by as server_update_by,
+        ${property}.create_time as server_create_time,
+        ${property}.update_time as server_update_time
+    </sql>
+
+</mapper>

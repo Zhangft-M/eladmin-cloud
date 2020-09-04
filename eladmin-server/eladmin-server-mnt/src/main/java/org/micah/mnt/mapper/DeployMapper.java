@@ -16,7 +16,11 @@
 
 package org.micah.mnt.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.micah.model.Deploy;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -28,4 +32,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface DeployMapper extends BaseMapper<Deploy> {
 
+    Page<Deploy> queryAll(@Param(Constants.WRAPPER) Wrapper<Deploy> wrapper , Page<Deploy> page);
+
+    Deploy findById(Long deployId);
 }

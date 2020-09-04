@@ -17,6 +17,7 @@
 package org.micah.mnt.service;
 
 import org.micah.model.Deploy;
+import org.micah.model.DeployHistory;
 import org.micah.model.dto.DeployDto;
 import org.micah.model.query.DeployQueryCriteria;
 import org.micah.core.web.page.PageResult;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @description Deploy服务接口
@@ -83,4 +85,40 @@ public interface IDeployService extends IService<Deploy>{
      * @throws IOException /
      */
     void download(List<DeployDto> data, HttpServletResponse response) throws IOException;
+
+    /**
+     * 上传文件部署
+     * @param id
+     * @param file
+     * @return
+     */
+    Map<String, Object> deployApp(Long id, MultipartFile file);
+
+    /**
+     * 系统还原
+     * @param resources
+     * @return
+     */
+    String serverReduction(DeployHistory resources);
+
+    /**
+     * 获取服务运行状态
+     * @param resources
+     * @return
+     */
+    String serverStatus(Deploy resources);
+
+    /**
+     * 启动服务
+     * @param resources
+     * @return
+     */
+    String startServer(Deploy resources);
+
+    /**
+     * 停止服务
+     * @param resources
+     * @return
+     */
+    String stopServer(Deploy resources);
 }

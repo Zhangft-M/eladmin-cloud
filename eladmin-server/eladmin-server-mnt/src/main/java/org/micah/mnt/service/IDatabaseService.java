@@ -27,6 +27,7 @@ import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @description Database服务接口
@@ -83,4 +84,19 @@ public interface IDatabaseService extends IService<Database>{
      * @throws IOException /
      */
     void download(List<DatabaseDto> data, HttpServletResponse response) throws IOException;
+
+    /**
+     * 测试数据库连接
+     * @param resources
+     * @return
+     */
+    Boolean testConnection(Database resources);
+
+    /**
+     * 执行sql文件
+     * @param id
+     * @param file
+     * @return
+     */
+    String executeSqlFile(String id, MultipartFile file);
 }

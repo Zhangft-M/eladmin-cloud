@@ -41,8 +41,8 @@ import java.util.Set;
 **/
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "Mnt管理")
-@RequestMapping("/mntApp")
+@Api(tags = "App管理")
+@RequestMapping("/app")
 public class AppController {
 
     private final IAppService appService;
@@ -56,17 +56,17 @@ public class AppController {
     }
 
     @GetMapping
-    @Log("查询Mnt")
-    @ApiOperation("查询Mnt")
-    @PreAuthorize("@el.check('mntApp:list')")
+    @Log("查询App")
+    @ApiOperation("查询App")
+    @PreAuthorize("@el.check('app:list')")
     public ResponseEntity<PageResult> query(AppQueryCriteria mntAppCriteria, Pageable pageable){
         return new ResponseEntity<>(this.appService.queryAll(mntAppCriteria,pageable),HttpStatus.OK);
     }
 
     @PostMapping
-    @Log("新增Mnt")
-    @ApiOperation("新增Mnt")
-    @PreAuthorize("@el.check('mntApp:add')")
+    @Log("新增app")
+    @ApiOperation("新增app")
+    @PreAuthorize("@el.check('app:add')")
     public ResponseEntity<Void> create(@Validated @RequestBody App resource){
         if(resource.getId() != null){
             throw new IllegalArgumentException("新的数据id不为空");
@@ -76,17 +76,17 @@ public class AppController {
     }
 
     @PutMapping
-    @Log("修改Mnt")
-    @ApiOperation("修改Mnt")
-    @PreAuthorize("@el.check('mntApp:edit')")
+    @Log("修改app")
+    @ApiOperation("修改app")
+    @PreAuthorize("@el.check('app:edit')")
     public ResponseEntity<Void> updateMntApp(@Validated @RequestBody App resources){
         this.appService.updateMntApp(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Log("删除Mnt")
-    @ApiOperation("删除Mnt")
-    @PreAuthorize("@el.check('mntApp:del')")
+    @Log("删除app")
+    @ApiOperation("删除app")
+    @PreAuthorize("@el.check('app:del')")
     @DeleteMapping
     public ResponseEntity<Void> delete(@RequestBody Set<Long> ids) {
         this.appService.deleteAll(ids);

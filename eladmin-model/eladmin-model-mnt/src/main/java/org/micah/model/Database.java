@@ -15,6 +15,7 @@
  */
 package org.micah.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
@@ -33,9 +34,9 @@ import java.io.Serializable;
 @TableName(value="mnt_database")
 public class Database extends BaseEntity implements Serializable {
 
-    @TableId("db_id")
+    @TableId(value = "db_id",type = IdType.AUTO)
 	@ApiModelProperty(value = "ID", hidden = true)
-    private String id;
+    private Long id;
 
 	@ApiModelProperty(value = "数据库名称")
     private String name;

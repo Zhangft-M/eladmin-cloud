@@ -26,6 +26,6 @@ import org.micah.model.DeployServerRelation;
 * @date 2020-09-03
 **/
 @Mapper
-public interface DeployServerMapper extends BaseMapper<DeployServerRelation> {
+public interface DeployServerRelationMapper extends BaseMapper<DeployServerRelation> {
 
 }

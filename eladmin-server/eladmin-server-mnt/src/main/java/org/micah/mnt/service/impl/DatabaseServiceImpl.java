@@ -1,5 +1,10 @@
 package org.micah.mnt.service.impl;
 
+
+import cn.hutool.core.io.FileUtil;
+import lombok.SneakyThrows;
+import org.micah.exception.global.BadRequestException;
+import org.micah.mnt.util.SqlUtils;
 import org.micah.model.Database;
 import lombok.extern.slf4j.Slf4j;
 import org.micah.core.util.FileUtils;
@@ -11,8 +16,12 @@ import org.micah.model.query.DatabaseQueryCriteria;
 import org.micah.model.mapstruct.DatabaseMapStruct;
 import org.micah.mnt.service.IDatabaseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
 import java.lang.IllegalArgumentException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.micah.mp.util.QueryHelpUtils;
@@ -23,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.micah.exception.global.CreateFailException;
 import org.micah.exception.global.DeleteFailException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -40,6 +50,8 @@ public class DatabaseServiceImpl extends ServiceImpl<DatabaseMapper,Database> im
     private final DatabaseMapper databaseMapper;
 
     private final DatabaseMapStruct databaseMapStruct;
+
+    private static final String FILE_SAVE_PATH = FileUtil.getTmpDirPath()+"/";
 
     @Override
     public PageResult queryAll(DatabaseQueryCriteria databaseCriteria, Pageable pageable){
@@ -96,5 +108,44 @@ public class DatabaseServiceImpl extends ServiceImpl<DatabaseMapper,Database> im
     @Override
     public void download(List<DatabaseDto> data, HttpServletResponse response) throws IOException {
         FileUtils.downloadFailedUsingJson(response, "database-info", DatabaseDto.class, data, "database-sheet");
+    }
+
+    /**
+     * 测试数据库连接
+     *
+     * @param resources
+     * @return
+     */
+    @Override
+    public Boolean testConnection(Database resources) {
+        return SqlUtils.testConnection(resources.getJdbcUrl(),resources.getUserName(),resources.getPwd());
+    }
+
+    /**
+     * 执行sql文件
+     *
+     * @param id
+     * @param file
+     * @return
+     */
+    @Override
+    @SneakyThrows
+    public String executeSqlFile(String id, MultipartFile file) {
+        // 查询执行的数据库
+        Database database = this.getById(id);
+        String fileName;
+        if (!Objects.isNull(database)){
+            fileName = file.getOriginalFilename();
+            File executeFile = new File(FILE_SAVE_PATH + fileName);
+            // 先删除原文件，保证不存在该文件
+            FileUtil.del(executeFile);
+            // 上传文件
+            file.transferTo(executeFile);
+            // 执行
+            return SqlUtils.executeFile(database.getJdbcUrl(), database.getUserName(), database.getPwd(), executeFile);
+        }else {
+            log.warn("传入参数可能有误,无法找到该数据库:{}",id);
+            throw new BadRequestException("无法找到执行文件的数据库");
+        }
     }
 }
