@@ -34,6 +34,7 @@
         <p6spy.version>3.9.1</p6spy.version>
         <jaspyt.version>2.1.0</jaspyt.version>
         <eladmin-swagger.version>0.0.1</eladmin-swagger.version>
+        <eladmin-mq.version>0.0.1</eladmin-mq.version>
     </properties>
 
     <modules>
@@ -203,6 +204,11 @@
                 <groupId>org.micah</groupId>
                 <artifactId>eladmin-model-system</artifactId>
                 <version>${eladmin-model.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.micah.eladmin-cloud</groupId>
+                <artifactId>eladmin-common-mq</artifactId>
+                <version>${eladmin-mq.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.micah</groupId>

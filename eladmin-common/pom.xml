@@ -14,6 +14,7 @@
         <module>eladmin-common-mybatis-plus</module>
         <module>eladmin-common-security</module>
         <module>eladmin-common-swagger</module>
+        <module>eladmin-common-mq</module>
     </modules>
     <name>eladmin-common</name>
     <description>通用模块</description>
