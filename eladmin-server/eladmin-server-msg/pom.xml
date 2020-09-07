@@ -12,6 +12,12 @@
     <artifactId>eladmin-server-msg</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-mq</artifactId>
+        </dependency>
+    </dependencies>
 
 
 </project>

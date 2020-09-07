@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @create: 2020-09-06 16:35
  **/
 @Configuration
-public class QueueConfiguration {
+public class QueueConfiguration implements IQueueConfig {
 
     private final MqConfigurationProperties mqConfigurationProperties;
 
@@ -20,6 +20,7 @@ public class QueueConfiguration {
         this.mqConfigurationProperties = mqConfigurationProperties;
     }
 
+    @Override
     @Bean
     @ConditionalOnMissingBean(value = Queue.class)
     public Queue queue(){

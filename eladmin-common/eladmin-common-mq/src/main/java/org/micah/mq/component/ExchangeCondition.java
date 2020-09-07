@@ -32,7 +32,7 @@ public class ExchangeCondition implements Condition {
         String beanClassName = exchange.getBeanClassName();
         MqModel model = context.getEnvironment().getProperty("eladmin.mq.model", MqModel.class);
         if (model != null && beanClassName != null){
-            return beanClassName.equals(model.name());
+            return beanClassName.equals(model.getModel());
         }
         return false;
     }

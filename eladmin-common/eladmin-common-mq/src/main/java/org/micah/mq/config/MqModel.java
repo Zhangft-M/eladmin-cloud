@@ -16,4 +16,8 @@ public enum MqModel {
     MqModel(String model) {
         this.model = model;
     }
+
+    public String getModel() {
+        return model;
+    }
 }

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration("Fanout")
 @Conditional(ExchangeCondition.class)
-public class FanoutModelConfiguration {
+public class FanoutModelConfiguration implements IExchangeConfig {
 
     private final MqConfigurationProperties mqConfigurationProperties;
 
@@ -25,7 +25,9 @@ public class FanoutModelConfiguration {
         this.queueConfiguration = queueConfiguration;
     }
 
+
     @Bean
+    @Override
     public FanoutExchange exchange(){
         return new FanoutExchange(this.mqConfigurationProperties.getExchangeName(),
                 this.mqConfigurationProperties.getExchangeDurable(),
@@ -33,7 +35,9 @@ public class FanoutModelConfiguration {
     }
 
 
+
     @Bean
+    @Override
     public Binding binding(){
         return BindingBuilder.bind(queueConfiguration.queue()).to(exchange());
     }

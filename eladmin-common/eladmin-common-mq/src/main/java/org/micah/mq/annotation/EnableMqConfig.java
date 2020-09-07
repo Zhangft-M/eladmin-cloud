@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import(MqAutoConfiguration.class)
-public @interface EnableMq {
+public @interface EnableMqConfig {
 }
