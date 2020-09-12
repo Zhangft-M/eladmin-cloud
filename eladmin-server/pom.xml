@@ -18,6 +18,7 @@
         <module>eladmin-server-job</module>
         <module>eladmin-server-mnt</module>
         <module>eladmin-server-msg</module>
+        <module>eladmin-server-tool</module>
     </modules>
 
     <dependencies>

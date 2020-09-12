@@ -15,6 +15,7 @@
         <module>eladmin-model-log</module>
         <module>eladmin-model-system</module>
         <module>eladmin-model-mnt</module>
+        <module>eladmin-model-tool</module>
     </modules>
 
     <dependencies>

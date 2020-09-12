@@ -1,5 +1,7 @@
 package org.micah.mq.config;
 
+import org.micah.mq.config.exchange.ExchangeModel;
+import org.micah.mq.config.queue.QueueModel;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -26,7 +28,25 @@ public class MqConfigurationProperties {
 
     private Boolean queueExclusive = false;
 
-    private MqModel model = MqModel.DIRECT;
+    private ExchangeModel exchangeModel = ExchangeModel.DIRECT;
+
+    private QueueModel queueModel = QueueModel.DEFAULT;
+
+    public QueueModel getQueueModel() {
+        return queueModel;
+    }
+
+    public void setQueueModel(QueueModel queueModel) {
+        this.queueModel = queueModel;
+    }
+
+    public ExchangeModel getExchangeModel() {
+        return exchangeModel;
+    }
+
+    public void setExchangeModel(ExchangeModel exchangeModel) {
+        this.exchangeModel = exchangeModel;
+    }
 
     public String getExchangeName() {
         return exchangeName;
@@ -92,11 +112,4 @@ public class MqConfigurationProperties {
         this.queueExclusive = queueExclusive;
     }
 
-    public MqModel getModel() {
-        return model;
-    }
-
-    public void setModel(MqModel model) {
-        this.model = model;
-    }
 }

@@ -1,8 +1,8 @@
 server:
-  port: 8081
+  port: 8090
 spring:
   application:
-    name: system-server
+    name: tool-server
   cloud:
     nacos:
       server-addr: 127.0.0.1
@@ -13,4 +13,3 @@ spring:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
   profiles:
     active: dev
-

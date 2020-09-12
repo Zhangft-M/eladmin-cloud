@@ -13,4 +13,10 @@ public interface IVerifyService {
      * @param code
      */
     void validated(String s, String code);
+
+    /**
+     * 发送验证码邮件
+     * @param tos
+     */
+    void sendEmail(String tos,String key);
 }

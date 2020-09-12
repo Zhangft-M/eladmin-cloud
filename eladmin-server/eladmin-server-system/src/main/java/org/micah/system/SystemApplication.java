@@ -1,5 +1,6 @@
 package org.micah.system;
 
+import org.micah.mq.annotation.EnableMqConfig;
 import org.micah.security.annotation.EnableCustomizeFeignClient;
 import org.micah.security.annotation.EnableCustomizeResourceServer;
 import org.micah.security.config.LoginProperties;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author: Micah
  * @create: 2020-08-06 17:49
  **/
+@EnableMqConfig
 @SpringBootApplication
 @EnableCustomizeResourceServer
 @EnableCustomizeFeignClient
@@ -25,7 +27,7 @@ public class SystemApplication {
     }
 
     // TODO: 2020/8/16 不开启权限管理需要自己注入这个bean，测试时使用
-   /* @Bean
+   /* @Bean0
     public LoginProperties loginProperties(){
         return new LoginProperties();
     }*/

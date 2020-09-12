@@ -1,8 +1,7 @@
-package org.micah.mq.config;
+package org.micah.mq.config.exchange;
 
 import org.micah.mq.component.ExchangeCondition;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
+import org.micah.mq.config.MqConfigurationProperties;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -20,12 +19,9 @@ public class TopicModelConfiguration implements IExchangeConfig {
 
     private final MqConfigurationProperties mqConfigurationProperties;
 
-    private final QueueConfiguration queueConfiguration;
 
-
-    public TopicModelConfiguration(MqConfigurationProperties mqConfigurationProperties, QueueConfiguration queueConfiguration) {
+    public TopicModelConfiguration(MqConfigurationProperties mqConfigurationProperties) {
         this.mqConfigurationProperties = mqConfigurationProperties;
-        this.queueConfiguration = queueConfiguration;
     }
 
 
@@ -37,8 +33,4 @@ public class TopicModelConfiguration implements IExchangeConfig {
                 this.mqConfigurationProperties.getExchangeAutoDelete());
     }
 
-    @Override
-    public Binding binding() {
-        return BindingBuilder.bind(queueConfiguration.queue()).to(exchange()).with(this.mqConfigurationProperties.getRouteKey());
-    }
 }

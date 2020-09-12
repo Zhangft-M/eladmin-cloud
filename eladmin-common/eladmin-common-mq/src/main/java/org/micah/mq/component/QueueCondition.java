@@ -1,6 +1,7 @@
 package org.micah.mq.component;
 
-import org.micah.mq.config.exchange.ExchangeModel;
+
+import org.micah.mq.config.queue.QueueModel;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -13,9 +14,9 @@ import java.util.Map;
  * @program: eladmin-cloud
  * @description:
  * @author: Micah
- * @create: 2020-09-06 16:49
+ * @create: 2020-09-12 16:12
  **/
-public class ExchangeCondition implements Condition {
+public class QueueCondition implements Condition {
     /**
      * Determine if the condition matches.
      *
@@ -29,7 +30,7 @@ public class ExchangeCondition implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes("org.springframework.context.annotation.Configuration");
         String value = (String) annotationAttributes.get("value");
-        ExchangeModel model = context.getEnvironment().getProperty("eladmin.mq.exchange-model", ExchangeModel.class);
+        QueueModel model = context.getEnvironment().getProperty("eladmin.mq.queue-model", QueueModel.class);
         if (model != null && value != null){
             return value.equals(model.getModel());
         }

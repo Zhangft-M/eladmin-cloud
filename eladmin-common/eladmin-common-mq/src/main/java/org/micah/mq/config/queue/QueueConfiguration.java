@@ -1,8 +1,11 @@
-package org.micah.mq.config;
+package org.micah.mq.config.queue;
 
+import org.micah.mq.component.QueueCondition;
+import org.micah.mq.config.MqConfigurationProperties;
+import org.micah.mq.constant.QueenConstant;
 import org.springframework.amqp.core.Queue;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -11,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
  * @author: Micah
  * @create: 2020-09-06 16:35
  **/
-@Configuration
+@Configuration(value = "default")
+@Conditional(QueueCondition.class)
 public class QueueConfiguration implements IQueueConfig {
 
     private final MqConfigurationProperties mqConfigurationProperties;
@@ -20,13 +24,20 @@ public class QueueConfiguration implements IQueueConfig {
         this.mqConfigurationProperties = mqConfigurationProperties;
     }
 
-    @Override
     @Bean
-    @ConditionalOnMissingBean(value = Queue.class)
-    public Queue queue(){
-        return new Queue(this.mqConfigurationProperties.getQueenName(),
+    public Queue emailQueue(){
+        return new Queue(QueenConstant.EMAIL_QUEEN_NAME,
                 this.mqConfigurationProperties.getQueueDurable(),
                 this.mqConfigurationProperties.getQueueExclusive(),
                 this.mqConfigurationProperties.getQueueAutoDelete());
     }
+
+    @Bean
+    public Queue messageQueue(){
+        return new Queue(QueenConstant.MESSAGE_QUEEN_NAME,
+                this.mqConfigurationProperties.getQueueDurable(),
+                this.mqConfigurationProperties.getQueueExclusive(),
+                this.mqConfigurationProperties.getQueueAutoDelete());
+    }
+
 }

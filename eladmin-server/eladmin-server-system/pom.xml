@@ -116,6 +116,10 @@
             <artifactId>oshi-core</artifactId>
             <version>5.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.micah.eladmin-cloud</groupId>
+            <artifactId>eladmin-common-mq</artifactId>
+        </dependency>
     </dependencies>
 
 

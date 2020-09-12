@@ -1,6 +1,7 @@
-package org.micah.mq.config;
+package org.micah.mq.config.exchange;
 
 import org.micah.mq.component.ExchangeCondition;
+import org.micah.mq.config.MqConfigurationProperties;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -12,17 +13,15 @@ import org.springframework.context.annotation.Configuration;
  * @author: Micah
  * @create: 2020-09-06 16:17
  **/
-@Configuration("Fanout")
+@Configuration
 @Conditional(ExchangeCondition.class)
 public class FanoutModelConfiguration implements IExchangeConfig {
 
     private final MqConfigurationProperties mqConfigurationProperties;
 
-    private final QueueConfiguration queueConfiguration;
 
-    public FanoutModelConfiguration(MqConfigurationProperties mqConfigurationProperties, QueueConfiguration queueConfiguration) {
+    public FanoutModelConfiguration(MqConfigurationProperties mqConfigurationProperties) {
         this.mqConfigurationProperties = mqConfigurationProperties;
-        this.queueConfiguration = queueConfiguration;
     }
 
 
@@ -34,11 +33,4 @@ public class FanoutModelConfiguration implements IExchangeConfig {
                 this.mqConfigurationProperties.getExchangeAutoDelete());
     }
 
-
-
-    @Bean
-    @Override
-    public Binding binding(){
-        return BindingBuilder.bind(queueConfiguration.queue()).to(exchange());
-    }
 }

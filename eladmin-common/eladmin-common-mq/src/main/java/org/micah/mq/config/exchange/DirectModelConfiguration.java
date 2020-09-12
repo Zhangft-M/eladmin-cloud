@@ -1,10 +1,8 @@
-package org.micah.mq.config;
+package org.micah.mq.config.exchange;
 
 import org.micah.mq.component.ExchangeCondition;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
+import org.micah.mq.config.MqConfigurationProperties;
 import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Exchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +19,9 @@ public class DirectModelConfiguration implements IExchangeConfig {
 
     private final MqConfigurationProperties mqConfigurationProperties;
 
-    private final QueueConfiguration queueConfiguration;
 
-    public DirectModelConfiguration(MqConfigurationProperties mqConfigurationProperties, QueueConfiguration queueConfiguration) {
+    public DirectModelConfiguration(MqConfigurationProperties mqConfigurationProperties) {
         this.mqConfigurationProperties = mqConfigurationProperties;
-        this.queueConfiguration = queueConfiguration;
     }
 
     @Override
@@ -36,11 +32,5 @@ public class DirectModelConfiguration implements IExchangeConfig {
                 this.mqConfigurationProperties.getExchangeAutoDelete());
     }
 
-
-    @Bean
-    @Override
-    public Binding binding(){
-        return BindingBuilder.bind(queueConfiguration.queue()).to(exchange()).with(this.mqConfigurationProperties.getRouteKey());
-    }
 
 }

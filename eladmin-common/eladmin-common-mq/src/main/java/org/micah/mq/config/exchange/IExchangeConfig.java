@@ -1,4 +1,4 @@
-package org.micah.mq.config;
+package org.micah.mq.config.exchange;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -17,6 +17,8 @@ public interface IExchangeConfig  {
 
      Exchange exchange();
 
+     default String getExchangeName(){
+          return null;
+     }
 
-     Binding binding();
 }
