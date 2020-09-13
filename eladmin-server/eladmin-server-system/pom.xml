@@ -25,6 +25,16 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.micah</groupId>
+            <artifactId>eladmin-api-auth</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.micah.eladmin-cloud</groupId>
+                    <artifactId>eladmin-common-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
             <exclusions>

@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.micah.authapi.api.IRemoteAuthService;
 import org.micah.core.constant.CacheKey;
 import org.micah.core.util.FileUtils;
 import org.micah.core.util.StringUtils;
@@ -26,22 +27,18 @@ import org.micah.model.query.UserQueryCriteria;
 import org.micah.mp.util.PageUtils;
 import org.micah.mp.util.QueryHelpUtils;
 import org.micah.redis.util.RedisUtils;
-import org.micah.security.service.UserDetailsServiceImpl;
 import org.micah.security.util.SecurityUtils;
 import org.micah.system.mapper.SysUserMapper;
 import org.micah.system.mapper.UserJobMapper;
 import org.micah.system.mapper.UserRoleMapper;
 import org.micah.system.service.ISysUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -74,6 +71,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final UserRoleMapper userRoleMapper;
 
     private final UserJobMapper userJobMapper;
+
+    private final IRemoteAuthService remoteAuthService;
 
     /**
      * restTemplate提供远程访问功能,给RemoteTokenServices提供支持
@@ -192,10 +191,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 如果用户被禁用，则清除用户登陆的信息
         if (!resources.getEnabled()) {
             // TODO: 2020/8/11 需要使用在线业务服务进行操作
-            HashMap<String, Long> args = Maps.newHashMapWithExpectedSize(1);
-            args.put("ids",resources.getId());
-            HttpEntity<Map<String,Long>> httpEntity = new HttpEntity<>(args);
-            this.lbRestTemplate.exchange("http://auth-server/oauth/online",HttpMethod.DELETE,httpEntity,Void.class);
+            try {
+                this.remoteAuthService.delete(Collections.singleton(resources.getId()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         /**
          * 示例请求数据
@@ -354,19 +354,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 修改用户账号密码
-     *
-     * @param username
+     *  @param userDto
      * @param encode
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updatePassword(String username, String encode) {
+    public void updatePassword(SysUserDto userDto, String encode) {
         boolean update = this.update(Wrappers.<SysUser>lambdaUpdate().set(SysUser::getPassword, encode)
                 .set(SysUser::getPwdResetTime, LocalDateTime.now(ZoneId.systemDefault()))
-                .eq(SysUser::getUsername, username));
+                .eq(SysUser::getUsername, userDto.getUsername()));
         if (!update) {
-            log.error("更新密码失败，需要更新的用户名为:{}", username);
+            log.error("更新密码失败，需要更新的用户名为:{}", userDto.getUsername());
             throw new UpdateFailException("更新密码失败");
+        }
+        try {
+            this.remoteAuthService.delete(Collections.singleton(userDto.getId()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

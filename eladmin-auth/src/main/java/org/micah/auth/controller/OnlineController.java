@@ -33,7 +33,7 @@ public class OnlineController {
 
     @ApiOperation("踢出用户")
     @DeleteMapping
-    public ResponseEntity<Object> delete(@RequestBody Set<Long> ids) throws Exception {
+    public ResponseEntity<Void> delete(@RequestBody Set<Long> ids) throws Exception {
         for (Long id : ids) {
             // 解密Key
             onlineUserService.kickOut(id,null);

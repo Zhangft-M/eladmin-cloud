@@ -106,6 +106,7 @@ public class OnlineServiceImpl implements IOnlineUserService {
             } else if (userId == null) {
                 userId = (Long) oAuth2AccessToken.getAdditionalInformation().get(SecurityConstants.DETAILS_USER_ID);
             }
+            String username = (String) oAuth2AccessToken.getAdditionalInformation().get(SecurityConstants.DETAILS_USERNAME);
             // 判断oAuth2AccessToken是否为空，oAuth2AccessToken是否有token的值
             if (BeanUtil.isEmpty(oAuth2AccessToken)) {
                 // 都为空说明已经注销，直接返回true
@@ -116,6 +117,8 @@ public class OnlineServiceImpl implements IOnlineUserService {
             // 清空刷新token
             this.redisTokenStore.removeRefreshToken(oAuth2AccessToken.getRefreshToken());
             this.redisUtils.del(CacheKey.ONLINE_USER + userId);
+            this.redisUtils.del(CacheKey.USER_DETAILS +"::" + username);
+            this.redisUtils.del(CacheKey.USER_CACHE_KEY_PRE + username);
             return true;
         } catch (Exception e) {
             log.info("注销失败");

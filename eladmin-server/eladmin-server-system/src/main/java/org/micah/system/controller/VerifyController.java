@@ -30,11 +30,17 @@ public class VerifyController {
 
     @PostMapping(value = "/email/resetPass")
     @ApiOperation("重置密码，发送验证码")
-    public ResponseEntity<Void> resetPass(@RequestParam String tos){
-        this.verificationCodeService.sendEmail(tos,CodeEnum.PHONE_RESET_PWD_CODE.getKey());
+    public ResponseEntity<Void> resetPassByEmail(@RequestParam String tos){
+        this.verificationCodeService.sendEmail(tos,CodeEnum.EMAIL_RESET_PWD_CODE.getKey());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping(value = "/phone/resetPass")
+    @ApiOperation("重置密码，发送验证码")
+    public ResponseEntity<Void> resetPassByPhone(@RequestParam String phone){
+        this.verificationCodeService.sendMessage(phone,CodeEnum.PHONE_RESET_PWD_CODE.getKey());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping(value = "/validated")
     @ApiOperation("验证码验证")

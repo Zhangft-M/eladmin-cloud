@@ -19,4 +19,11 @@ public interface IVerifyService {
      * @param tos
      */
     void sendEmail(String tos,String key);
+
+    /**
+     * 发送短信
+     * @param phone
+     * @param key
+     */
+    void sendMessage(String phone, String key);
 }

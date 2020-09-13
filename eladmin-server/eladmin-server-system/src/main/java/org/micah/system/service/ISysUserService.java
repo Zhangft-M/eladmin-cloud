@@ -6,7 +6,6 @@ import org.micah.model.SysUser;
 import org.micah.model.dto.SysUserDto;
 import org.micah.model.dto.UserSmallDto;
 import org.micah.model.query.UserQueryCriteria;
-import org.micah.security.component.LoginUser;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,10 +83,10 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * 修改用户账号密码
-     * @param username
+     * @param userDto
      * @param encode
      */
-    void updatePassword(String username, String encode);
+    void updatePassword(SysUserDto userDto, String encode);
 
     /**
      * 修改用户的头像

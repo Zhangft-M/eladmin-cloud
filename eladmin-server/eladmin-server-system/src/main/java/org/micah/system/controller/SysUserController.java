@@ -173,7 +173,7 @@ public class SysUserController {
         if(passwordEncoder.matches(passVo.getNewPass(), user.getPassword())){
             throw new BadRequestException("新密码不能与旧密码相同");
         }
-        this.userService.updatePassword(user.getUsername(),passwordEncoder.encode(passVo.getNewPass()));
+        this.userService.updatePassword(user,passwordEncoder.encode(passVo.getNewPass()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

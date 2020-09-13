@@ -51,7 +51,7 @@ public class SendEmailListener {
 
     @RabbitListener(queues = QueenConstant.EMAIL_QUEEN_NAME)
     @SneakyThrows
-    public void sendEmail(Message<Map<String,String>> message, Channel channel){
+    public void sendEmail(Message<Map<String, String>> message, Channel channel) {
         Map<String, String> payload = message.getPayload();
         String tos = payload.get(MailConstant.TOS);
         String key = payload.get(MailConstant.KEY);
@@ -59,14 +59,14 @@ public class SendEmailListener {
         EmailConfig emailConfig = emailService.find();
         Long tag = message.getHeaders().get(AmqpHeaders.DELIVERY_TAG, Long.class);
         try {
-            EmailUtils.sendEmail(emailVo,emailConfig);
-            if (tag != null){
-                channel.basicAck(tag,false);
+            EmailUtils.sendEmail(emailVo, emailConfig);
+            if (tag != null) {
+                channel.basicAck(tag, false);
                 log.warn("消息消费成功");
             }
-        }catch (Exception e){
-            if (tag != null){
-                channel.basicNack(tag,false,true);
+        } catch (Exception e) {
+            if (tag != null) {
+                channel.basicNack(tag, false, true);
                 log.warn("消息消费失败");
             }
         }
@@ -74,30 +74,31 @@ public class SendEmailListener {
 
     /**
      * 获取邮件视图对象
+     *
      * @param tos 收件人,可以有多个人
      * @param key 缓存的key
      * @return
      */
-    private EmailVo getEmailVo(String tos,String key){
+    private EmailVo getEmailVo(String tos, String key) {
         EmailVo emailVo;
         String content;
-        String redisKey = tos + key;
+        String redisKey = key + tos;
         // 如果不存在有效的验证码，就创建一个新的
         TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("template", TemplateConfig.ResourceMode.CLASSPATH));
         Template template = engine.getTemplate("email/email.ftl");
-        Object oldCode =  redisUtils.get(redisKey);
-        if (oldCode == null){
+        Object oldCode = redisUtils.get(redisKey);
+        if (oldCode == null) {
             // 生成一个新的验证码
             String code = RandomUtil.randomNumbers(6);
             // 存入缓存
-            if(!redisUtils.set(redisKey, code,EXPIRE_TIME, TimeUnit.MINUTES)){
+            if (!redisUtils.set(redisKey, code, EXPIRE_TIME, TimeUnit.MINUTES)) {
                 throw new BadRequestException("服务异常，请联系网站负责人");
             }
-            content = template.render(Dict.create().set("code",code));
-            emailVo = new EmailVo(Collections.singletonList(tos),"EL-ADMIN-CLOUD后台管理系统",content);
-        }else {
-            content = template.render(Dict.create().set("code",oldCode));
-            emailVo = new EmailVo(Collections.singletonList(tos),"EL-ADMIN-CLOUD后台管理系统",content);
+            content = template.render(Dict.create().set("code", code));
+            emailVo = new EmailVo(Collections.singletonList(tos), "EL-ADMIN-CLOUD后台管理系统", content);
+        } else {
+            content = template.render(Dict.create().set("code", oldCode));
+            emailVo = new EmailVo(Collections.singletonList(tos), "EL-ADMIN-CLOUD后台管理系统", content);
         }
         return emailVo;
     }

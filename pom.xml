@@ -143,6 +143,11 @@
                 <artifactId>eladmin-api-log</artifactId>
                 <version>${eladmin-api.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.micah</groupId>
+                <artifactId>eladmin-api-auth</artifactId>
+                <version>${eladmin-api.version}</version>
+            </dependency>
 <!--            封装mybatis-plus的通用模块-->
             <dependency>
                 <groupId>org.micah.eladmin-cloud</groupId>

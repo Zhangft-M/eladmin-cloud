@@ -11,4 +11,6 @@ public final class ServiceNameConstants {
     public static final String LOG_SERVICE = "log-server";
 
     public static final String SYS_SERVICE = "system-server";
+
+    public static final String AUTH_SERVICE = "auth-server";
 }
