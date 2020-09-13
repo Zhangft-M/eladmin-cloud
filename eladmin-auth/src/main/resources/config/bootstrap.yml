@@ -5,7 +5,7 @@ spring:
     name: auth-server
   cloud:
     nacos:
-      server-addr: 127.0.0.1
+      server-addr: 121.89.178.219
       config:
         server-addr: ${spring.cloud.nacos.server-addr}
         file-extension: yml
