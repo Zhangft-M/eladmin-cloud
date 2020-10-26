@@ -41,6 +41,9 @@ public class Picture implements Serializable {
     @ApiModelProperty(value = "用于删除的url")
     private String delete;
 
+    @ApiModelProperty(value = "所在的桶")
+    private String bucketName;
+
     @ApiModelProperty(value = "创建者")
     private String username;
 
